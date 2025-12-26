@@ -1,0 +1,24 @@
+# LaTeX编译产物
+*.aux
+*.log
+*.out
+*.toc
+*.pdf
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# 字体相关
+missfont.log
+
+# 输出目录
+output/
+
+# 临时文件
+*~
+*.bak
+*.swp
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
