@@ -9,6 +9,7 @@
 \usepackage{geometry}  % 页面设置
 \usepackage{setspace}  % 行间距设置
 \usepackage{titlesec}  % 标题格式设置
+\usepackage{float}    % 浮动体控制，用于[H]参数
 
 % 按标准设置中文字体
 \setCJKmainfont{Noto Serif CJK SC}  % 宋体
@@ -16,7 +17,7 @@
 \setmainfont{DejaVu Serif}  % 西文字体
 
 % 按标准定义字号命令
-\newcommand{\wuhao}{\fontsize{10.5pt}{15.75pt}\selectfont}  % 五号
+\newcommand{\wuhao}{\fontsize{10.5pt}{18pt}\selectfont}  % 五号，行间距18磅
 \newcommand{\wuhaohei}{\wuhao\bfseries}  % 五号黑体加粗
 \newcommand{\xiaowu}{\fontsize{9pt}{11pt}\selectfont}  % 小五号
 \newcommand{\xiaowusong}{\xiaowu\rmfamily}  % 小五号宋体
@@ -33,8 +34,8 @@
 \setlength{\parindent}{1.5em}
 \setlength{\parskip}{0pt}
 
-% 设置行间距为固定值18磅 (18/10.5 ≈ 1.71)
-\renewcommand{\baselinestretch}{1.71}
+% 设置全局行间距倍数为1.0（已在\fontsize中设置行间距为18pt）
+\renewcommand{\baselinestretch}{1.0}
 
 % 设置页码为小五号新罗马体，版心下面居中
 \pagestyle{plain}
@@ -73,6 +74,22 @@
   {}
 \titlespacing*{\subsubsection}{0pt}{6pt}{0pt}  % 段前6pt，段后0pt，标题之间间距为6pt
 
+% 四级标题设置
+\titleformat{\paragraph}
+  {\wuhao\bfseries}
+  {}
+  {0em}
+  {}
+\titlespacing*{\paragraph}{0pt}{6pt}{0pt}  % 段前6pt，段后0pt，与其他标题保持一致
+
+% 五级标题设置
+\titleformat{\subparagraph}
+  {\wuhao\bfseries}
+  {}
+  {0em}
+  {}
+\titlespacing*{\subparagraph}{0pt}{6pt}{0pt}  % 段前6pt，段后0pt，与其他标题保持一致
+
 \begin{document}
 
 % 移除封面和目录，直接从第1章开始
@@ -108,10 +125,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx。
 
 项目节点测试的测试项与xxxxxxx的覆盖性对应关系如表1所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 1 xxxxxx与测试项覆盖性对照表}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{0.5cm}|p{7cm}|p{7cm}|}
 \hline
@@ -130,8 +150,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx。
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{6pt}  % 表格后为正文，总间距18pt
 
 xxxxxxxxxx系统软件的需方是"M"项目管理办公室，开发方是xxxxx。
 
@@ -161,10 +181,13 @@ xxxxxxxxxx系统软件的需方是"M"项目管理办公室，开发方是xxxxx�
 {\normalsize
 本文档引用的文档一览表如表2所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 2 引用文档一览表}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{0.5cm}|p{2.5cm}|p{5.5cm}|p{2.5cm}|p{1.5cm}|p{2cm}|}
 \hline
@@ -179,8 +202,8 @@ xxxxxxxxxx系统软件的需方是"M"项目管理办公室，开发方是xxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
 
 }
 
@@ -217,10 +240,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 测试环境中的软件项如表3所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 3 测试环境被测软件}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{0.5cm}|p{3.5cm}|p{3cm}|p{3cm}|p{2.5cm}|p{2cm}|}
 \hline
@@ -235,8 +261,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{6pt}  % 表格后为正文，总间距18pt
 
 测试环境中的支撑软件包括操作系统、数据库系统等，为被测软件提供必要的运行环境。
 }
@@ -246,10 +272,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 测试环境中的硬件和固件项如表4所示。
 
-\vspace{-12pt}
-\begin{center}
-{\wuhaohei 表 4 测试环境硬件项}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
+{\wuhaohei 表 5 测试环境硬件项}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{0.5cm}|p{3.5cm}|p{3.5cm}|p{1.5cm}|p{3.5cm}|p{2cm}|}
 \hline
@@ -264,8 +293,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{6pt}  % 表格后为正文，总间距18pt
 
 硬件配置满足测试要求，所有设备均已安装调试完毕，运行正常。固件版本符合系统要求。
 }
@@ -311,10 +340,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 
 根据测试大纲获取和准备测试环境中的每个元素。在测试开始前，从受控库提取被测软件，配置测试环境。测试环境的准备、建立与维护计划表如表6所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 6 测试环境的准备、建立与维护计划表}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{1.5cm}|p{6.5cm}|p{3.5cm}|p{3cm}|}
 \hline
@@ -329,8 +361,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
 
 }
 
@@ -345,10 +377,13 @@ xxxxxxxxxx测试环境满足合同指标要求中对计算机资源的要求，�
 {\normalsize
 本次测试的参与组织如表7所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 7 参与组织}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{1cm}|p{3.5cm}|p{6.5cm}|p{3.5cm}|}
 \hline
@@ -365,8 +400,8 @@ xxxxxxxxxx测试环境满足合同指标要求中对计算机资源的要求，�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
 
 }
 
@@ -375,10 +410,13 @@ xxxxxxxxxx测试环境满足合同指标要求中对计算机资源的要求，�
 {\normalsize
 本次测试人员与分工安排如表8所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 8 人员与分工安排}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{0.5cm}|p{4.5cm}|p{2.5cm}|p{2.5cm}|p{4.5cm}|}
 \hline
@@ -399,8 +437,8 @@ xxxxxxxxxx测试环境满足合同指标要求中对计算机资源的要求，�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
 
 }
 
@@ -457,10 +495,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 计划开展的测试按照优先级排序从高到低依次开展工作。计划的测试顺序如表9所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 9 计划的测试顺序}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{0.5cm}|p{4cm}|p{3cm}|p{3.5cm}|p{3.5cm}|}
 \hline
@@ -475,8 +516,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
 
 }
 
@@ -509,10 +550,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 计划执行的测试如表10所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 10 测试项列表}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{1cm}|p{4cm}|p{3cm}|p{6.5cm}|}
 \hline
@@ -531,8 +575,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
 
 }
 
@@ -555,10 +599,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 测试进度如表11所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 11 基于PQL查询语言的血缘演算功能测试}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{3cm}|p{6.5cm}|p{5cm}|}
 \hline
@@ -569,8 +616,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{6pt}  % 表格后为正文，总间距18pt
 
 测试方法：该测试使用手工测试的方法，测试人员通过界面执行相关功能测试用例，查看操作预期结果是否与实际相符。
 
@@ -586,10 +633,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 本次测试进度安排如表12所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 12 测试进度表}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{2.5cm}|p{3.5cm}|p{3.5cm}|p{5cm}|}
 \hline
@@ -610,8 +660,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
 
 }
 
@@ -621,10 +671,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 本次测试的终止条件如表13所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 13 缺陷级别}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
 \hline
@@ -641,8 +694,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{6pt}  % 表格后为正文，总间距18pt
 
 测试终止条件为：
 （1）全部测试用例被执行完毕；
@@ -656,10 +709,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 本测试大纲对《xxxxxxxxxx系统软件需求规格说明》的可追踪性如表14和表15所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 14 xxxxxxxxxx与需求规格说明以及测试项的追踪关系表}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{1cm}|p{3cm}|p{3cm}|p{7cm}|}
 \hline
@@ -676,15 +732,18 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{6pt}  % 表格后为正文，总间距18pt
 
 xxxxxxxxxx系统软件需求规格说明中描述的PQL查询语言交互功能，本测试大纲的第4.2节对此进行了覆盖。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 15 xxxxxxxxxx与需求规格说明以及测试项的逆向追踪关系表}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{1cm}|p{3cm}|p{3cm}|p{7cm}|}
 \hline
@@ -699,8 +758,8 @@ xxxxxxxxxx系统软件需求规格说明中描述的PQL查询语言交互功能�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
 
 }
 

@@ -80,18 +80,24 @@ allowed-tools: Read, Write, Edit, Grep, Glob
 }
 ```
 
-### 含表格的章节格式
+### 含表格的章节格式（推荐）⭐
 
 ```latex
+% 导言区需要添加
+\usepackage{float}    % 浮动体控制，用于[H]参数
+
 \subsection*{N.X 表格型章节}
 
 {\normalsize
 前置说明文字。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 X 表格标题}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|列格式|}
 \hline
@@ -102,8 +108,8 @@ allowed-tools: Read, Write, Edit, Grep, Glob
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{6pt}  % 或 \vspace{-6pt}，根据后续内容类型调整（见表格最佳实践）
 
 后续说明文字。
 }
@@ -350,10 +356,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx如表 X 所示。
 
-\vspace{-12pt}
-\begin{center}
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
 {\wuhaohei 表 X 表格标题}
 
+\vspace{6pt}
 {\settablespacing
 \begin{tabular}{|p{0.5cm}|p{7cm}|p{7cm}|}
 \hline
@@ -366,8 +375,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \end{tabular}
 }
-\end{center}
-\vspace{6pt}
+\end{table}
+\vspace{6pt}  % 根据后续内容类型调整（见表格最佳实践）
 
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
 }
@@ -454,18 +463,137 @@ python3 tools/extract_word_structure.py templates/document.docx
 
 ### 6. 间距规范
 
-- 标题段前段后：6pt
-- 正文行间距：18磅
-- 段落首行缩进：1.5em
+- **标题段前段后**：6pt
+- **正文行间距**：18磅（重要，见下方详细说明）
+- **段落首行缩进**：1.5em
+
+#### 正文行间距设置（关键）⭐⭐⭐⭐⭐
+
+**问题**：避免双重设置导致实际行间距超过预期。
+
+**正确设置方法**：
+```latex
+% 导言区设置
+\newcommand{\wuhao}{\fontsize{10.5pt}{18pt}\selectfont}  % 五号，行间距18磅
+\renewcommand{\baselinestretch}{1.0}  % 不额外倍增
+```
+
+**错误示例**（会导致行间距过大）：
+```latex
+\newcommand{\wuhao}{\fontsize{10.5pt}{15.75pt}\selectfont}
+\renewcommand{\baselinestretch}{1.71}
+% 实际行间距：15.75pt × 1.71 ≈ 26.9pt ❌ 远超18磅
+```
+
+**计算公式**：
+```
+实际行间距 = \fontsize的第二个参数 × \baselinestretch
+```
+
+**推荐设置**：
+
+| 字体大小 | \fontsize参数 | \baselinestretch | 实际行间距 |
+|---------|--------------|-----------------|-----------|
+| 10.5pt (五号) | 18pt | 1.0 | **18pt** ✅ |
+| 9pt (小五号) | 可自定义 | 1.0 | 根据需求 |
+
+**注意事项**：
+- ⚠️ 避免双重设置：不要同时设置\fontsize的第二个参数和\baselinestretch
+- ⚠️ 如果使用\baselinestretch，应设置为1.0，并在\fontsize中直接指定行间距
+- ✅ 推荐：`\fontsize{10.5pt}{18pt}` + `\baselinestretch{1.0}`
+- ❌ 不推荐：`\fontsize{10.5pt}{15.75pt}` + `\baselinestretch{1.71}`
 
 ### 7. 表格规范
 
-- 表题：五号黑体居中
-- 表头：小五号黑体，灰色背景
-- 表格内容：小五号宋体
-- 统一宽度：14.5cm（参考表1、表2）
+- **表格环境**：使用 `\begin{table}[H]` 替代 `\begin{center}`（重要）
+- **表题**：五号黑体居中
+- **表头**：小五号黑体，灰色背景
+- **表格内容**：小五号宋体
+- **统一宽度**：14.5cm（参考表1、表2）
 
-### 8. 内容填充
+### 8. 表格最佳实践（新增）⭐⭐⭐⭐⭐
+
+#### 防止表格分页
+
+**问题**：表格标题和内容可能被分页符分开到不同页面。
+
+**解决方案**：
+```latex
+% 必须在导言区添加
+\usepackage{float}    % 浮动体控制
+
+% 表格格式
+\begin{table}[H]
+\centering
+\vspace{6pt}
+{\wuhaohei 表 X 表格标题}
+
+\vspace{6pt}
+{\settablespacing
+\begin{tabular}{|...|}
+...
+\end{tabular}
+}
+\end{table}
+```
+
+**方法对比**：
+| 方法 | 优点 | 缺点 | 推荐度 |
+|------|------|------|--------|
+| `\begin{table}[H]` | 防止分页，效果好 | 需要float包 | ✅ 强烈推荐 |
+| `\begin{center}` | 简单 | 标题和内容可能分页 | ❌ 不推荐 |
+| `\nopagebreak` | 简单 | 效果弱，可能被忽略 | ⚠️ 不推荐 |
+
+#### 表格后间距精确控制
+
+**问题**：表格与后续内容（正文/标题）的间距需要精确控制。
+
+**技术要点**：LaTeX的table环境有默认的 `\textfloatsep` 间距（约12pt）。
+
+**间距计算公式**：
+```
+总间距 = LaTeX默认间距(\textfloatsep) + 手动间距(\vspace)
+```
+
+**推荐设置**：
+
+| 后续内容 | 目标总间距 | 手动设置 | 说明 |
+|---------|-----------|---------|------|
+| 标题 | 6pt | `\vspace{-6pt}` | 抵消部分默认间距 |
+| 正文 | 18pt | `\vspace{6pt}` | 在默认间距基础上增加 |
+
+**实现示例**：
+```latex
+\end{table}
+% 智能选择间距：
+% - 后续是标题：\vspace{-6pt}  % 总间距6pt
+% - 后续是正文：\vspace{6pt}   % 总间距18pt
+```
+
+**Python自动判断**：
+```python
+# 检查表格后的内容类型
+if '\\section*' in next_content or '\\subsection*' in next_content:
+    spacing = '\\vspace{-6pt}  % 表格后为标题'
+else:
+    spacing = '\\vspace{6pt}   % 表格后为正文'
+```
+
+#### 常见问题
+
+**Q: 为什么实际间距比设置的大？**
+A: LaTeX的table环境有默认的 `\textfloatsep`（约12pt），需要考虑这个值。
+
+**Q: 可以使用负值间距吗？**
+A: 可以。`\vspace{-6pt}` 是安全的，用于抵消部分默认间距。
+
+**Q: 如何批量转换旧表格？**
+A: 使用Python脚本逐行处理，将 `\begin{center}` 改为 `\begin{table}[H]`。
+
+**Q: table环境缺少float包怎么办？**
+A: 在导言区添加 `\usepackage{float}`。
+
+### 9. 内容填充
 
 - 使用 `xxxx` 作为占位符
 - 保持句子结构完整
@@ -481,6 +609,8 @@ python3 tools/extract_word_structure.py templates/document.docx
 - 检查表格列数与表头一致
 - 确认所有 `\\` 和 `\hline` 配对
 - 验证特殊字符已转义
+- **表格环境错误**：确认已加载 `\usepackage{float}`
+- **表格结束错误**：检查是否有遗漏的 `\end{center}`
 
 ### 格式不一致
 - 对比已有章节的格式
