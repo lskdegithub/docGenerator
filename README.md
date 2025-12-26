@@ -13,9 +13,17 @@ latex-test/
 │       └── str-captain-1.tex # LaTeX 模板文件
 ├── templates/                # 模板文件目录
 │   └── *.docx               # Word 模板文档
+├── tools/                    # 工具脚本目录
+│   ├── README.md            # 工具使用说明
+│   ├── extract_word_structure.py  # Word章节结构提取工具
+│   ├── extract_docx.py      # DOCX文档解析工具
+│   └── extract_structure.py # 结构提取工具
 ├── output/                   # 输出目录
 │   └── *.pdf               # 生成的 PDF 文件
-└── .claude/                 # Claude Code 配置
+├── build.sh                 # LaTeX 编译脚本
+├── .claude/                 # Claude Code 配置
+│   └── skills/             # Claude Code Skills
+└── README.md               # 项目说明文档
 ```
 
 ## 技术文件格式规范标准
