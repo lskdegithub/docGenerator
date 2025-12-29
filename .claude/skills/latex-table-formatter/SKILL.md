@@ -192,6 +192,28 @@ allowed-tools: Read, Write, Edit, Grep, Glob
 - 确保表题和表格在同一 center 环境中
 - 移除不必要的 `\vspace`
 
+### 表题与表格内容分页
+- **使用 `table[H]` 环境强制表格位置**：
+  ```latex
+  \begin{table}[H]
+  \centering
+  {\wuhaohei 表 X 表格标题}
+  \nobreak  % 防止标题后分页
+  \vspace{6pt}
+  {\settablespacing
+  \begin{tabular}{...}
+  ...
+  \end{tabular}
+  }
+  \end{table}
+  ```
+- **重要提示**：
+  - `table` 环境需要 `float` 宏包：`\usepackage{float}`
+  - `[H]` 参数强制表格在当前位置，不会浮动
+  - `\nobreak` 防止标题和表格之间分页
+  - `\samepage` 不是环境，只是声明命令，不能使用 `\endsamepage`
+  - 不要使用 `\vbox` 强制包裹，会破坏排版
+
 ### 表格宽度不一致
 - 检查所有表格的总宽度
 - 统一为标准宽度（推荐14.5cm）
