@@ -1,0 +1,172 @@
+\section*{4. 测试说明}
+
+{\normalsize
+\subsection*{4.1 一般信息}
+
+{\normalsize
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
+
+依据xxxxxxxxxx要求，结合被测项目技术成果的结构和复杂性，对测试任务进行需求分析，确定测试级别为部件测试。
+}
+
+\subsubsection*{4.1.1 测试级别}
+
+{\normalsize
+本次测试级别为部件测试，对xxxxxxxxxx系统软件单元和软件部件进行测试。
+}
+
+\subsubsection*{4.1.2 测试方法}
+
+{\normalsize
+本次测试采用的测试类型包括：功能测试、接口测试和可靠性测试。
+
+功能测试、接口测试和可靠性测试均使用等价类划分、正交法、场景法等分析方法设计测试用例。其中功能测试使用手工测试的方法，测试人员通过界面进行相关功能测试用例，查看操作预期结果是否与实际相符；接口测试和可靠性测试则使用自动化测试的方法，测试人员通过运行测试脚本进行验证预期结果是否与实际相符。
+}
+
+\subsubsection*{4.1.3 测试类别}
+
+{\normalsize
+执行的测试类别为：功能测试、接口测试和可靠性测试。
+
+测试用例应按照等价类划分、边界值分析、错误猜测、因果图、判定表等策略设计，测试依据中涉及的软件质量特性覆盖率应达到100\%。
+}
+
+\subsubsection*{4.1.4 一般测试条件}
+
+{\normalsize
+计划开展的测试按照优先级排序从高到低依次开展工作。计划的测试顺序如表9所示。
+
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
+{\wuhaohei 表 9 计划的测试顺序}
+
+\vspace{6pt}
+{\settablespacing
+\begin{tabular}{|p{0.5cm}|p{4cm}|p{3cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+\rowcolor{gray!20}
+\multicolumn{1}{|c|}{{\xiaowuhei 序号}} & \multicolumn{1}{c|}{{\xiaowuhei 测试项名称}} & \multicolumn{1}{c|}{{\xiaowuhei 计划开始测试时间}} & \multicolumn{1}{c|}{{\xiaowuhei 计划完成测试时间}} & \multicolumn{1}{c|}{{\xiaowuhei 测试类别}} \\
+\hline
+\multicolumn{1}{|c|}{{\xiaowu 1}} & {\xiaowu xxxxxxxx功能测试} & {\xiaowu 2025.9.20} & {\xiaowu 2025.9.30} & {\xiaowu 功能测试} \\
+\hline
+\multicolumn{1}{|c|}{{\xiaowu 2}} & {\xiaowu xxxxxxxx接口测试} & {\xiaowu 2025.9.20} & {\xiaowu 2025.9.30} & {\xiaowu 接口测试} \\
+\hline
+\multicolumn{1}{|c|}{{\xiaowu 3}} & {\xiaowu xxxxxxxx可靠性测试} & {\xiaowu 2025.9.20} & {\xiaowu 2025.9.30} & {\xiaowu 可靠性测试} \\
+\hline
+\end{tabular}
+}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
+
+}
+
+\subsubsection*{4.1.5 测试进展}
+
+{\normalsize
+测试进度安排详见第5章。
+}
+
+\subsubsection*{4.1.6 数据记录、整理和分析}
+
+{\normalsize
+软件测试期间获得的测试数据或测试过程中用到的数据，采用手工方式进行整理和分析，将整理和分析得到的信息保存并存档。整理和分析数据的结果包括：各类测试的测试结果、测试发现的问题和测试人员建议的改进意见等。
+
+在xxxxxxxxxx系统软件需求规格说明中描述的PQL查询语言交互功能为"主要提供数据世系的血缘查询和可信查询，其中血缘查询可支持查询某个数字对象的来源、后继情况，以及两个数字对象之间的血缘联通情况、是否有同源祖先等情况；可信查询主要可查询基于数据性质的可信情况"，因此该文档的编写按照满足数据世系的血缘查询和可信查询进行测试项的划分。
+
+围绕xxxxxxxxxx和《xxxxxxxxxx系统软件需求规格说明》的要求计划开展的测试共计5个测试项其中功能测试2个，接口测试2个和可靠性测试1个。
+}
+
+\subsubsection*{4.1.7 与测试有关的安全性和保密性}
+
+{\normalsize
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
+
+测试过程中所有相关人员必须严格遵守保密规定，不得泄露测试内容、测试数据和测试结果。
+}
+
+\subsection*{4.2 计划执行的测试}
+
+{\normalsize
+计划执行的测试如表10所示。
+
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
+{\wuhaohei 表 10 测试项列表}
+
+\vspace{6pt}
+{\settablespacing
+\begin{tabular}{|p{1cm}|p{4cm}|p{3cm}|p{6.5cm}|}
+\hline
+\rowcolor{gray!20}
+\multicolumn{1}{|c|}{{\xiaowuhei 序号}} & \multicolumn{1}{c|}{{\xiaowuhei 测试类别}} & \multicolumn{1}{c|}{{\xiaowuhei 测试项名称}} & \multicolumn{1}{c|}{{\xiaowuhei 说明}} \\
+\hline
+\multicolumn{1}{|c|}{{\xiaowu 1}} & {\xiaowu 功能测试} & {\xiaowu xxxxxxxx功能测试} & {\xiaowu 基于PQL查询语言的数据血缘和可信查询功能测试} \\
+\hline
+\multicolumn{1}{|c|}{{\xiaowu 2}} & {\xiaowu 功能测试} & {\xiaowu xxxxxxxx功能测试} & {\xiaowu 基于PQL查询语言的数据血缘和可信查询功能测试} \\
+\hline
+\multicolumn{1}{|c|}{{\xiaowu 3}} & {\xiaowu 接口测试} & {\xiaowu xxxxxxxx接口测试} & {\xiaowu 测试各模块之间的接口参数传递正确性} \\
+\hline
+\multicolumn{1}{|c|}{{\xiaowu 4}} & {\xiaowu 接口测试} & {\xiaowu xxxxxxxx接口测试} & {\xiaowu 测试各模块之间的接口参数传递正确性} \\
+\hline
+\multicolumn{1}{|c|}{{\xiaowu 5}} & {\xiaowu 可靠性测试} & {\xiaowu xxxxxxxx可靠性测试} & {\xiaowu 测试系统在异常情况下的恢复能力} \\
+\hline
+\end{tabular}
+}
+\end{table}
+\vspace{-6pt}  % 表格后为标题，总间距6pt
+
+}
+
+\subsubsection*{4.2.1 xxxxx语言功能测试（xxxxxx\_GN）}
+
+{\normalsize
+本测试项的测试要求、策略与方法如下：
+
+测试要求：依据《xxxxxxxxxx系统软件需求规格说明》，对基于PQL查询语言的血缘演算功能进行测试。
+
+测试策略：
+测试方法：该测试使用手工测试的方法，测试人员通过界面执行相关功能测试用例，查看操作预期结果是否与实际相符。
+
+测试终止条件：全部测试用例被执行或因某种原因导致测试无法执行。
+
+测试通过准则：软件测试问题报告中1级、2级问题均已关闭，且3级、4级问题关闭率达到80\%以上，则测试通过，否则测试不通过。
+
+\paragraph*{4.2.1.1 xxxxx功能测试（xxxxxx\_GN）}
+
+{\normalsize
+测试进度如表11所示。
+
+% 表格使用[H]参数强制在当前位置，防止标题与内容分离
+\begin{table}[H]
+\centering
+\vspace{6pt}
+{\wuhaohei 表 11 基于PQL查询语言的血缘演算功能测试}
+
+\vspace{6pt}
+{\settablespacing
+\begin{tabular}{|p{3cm}|p{6.5cm}|p{5cm}|}
+\hline
+\rowcolor{gray!20}
+\multicolumn{1}{|c|}{{\xiaowuhei 测试项名称}} & \multicolumn{1}{c|}{{\xiaowuhei 测试要求}} & \multicolumn{1}{c|}{{\xiaowuhei 测试策略与方法}} \\
+\hline
+\multicolumn{1}{|c|}{{\xiaowu xxxxxxxx功能测试}} & {\xiaowu 依据《xxxxxxxxxx系统软件需求规格说明》，对基于PQL查询语言的血缘演算功能进行测试。} & {\xiaowu 测试策略：} \\
+\hline
+\end{tabular}
+}
+\end{table}
+\vspace{6pt}  % 表格后为正文，总间距18pt
+
+测试方法：该测试使用手工测试的方法，测试人员通过界面执行相关功能测试用例，查看操作预期结果是否与实际相符。
+
+测试终止条件：全部测试用例被执行或因某种原因导致测试无法执行。
+
+测试通过准则：软件测试问题报告中1级、2级问题均已关闭，且3级、4级问题关闭率达到80\%以上，则测试通过，否则测试不通过。
+
+}
+
+% =================== 第5章：测试进度 ===================
+\noindent

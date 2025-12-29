@@ -1,0 +1,171 @@
+% GJB 438C-2021 技术文档样式文件
+% 版本: 1.0
+% 日期: 2025-12-29
+% 说明: 包含所有字号、间距、标题、表格等格式定义
+
+\ProvidesPackage{gjb438c-style}[2025/12/29 v1.0 GJB 438C Format]
+
+% =================================================================
+% 基础包加载
+% =================================================================
+\usepackage{ctex}          % 中文支持
+\usepackage{fontspec}      % 字体设置
+\usepackage{xcolor}        % 颜色支持
+\usepackage{colortbl}      % 表格颜色
+\usepackage{geometry}      % 页面设置
+\usepackage{setspace}      % 行间距设置
+\usepackage{titlesec}      % 标题格式设置
+\usepackage{float}         % 浮动体控制，用于[H]参数
+
+% =================================================================
+% 中文字体设置
+% =================================================================
+\setCJKmainfont{Noto Serif CJK SC}  % 宋体
+\setCJKsansfont{Noto Sans CJK SC}  % 黑体
+\setmainfont{DejaVu Serif}          % 西文字体
+
+% =================================================================
+% 字号定义（严格按照GJB 438C-2021标准）
+% =================================================================
+% 五号，行间距18磅（10.5pt, 18pt）
+\newcommand{\wuhao}{\fontsize{10.5pt}{18pt}\selectfont}
+% 五号黑体加粗
+\newcommand{\wuhaohei}{\wuhao\bfseries}
+% 小五号（9pt, 11pt）
+\newcommand{\xiaowu}{\fontsize{9pt}{11pt}\selectfont}
+% 小五号宋体
+\newcommand{\xiaowusong}{\xiaowu\rmfamily}
+% 小五号黑体加粗
+\newcommand{\xiaowuhei}{\xiaowu\bfseries}
+% 三号黑体加粗（16pt, 18pt）
+\newcommand{\sanhao}{\fontsize{16pt}{18pt}\selectfont\bfseries}
+
+% =================================================================
+% 正文格式设置
+% =================================================================
+% 定义正文字体为五号宋体
+\renewcommand{\normalsize}{\wuhao}
+
+% =================================================================
+% 页面设置
+% =================================================================
+% A4纸张，上下左右各2.5cm页边距
+\geometry{a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+% 段落首行缩进为标准中文缩进1.5em
+\setlength{\parindent}{1.5em}
+% 段落间距为0
+\setlength{\parskip}{0pt}
+
+% =================================================================
+% 行间距设置（重要：避免双重设置）
+% =================================================================
+% 全局行间距倍数为1.0（已在\fontsize中设置行间距为18pt）
+\renewcommand{\baselinestretch}{1.0}
+
+% =================================================================
+% 页码设置
+% =================================================================
+% 页码为小五号新罗马体，版心下面居中
+\pagestyle{plain}
+\renewcommand{\thepage}{\xiaowu\rmfamily\arabic{page}}
+
+% =================================================================
+% 表格和图表标题格式
+% =================================================================
+% 表格标题：五号黑体
+\renewcommand{\tablename}{\wuhaohei 表}
+% 图表标题：五号黑体
+\renewcommand{\figurename}{\wuhaohei 图}
+
+% =================================================================
+% 表格行间距设置
+% =================================================================
+% 定义表格行间距倍数（设置为1.0，使用默认表格行间距）
+\newcommand{\tablearraystretch}{1.0}
+% 应用表格行间距的辅助命令
+\newcommand{\settablespacing}{\renewcommand{\arraystretch}{\tablearraystretch}}
+% 重置表格行间距
+\newcommand{\resettablespacing}{\renewcommand{\arraystretch}{1.0}}
+
+% =================================================================
+% 标题格式设置（1-5级标题）
+% =================================================================
+
+% 1级标题：五号宋体加粗，段前段后6pt
+\titleformat{\section}
+  {\wuhao\bfseries}
+  {\thesection}
+  {1em}
+  {}
+\titlespacing*{\section}{0pt}{6pt}{0pt}
+
+% 2级标题：五号宋体加粗，段前段后6pt
+\titleformat{\subsection}
+  {\wuhao\bfseries}
+  {\thesubsection}
+  {1em}
+  {}
+\titlespacing*{\subsection}{0pt}{6pt}{0pt}
+
+% 3级标题：五号宋体加粗，段前段后6pt
+\titleformat{\subsubsection}
+  {\wuhao\bfseries}
+  {\thesubsubsection}
+  {1em}
+  {}
+\titlespacing*{\subsubsection}{0pt}{6pt}{0pt}
+
+% 4级标题：五号宋体加粗，段前段后6pt
+\titleformat{\paragraph}
+  {\wuhao\bfseries}
+  {}
+  {0em}
+  {}
+\titlespacing*{\paragraph}{0pt}{6pt}{0pt}
+
+% 5级标题：五号宋体加粗，段前段后6pt
+\titleformat{\subparagraph}
+  {\wuhao\bfseries}
+  {}
+  {0em}
+  {}
+\titlespacing*{\subparagraph}{0pt}{6pt}{0pt}
+
+% =================================================================
+% 辅助命令
+% =================================================================
+
+% 表格标准格式（防止分页）
+% 用法: \StandardTable{标题}{列格式}{内容}
+\newcommand{\StandardTable}[3]{%
+  \begin{table}[H]
+  \centering
+  \vspace{6pt}
+  {\wuhaohei #1}
+  \vspace{6pt}
+  {\settablespacing
+  \begin{tabular}{#2}
+  #3
+  \end{tabular}
+  }
+  \end{table}
+}
+
+% 带灰表头的表格行
+% 用法: \GrayHeaderRow{列数}{内容1}{内容2}{...}
+\newcommand{\GrayHeaderRow}[2]{%
+  \hline
+  \rowcolor{gray!20}%
+  #2%
+  \\%
+  \hline%
+}
+
+% 普通表格行
+% 用法: \NormalRow{列数}{内容1}{内容2}{...}
+\newcommand{\NormalRow}[2]{%
+  #2%
+  \\%
+  \hline%
+}
