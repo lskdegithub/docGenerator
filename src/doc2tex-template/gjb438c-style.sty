@@ -27,18 +27,18 @@
 % =================================================================
 % 字号定义（严格按照GJB 438C-2021标准）
 % =================================================================
-% 五号，行间距18磅（10.5pt, 18pt）
-\newcommand{\wuhao}{\fontsize{10.5pt}{18pt}\selectfont}
+% 五号，行间距18磅（10.5pt, 18pt）- 宋体，英文和数字使用罗马体
+\newcommand{\wuhao}{\fontsize{10.5pt}{18pt}\rmfamily\selectfont}
 % 五号黑体加粗
 \newcommand{\wuhaohei}{\wuhao\bfseries}
-% 小五号（9pt, 11pt）
-\newcommand{\xiaowu}{\fontsize{9pt}{11pt}\selectfont}
-% 小五号宋体
-\newcommand{\xiaowusong}{\xiaowu\rmfamily}
+% 小五号（9pt, 11pt）- 宋体，英文和数字使用罗马体
+\newcommand{\xiaowu}{\fontsize{9pt}{11pt}\rmfamily\selectfont}
+% 小五号宋体（与\xiaowu相同，保留别名）
+\newcommand{\xiaowusong}{\xiaowu}
 % 小五号黑体加粗
 \newcommand{\xiaowuhei}{\xiaowu\bfseries}
 % 三号黑体加粗（16pt, 18pt）
-\newcommand{\sanhao}{\fontsize{16pt}{18pt}\selectfont\bfseries}
+\newcommand{\sanhao}{\fontsize{16pt}{18pt}\rmfamily\bfseries}
 
 % =================================================================
 % 正文格式设置
