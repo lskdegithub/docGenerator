@@ -162,14 +162,9 @@ def generate_section_4_2(data_dir):
         metric_content = metric_data.get('content', '')
         metric_index = metric_data.get('index', metric_dir.name.split('-')[0])
 
-        # 生成三级子标题 (4.2.x)
+        # 生成三级子标题 (4.2.x) - 只显示标题，不包含content内容
         latex_output.append(f"\\subsubsection*{{4.2.{metric_index} {metric_title}}}")
-        latex_output.append("\n{\\normalsize")
-
-        # 如果有content字段，添加内容描述
-        if metric_content and metric_content.strip():
-            latex_output.append(f"{metric_content}")
-            latex_output.append("")
+        # 三级标题后不添加内容，直接处理下一级
 
         # 获取该metric下的所有module目录并排序
         module_dirs = sorted([d for d in metric_dir.iterdir() if d.is_dir() and d.name.endswith('-module')])
@@ -187,9 +182,14 @@ def generate_section_4_2(data_dir):
                 continue
 
             module_name = metadata_data.get('MODULE_NAME', '')
+            module_id = metadata_data.get('MODULE_ID', '')
 
-            # 生成四级子标题 (4.2.x.x) - 使用递增序号
-            latex_output.append(f"\\paragraph*{{4.2.{metric_index}.{module_idx} {module_name}}}")
+            # 转义LaTeX特殊字符（如下划线）
+            module_id_escaped = module_id.replace('_', '\\_')
+
+            # 生成四级子标题 (4.2.x.x) - 格式：MODULE_NAME (MODULE_ID)
+            module_title = f"{module_name}（{module_id_escaped}）" if module_id else module_name
+            latex_output.append(f"\\paragraph*{{4.2.{metric_index}.{module_idx} {module_title}}}")
             latex_output.append("\n{\\normalsize")
 
             # 获取该module下的所有item目录并排序
@@ -222,7 +222,7 @@ def generate_section_4_2(data_dir):
 
             latex_output.append("}")  # 结束四级section
 
-        latex_output.append("}")  # 结束三级section
+        # 三级标题不包含内容，无需结束标记
 
     return "\n".join(latex_output)
 
