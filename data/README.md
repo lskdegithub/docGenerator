@@ -43,7 +43,7 @@ data 目录采用**指标-模块-测试项**的三层结构：
 **对应到测试计划文档的章节结构**：
 ```
 4.2 计划执行的测试
-  ├─ 4.2.1 测试指标1              ← 三级标题（来自 metric.yaml 的 content）
+  ├─ 4.2.1 测试指标1              ← 三级标题（来自 metric.yaml 的 title）
   │   ├─ 4.2.1.1 模块1            ← 四级标题（来自 metadata.yaml 的 MODULE_NAME）
   │   │   ├─ 4.2.1.1.1 测试项1（标识）  ← 五级标题（来自 plan.yaml）
   │   │   │   └─ 表11: 测试项详细信息
@@ -60,6 +60,9 @@ data 目录采用**指标-模块-测试项**的三层结构：
 - **编号规则**：从 001 开始递增
 - **作用**：定义测试的高层次分类或验收指标
 - **对应文档**：测试计划 4.2 章节的三级子标题
+- **字段说明**：
+  - `title` 字段 → 三级标题
+  - `content` 字段 → 标题下方的正文内容（可选）
 
 #### 2. 模块层 (Module)
 - **目录命名**：`{编号}-module/`（如 `001-module/`）
@@ -80,19 +83,26 @@ data 目录采用**指标-模块-测试项**的三层结构：
 定义测试指标的元信息，存放在指标目录下。
 
 ```yaml
-index: 01                    # 指标编号
-source: XX合同               # 来源（如合同名称、文档编号等）
-content: 大规模数据存储      # 指标名称（会成为三级标题）
+index: 01                         # 指标编号
+source: XX合同                    # 来源（如合同名称、文档编号等）
+title: 大规模数据存储             # 指标标题（会成为三级标题）
+content: 大规模数据存储的详细内容描述  # 指标内容（会显示在标题下方）
 ```
 
 **必填字段**：
 - `index` - 指标编号（用于排序）
 - `source` - 来源描述
-- `content` - 指标名称（会作为 4.2.x 章节的标题）
+- `title` - 指标标题（会作为 4.2.x 章节的标题）
+
+**可选字段**：
+- `content` - 指标内容描述（会显示在标题下方的正文内容）
 
 **生成效果**：
-```
+```latex
 \subsubsection*{4.2.1 大规模数据存储}
+
+{\normalsize
+大规模数据存储的详细内容描述
 ```
 
 ### 模块元数据文件 (metadata.yaml)
@@ -207,7 +217,8 @@ metrics: 01-metric.yaml
    ```yaml
    index: 03
    source: XX合同
-   content: 数据血缘查询
+   title: 数据血缘查询
+   content: 数据血缘查询功能的详细说明内容
    ```
 
 4. **在指标下创建模块**
@@ -284,7 +295,8 @@ metrics: 01-metric.yaml
 data/ 目录结构                    →  测试计划文档章节
 ────────────────────────────────────────────────────
 001-test-metric/                 →  4.2.1 大规模数据存储 (三级标题)
-├── 001-metric.yaml              →     (content 字段)
+├── 001-metric.yaml              →     (title 字段)
+│                                 →  内容描述 (content 字段)
 ├── 001-module/                  →
 │   ├── metadata.yaml            →  4.2.1.1 模块1 (四级标题)
 │   └── 001-item1/               →     (MODULE_NAME 字段)
@@ -344,7 +356,8 @@ data/ 目录结构                    →  测试计划文档章节
 ```
 data/
 ├── 001-test-metric/                      # 指标1：大规模数据存储
-│   ├── 001-metric.yaml                  # content: 大规模数据存储
+│   ├── 001-metric.yaml                  # title: 大规模数据存储
+│   │                                     # content: 详细内容描述
 │   │
 │   ├── 001-module/                      # 模块1：大文件存储
 │   │   ├── metadata.yaml                # MODULE_NAME: 大文件存储
@@ -355,7 +368,7 @@ data/
 │   │   │       ├── 001-case-upload.yaml
 │   │   │       └── 002-case-delete.yaml
 │   │   │
-│   │   └── 002-item2/                   # 测试项2：100MB文件上传
+│   │   └─ 002-item2/                   # 测试项2：100MB文件上传
 │   │       ├── plan.yaml
 │   │       └── test_case/
 │   │           └── 001-case-upload.yaml
@@ -366,7 +379,8 @@ data/
 │           └── plan.yaml
 │
 └── 002-test-metric/                      # 指标2：数据血缘查询
-    ├── 002-metric.yaml                  # content: 数据血缘查询
+    ├── 002-metric.yaml                  # title: 数据血缘查询
+    │                                     # content: 详细内容描述
     └── 001-module/
         ├── metadata.yaml                # MODULE_NAME: 血缘查询
         └── 001-item1/
@@ -377,7 +391,8 @@ data/
 
 ```
 4.2 计划执行的测试
-├─ 4.2.1 大规模数据存储                           ← 001-test-metric
+├─ 4.2.1 大规模数据存储                           ← 001-test-metric 的 title
+│   [内容描述: 大规模数据存储的详细内容...]        ← 001-test-metric 的 content
 │   ├─ 4.2.1.1 大文件存储                        ← 001-module
 │   │   ├─ 4.2.1.1.1 10MB文件上传测试（upload10mb）      ← 001-item1
 │   │   │   └─ 表11: 测试项详细信息
@@ -386,7 +401,8 @@ data/
 │   └─ 4.2.1.2 小文件存储                        ← 002-module
 │       └─ 4.2.1.2.1 小文件上传测试（uploadsmall）        ← 001-item1
 │           └─ 表13: 测试项详细信息
-└─ 4.2.2 数据血缘查询                             ← 002-test-metric
+└─ 4.2.2 数据血缘查询                             ← 002-test-metric 的 title
+    [内容描述: 数据血缘查询的详细内容...]         ← 002-test-metric 的 content
     └─ 4.2.2.1 血缘查询                          ← 001-module
         └─ 4.2.2.1.1 血缘来源查询（querysource）         ← 001-item1
             └─ 表14: 测试项详细信息

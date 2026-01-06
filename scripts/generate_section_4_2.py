@@ -154,16 +154,22 @@ def generate_section_4_2(data_dir):
 
         metric_file = metric_files[0]
         metric_data = load_yaml(metric_file)
-        if not metric_data or 'content' not in metric_data:
-            print(f"警告：{metric_file} 中缺少content字段")
+        if not metric_data or 'title' not in metric_data:
+            print(f"警告：{metric_file} 中缺少title字段")
             continue
 
+        metric_title = metric_data.get('title', '')
         metric_content = metric_data.get('content', '')
         metric_index = metric_data.get('index', metric_dir.name.split('-')[0])
 
         # 生成三级子标题 (4.2.x)
-        latex_output.append(f"\\subsubsection*{{4.2.{metric_index} {metric_content}}}")
+        latex_output.append(f"\\subsubsection*{{4.2.{metric_index} {metric_title}}}")
         latex_output.append("\n{\\normalsize")
+
+        # 如果有content字段，添加内容描述
+        if metric_content and metric_content.strip():
+            latex_output.append(f"{metric_content}")
+            latex_output.append("")
 
         # 获取该metric下的所有module目录并排序
         module_dirs = sorted([d for d in metric_dir.iterdir() if d.is_dir() and d.name.endswith('-module')])
