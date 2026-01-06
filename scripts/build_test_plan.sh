@@ -31,14 +31,70 @@ sed -i 's|../gjb438c-style|../../src/doc2tex-template/gjb438c-style|g' "$OUTPUT_
 
 echo "✅ 模板文件已复制"
 
-# 步骤2: 生成4.2章节内容
+# 步骤2: 生成1.2章节内容
 echo ""
-echo "步骤2: 生成4.2章节内容..."
+echo "步骤2: 生成1.2章节内容（覆盖性对照表）..."
+python3 "$SCRIPT_DIR/generate_section_1_2.py"
+
+# 步骤3: 更新chapter1.tex文件
+echo ""
+echo "步骤3: 更新chapter1.tex文件..."
+
+# 使用Python脚本来更新chapter1.tex
+python3 << 'PYEOF'
+import re
+
+output_dir = 'output/test_plan'
+
+# 读取chapter1.tex
+with open(f'{output_dir}/chapters/chapter1.tex', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# 读取生成的1.2内容
+with open(f'{output_dir}/chapters/chapter1_2_generated.tex', 'r', encoding='utf-8') as f:
+    generated = f.read()
+
+# 查找1.2章节的起始和结束标记
+# 1.2章节从 \subsection*{1.2 系统概述} 开始
+# 到 \subsection*{1.3 文档概述} 结束
+
+start_pattern = r'\\subsection\*\{1\.2 系统概述\}'
+end_pattern = r'\\subsection\*\{1\.3 文档概述\}'
+
+# 找到起始位置
+start_match = re.search(start_pattern, content)
+if not start_match:
+    print("错误：找不到1.2章节的起始标记")
+    exit(1)
+
+# 找到结束位置
+end_match = re.search(end_pattern, content)
+if not end_match:
+    print("错误：找不到1.3章节的起始标记")
+    exit(1)
+
+# 提取各部分内容
+before = content[:start_match.start()]  # 1.2章节之前的内容
+after = content[end_match.start():]  # 1.3章节开始的内容
+
+# 组合新内容
+new_content = before + generated + '\n' + after
+
+# 写回文件
+with open(f'{output_dir}/chapters/chapter1.tex', 'w', encoding='utf-8') as f:
+    f.write(new_content)
+
+print("✅ chapter1.tex已更新")
+PYEOF
+
+# 步骤4: 生成4.2章节内容
+echo ""
+echo "步骤4: 生成4.2章节内容（计划执行的测试）..."
 python3 "$SCRIPT_DIR/generate_section_4_2.py"
 
-# 步骤3: 更新chapter4.tex文件
+# 步骤5: 更新chapter4.tex文件
 echo ""
-echo "步骤3: 更新chapter4.tex文件..."
+echo "步骤5: 更新chapter4.tex文件..."
 
 # 使用Python脚本来更新chapter4.tex
 python3 << 'PYEOF'
@@ -91,8 +147,8 @@ PYEOF
 
 echo ""
 
-# 步骤4: 编译文档
-echo "步骤4: 编译LaTeX文档..."
+# 步骤6: 编译文档
+echo "步骤6: 编译LaTeX文档..."
 mkdir -p output/log
 
 # 进入输出目录编译
