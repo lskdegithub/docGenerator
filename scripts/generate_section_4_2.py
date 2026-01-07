@@ -101,34 +101,40 @@ def parse_plan_yaml(file_path):
 
 def generate_table_latex(plan_data, table_number, table_title):
     """生成测试项表格的LaTeX代码"""
-    latex = f"""\\begin{{table}}[H]
-\\centering
-\\vspace{{6pt}}
-{{\\wuhaohei 表 {table_number} {table_title}}}
+    # 对标识字段中的连续英文字符串进行断行处理
+    identifier = plan_data['标识']
+    # 如果标识是连续的英文字符且长度超过15个字符，每15个字符插入一个空格
+    if len(identifier) > 15 and '\\' not in identifier:
+        identifier = ' '.join([identifier[i:i+15] for i in range(0, len(identifier), 15)])
 
-\\vspace{{6pt}}
-{{\\settablespacing
-\\begin{{tabular}}{{|p{{2.3cm}}|p{{6cm}}|p{{0.7cm}}|p{{5.5cm}}|}}
-\\hline
-\\xiaowuhei 测试项名称 & \\xiaowu {plan_data['测试项名称']} & \\xiaowuhei 标识 & \\xiaowu {plan_data['标识']} \\\\
-\\hline
-\\xiaowuhei 测试要求 & \\multicolumn{{3}}{{p{{11.6cm}}|}}{{ \\xiaowu {plan_data['测试要求']}}} \\\\
-\\hline
-\\xiaowuhei 测试策略与方法 & \\multicolumn{{3}}{{p{{11.6cm}}|}}{{ \\xiaowu 测试策略：{plan_data['测试策略']}\\newline 测试方法：{plan_data['测试方法']}}} \\\\
-\\hline
-\\xiaowuhei 假设与约束 & \\multicolumn{{3}}{{p{{11.6cm}}|}}{{\\xiaowu 假设：{plan_data['假设']}\\newline 约束：{plan_data['约束']}}} \\\\
-\\hline
-\\xiaowuhei 优先级 & \\multicolumn{{3}}{{p{{11.6cm}}|}}{{\\xiaowu {plan_data['优先级']}}} \\\\
-\\hline
-\\xiaowuhei 测试终止条件 & \\multicolumn{{3}}{{p{{11.6cm}}|}}{{\\xiaowu {plan_data['测试终止条件']}}} \\\\
-\\hline
-\\xiaowuhei 追踪关系 & \\multicolumn{{3}}{{p{{11.6cm}}|}}{{\\xiaowu {plan_data['需求追踪关系']}}} \\\\
-\\hline
-\\end{{tabular}}
-}}
-\\end{{table}}
-\\vspace{{-6pt}}  % 表格后为标题，总间距6pt
-"""
+    latex = "\\begin{table}[H]\n"
+    latex += "\\centering\n"
+    latex += "\\vspace{6pt}\n"
+    # 表格标题：不使用固定宽度的parbox，让内容自然居中
+    latex += "{\\wuhaohei 表 " + str(table_number) + " {\\xiaowuhei " + table_title + "}}\n\n"
+    latex += "\\vspace{6pt}\n"
+    latex += "{\\settablespacing\n"
+    latex += "\\begin{tabular}{|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|}\n"
+    latex += "\\hline\n"
+    # 第一行不使用parbox，保持与模板一致的格式
+    latex += "\\xiaowuhei 测试项名称 & \\xiaowu " + plan_data['测试项名称'] + " & \\xiaowuhei 标识 & \\xiaowu " + identifier + " \\\\\n"
+    latex += "\\hline\n"
+    latex += "\\xiaowuhei 测试要求 & \\multicolumn{3}{p{11.6cm}|}{{ \\xiaowu " + plan_data['测试要求'] + "}} \\\\\n"
+    latex += "\\hline\n"
+    latex += "\\xiaowuhei 测试策略与方法 & \\multicolumn{3}{p{11.6cm}|}{{ \\xiaowu 测试策略：" + plan_data['测试策略'] + "\\newline 测试方法：" + plan_data['测试方法'] + "}} \\\\\n"
+    latex += "\\hline\n"
+    latex += "\\xiaowuhei 假设与约束 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu 假设：" + plan_data['假设'] + "\\newline 约束：" + plan_data['约束'] + "}} \\\\\n"
+    latex += "\\hline\n"
+    latex += "\\xiaowuhei 优先级 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + plan_data['优先级'] + "}} \\\\\n"
+    latex += "\\hline\n"
+    latex += "\\xiaowuhei 测试终止条件 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + plan_data['测试终止条件'] + "}} \\\\\n"
+    latex += "\\hline\n"
+    latex += "\\xiaowuhei 追踪关系 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + plan_data['需求追踪关系'] + "}} \\\\\n"
+    latex += "\\hline\n"
+    latex += "\\end{tabular}\n"
+    latex += "}\n"
+    latex += "\\end{table}\n"
+    latex += "\\vspace{-6pt}  % 表格后为标题，总间距6pt\n"
     return latex
 
 
@@ -208,8 +214,13 @@ def generate_section_4_2(data_dir):
                     continue
 
                 # 生成五级子标题 (4.2.x.x.x) - 使用递增序号，格式：测试项名称(标识)
-                item_title = f"{plan_data['测试项名称']}（{plan_data['标识']}）"
-                latex_output.append(f"\\subparagraph*{{4.2.{metric_index}.{module_idx}.{item_idx} {item_title}}}")
+                # 对标识进行断行处理
+                item_identifier = plan_data['标识']
+                if len(item_identifier) > 15 and '\\' not in item_identifier:
+                    item_identifier = ' '.join([item_identifier[i:i+15] for i in range(0, len(item_identifier), 15)])
+                item_title = plan_data['测试项名称'] + "（" + item_identifier + "）"
+                # 五级标题使用parbox实现换行
+                latex_output.append("\\subparagraph*{4.2." + str(metric_index) + "." + str(module_idx) + "." + str(item_idx) + " \\parbox[t]{12cm}{{" + item_title + "}}}")
                 latex_output.append("\n{\\normalsize")
 
                 # 生成表格
