@@ -128,7 +128,7 @@ def wrap_identifier_by_width(identifier, col_width_cm=5.5):
 
 
 def generate_table_latex(plan_data, table_number, table_title):
-    """生成测试项表格的LaTeX代码"""
+    """生成测试项表格的LaTeX代码（使用longtable支持跨页）"""
     # 转义LaTeX特殊字符（如下划线）
     test_item_name = plan_data['测试项名称'].replace('_', '\\_')
     requirement = plan_data['测试要求'].replace('_', '\\_')
@@ -143,14 +143,12 @@ def generate_table_latex(plan_data, table_number, table_title):
     # 对标识字段进行智能换行处理
     identifier = wrap_identifier_by_width(plan_data['标识'])
 
-    latex = "\\begin{table}[H]\n"
-    latex += "\\centering\n"
+    latex = "\\vspace{6pt}\n"
+    latex += "\\centerline{{\\wuhaohei 表 " + str(table_number) + " {\\wuhaohei " + table_title.replace('_', '\\_') + "}}}\n\n"
     latex += "\\vspace{6pt}\n"
-    # 表格标题：五号黑体居中
-    latex += "{\\wuhaohei 表 " + str(table_number) + " {\\wuhaohei " + table_title.replace('_', '\\_') + "}}\n\n"
-    latex += "\\vspace{6pt}\n"
+    latex += "% 使用longtable支持跨页\n"
     latex += "{\\settablespacing\n"
-    latex += "\\begin{tabular}{|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|}\n"
+    latex += "\\begin{longtable}{|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|}\n"
     latex += "\\hline\n"
     # 第一行：测试项名称和标识列都用parbox包裹，使用表格默认行间距
     latex += "\\xiaowuhei 测试项名称 & \\parbox[t]{6cm}{{\\xiaowu " + test_item_name + "}} & \\xiaowuhei 标识 & \\parbox[t]{5.5cm}{{\\xiaowu \\ttfamily " + identifier + "}} \\\\\n"
@@ -167,10 +165,9 @@ def generate_table_latex(plan_data, table_number, table_title):
     latex += "\\hline\n"
     latex += "\\xiaowuhei 追踪关系 & \\multicolumn{3}{p{13cm}|}{{\\xiaowu " + traceability + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\end{tabular}\n"
+    latex += "\\end{longtable}\n"
     latex += "}\n"
-    latex += "\\end{table}\n"
-    latex += "\\vspace{-6pt}  % 表格后为标题，总间距6pt\n"
+    latex += "\\vspace{-6pt}  % 表格后间距调整\n"
     return latex
 
 
