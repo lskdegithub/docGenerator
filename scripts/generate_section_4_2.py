@@ -99,7 +99,7 @@ def parse_plan_yaml(file_path):
         return None
 
 
-def wrap_identifier_by_width(identifier, col_width_cm=5.3):
+def wrap_identifier_by_width(identifier, col_width_cm=5.5):
     """
     根据列宽自动计算换行点（纯按字符数，不改变字体大小）
     - col_width_cm: 列宽（厘米）
@@ -109,9 +109,10 @@ def wrap_identifier_by_width(identifier, col_width_cm=5.3):
     identifier = identifier.replace('_', '\\_')
 
     # 计算每行能容纳的字符数
-    # 5.3cm ≈ 150pt，等宽字体每个字符约7pt（在正常大小下）
-    # 保守估计每行约20个字符
-    chars_per_line = 20
+    # 5.5cm ≈ 155.9pt，小五号字体(9pt)等宽字体每个字符约5.4pt
+    # 精确计算：155.9pt ÷ 5.4pt/字符 ≈ 28.9，取整为28-29个字符
+    # 不需要额外留白，parbox充分利用宽度
+    chars_per_line = 35
 
     # 如果字符串长度不超过每行字符数，直接返回
     if len(identifier) <= chars_per_line:
@@ -145,26 +146,26 @@ def generate_table_latex(plan_data, table_number, table_title):
     latex = "\\begin{table}[H]\n"
     latex += "\\centering\n"
     latex += "\\vspace{6pt}\n"
-    # 表格标题：不使用固定宽度的parbox，让内容自然居中
-    latex += "{\\wuhaohei 表 " + str(table_number) + " {\\xiaowuhei " + table_title.replace('_', '\\_') + "}}\n\n"
+    # 表格标题：五号黑体居中
+    latex += "{\\wuhaohei 表 " + str(table_number) + " {\\wuhaohei " + table_title.replace('_', '\\_') + "}}\n\n"
     latex += "\\vspace{6pt}\n"
     latex += "{\\settablespacing\n"
     latex += "\\begin{tabular}{|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|}\n"
     latex += "\\hline\n"
-    # 第一行：标识列使用自动换行的标识（不改变字体大小）
-    latex += "\\xiaowuhei 测试项名称 & \\xiaowu " + test_item_name + " & \\xiaowuhei 标识 & \\parbox[t]{5.3cm}{{\\xiaowu \\ttfamily " + identifier + "}} \\\\\n"
+    # 第一行：测试项名称和标识列都用parbox包裹，使用表格默认行间距
+    latex += "\\xiaowuhei 测试项名称 & \\parbox[t]{6cm}{{\\xiaowu " + test_item_name + "}} & \\xiaowuhei 标识 & \\parbox[t]{5.5cm}{{\\xiaowu \\ttfamily " + identifier + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 测试要求 & \\multicolumn{3}{p{11.6cm}|}{{ \\xiaowu " + requirement + "}} \\\\\n"
+    latex += "\\xiaowuhei 测试要求 & \\multicolumn{3}{p{13cm}|}{{ \\xiaowu " + requirement + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 测试策略与方法 & \\multicolumn{3}{p{11.6cm}|}{{ \\xiaowu 测试策略：" + strategy + "\\newline 测试方法：" + method + "}} \\\\\n"
+    latex += "\\xiaowuhei 测试策略与方法 & \\multicolumn{3}{p{13cm}|}{{ \\xiaowu 测试策略：" + strategy + "\\newline 测试方法：" + method + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 假设与约束 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu 假设：" + assumption + "\\newline 约束：" + constraint + "}} \\\\\n"
+    latex += "\\xiaowuhei 假设与约束 & \\multicolumn{3}{p{13cm}|}{{\\xiaowu 假设：" + assumption + "\\newline 约束：" + constraint + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 优先级 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + priority + "}} \\\\\n"
+    latex += "\\xiaowuhei 优先级 & \\multicolumn{3}{p{13cm}|}{{\\xiaowu " + priority + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 测试终止条件 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + termination + "}} \\\\\n"
+    latex += "\\xiaowuhei 测试终止条件 & \\multicolumn{3}{p{13cm}|}{{\\xiaowu " + termination + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 追踪关系 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + traceability + "}} \\\\\n"
+    latex += "\\xiaowuhei 追踪关系 & \\multicolumn{3}{p{13cm}|}{{\\xiaowu " + traceability + "}} \\\\\n"
     latex += "\\hline\n"
     latex += "\\end{tabular}\n"
     latex += "}\n"
