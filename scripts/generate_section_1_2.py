@@ -231,7 +231,7 @@ def generate_section_1_2(data_dir):
 
 xxxxxxx规定的本阶段主要要求和技术指标为：
 
-{{\\wuhaohei 表 1 主要要求和技术指标与测试项覆盖性对照表}}
+\\centerline{{{{\\wuhaohei 表 1 {{\\xiaowuhei 主要要求和技术指标与测试项覆盖性对照表}}}}}}
 
 {full_table}
 
