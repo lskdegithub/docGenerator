@@ -36,15 +36,11 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 计划开展的测试按照优先级排序从高到低依次开展工作。计划的测试顺序如表9所示。
 
-% 表格使用[H]参数强制在当前位置，防止标题与内容分离
-\begin{table}[H]
-\centering
 \vspace{6pt}
-{\wuhaohei 表 9 计划的测试顺序}
-
+\centerline{\wuhaohei 表 9 计划的测试顺序}
 \vspace{6pt}
 {\settablespacing
-\begin{tabular}{|p{0.5cm}|p{4cm}|p{3cm}|p{3.5cm}|p{3.5cm}|}
+\begin{longtable}{|p{0.5cm}|p{4cm}|p{3cm}|p{3.5cm}|p{3.5cm}|}
 \hline
 \rowcolor{gray!20}
 \multicolumn{1}{|c|}{{\xiaowuhei 序号}} & \multicolumn{1}{c|}{{\xiaowuhei 测试项名称}} & \multicolumn{1}{c|}{{\xiaowuhei 计划开始测试时间}} & \multicolumn{1}{c|}{{\xiaowuhei 计划完成测试时间}} & \multicolumn{1}{c|}{{\xiaowuhei 测试类别}} \\
@@ -55,10 +51,9 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \multicolumn{1}{|c|}{{\xiaowu 3}} & {\xiaowu xxxxxxxx可靠性测试} & {\xiaowu 2025.9.20} & {\xiaowu 2025.9.30} & {\xiaowu 可靠性测试} \\
 \hline
-\end{tabular}
+\end{longtable}
 }
-\end{table}
-\vspace{-6pt}  % 表格后为标题，总间距6pt
+\vspace{-6pt}
 
 }
 
@@ -91,15 +86,11 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 计划执行的测试如表10所示。
 
-% 表格使用[H]参数强制在当前位置，防止标题与内容分离
-\begin{table}[H]
-\centering
 \vspace{6pt}
-{\wuhaohei 表 10 测试项列表}
-
+\centerline{\wuhaohei 表 10 测试项列表}
 \vspace{6pt}
 {\settablespacing
-\begin{tabular}{|p{1cm}|p{4cm}|p{3cm}|p{6.5cm}|}
+\begin{longtable}{|p{1cm}|p{4cm}|p{3cm}|p{6.5cm}|}
 \hline
 \rowcolor{gray!20}
 \multicolumn{1}{|c|}{{\xiaowuhei 序号}} & \multicolumn{1}{c|}{{\xiaowuhei 测试类别}} & \multicolumn{1}{c|}{{\xiaowuhei 测试项名称}} & \multicolumn{1}{c|}{{\xiaowuhei 说明}} \\
@@ -114,10 +105,9 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 \hline
 \multicolumn{1}{|c|}{{\xiaowu 5}} & {\xiaowu 可靠性测试} & {\xiaowu xxxxxxxx可靠性测试} & {\xiaowu 测试系统在异常情况下的恢复能力} \\
 \hline
-\end{tabular}
+\end{longtable}
 }
-\end{table}
-\vspace{-6pt}  % 表格后为标题，总间距6pt
+\vspace{-6pt}
 
 }
 
@@ -129,32 +119,16 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 
 {\normalsize
 
-\begin{table}[H]
-\centering
-\vspace{6pt}
-{\wuhaohei 表 11 {\wuhaohei 基于PQL查询语言的血缘演算功能测试}}
-
-\vspace{6pt}
-{\settablespacing
-\begin{tabular}{|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|}
-\hline
-\xiaowuhei 测试项名称 & \parbox[t]{6cm}{{\xiaowu 大文件存储xxx大文件存储xxx}} & \xiaowuhei 标识 & \parbox[t]{5.5cm}{{\xiaowu \ttfamily bigfilestorage1}} \\
-\hline
-\xiaowuhei 测试要求 & \multicolumn{3}{p{13cm}|}{ \xiaowu 测试项的测试要求} \\
-\hline
-\xiaowuhei 测试策略与方法 & \multicolumn{3}{p{13cm}|}{ \xiaowu 测试策略：测试策略描述\newline 测试方法：测试方法描述} \\
-\hline
-\xiaowuhei 假设与约束 & \multicolumn{3}{p{13cm}|}{\xiaowu 假设：测试项的假设\newline 约束：测试项的约束} \\
-\hline
-\xiaowuhei 优先级 & \multicolumn{3}{p{13cm}|}{\xiaowu 高} \\
-\hline
-\xiaowuhei 测试终止条件 & \multicolumn{3}{p{13cm}|}{\xiaowu 测试项的终止条件} \\
-\hline
-\xiaowuhei 追踪关系 & \multicolumn{3}{p{13cm}|}{\xiaowu SRS-01} \\
-\hline
-\end{tabular}
-}
-\end{table}
+% 使用样式文件中定义的表格命令，格式统一由 .sty 文件控制
+\BeginTestItemTable{11}{基于PQL查询语言的血缘演算功能测试}
+\TestItemFirstRow{6cm}{大文件存储xxx大文件存储xxx}{5.5cm}{bigfilestorage1}
+\TestItemRow{测试要求}{3}{13cm}{测试项的测试要求}
+\TestItemRow{测试策略与方法}{3}{13cm}{测试策略：测试策略描述\newline 测试方法：测试方法描述}
+\TestItemRow{假设与约束}{3}{13cm}{假设：测试项的假设\newline 约束：测试项的约束}
+\TestItemRow{优先级}{3}{13cm}{高}
+\TestItemRow{测试终止条件}{3}{13cm}{测试项的终止条件}
+\TestItemRow{追踪关系}{3}{13cm}{SRS-01}
+\EndTestItemTable
 
 测试方法：该测试使用手工测试的方法，测试人员通过界面执行相关功能测试用例，查看操作预期结果是否与实际相符。
 

@@ -221,7 +221,7 @@ def generate_section_1_2(data_dir):
 % 表格内容
 {table_rows}
 \\end{{longtable}}
-\\vspace{{6pt}}  % 表格后为正文，总间距18pt"""
+\\vspace{{-6pt}}  % 表格后间距调整"""
 
     # 构建1.2章节内容
     latex = f"""\\subsection*{{1.2 系统概述}}
@@ -231,7 +231,9 @@ def generate_section_1_2(data_dir):
 
 xxxxxxx规定的本阶段主要要求和技术指标为：
 
-\\centerline{{{{\\wuhaohei 表 1 {{\\xiaowuhei 主要要求和技术指标与测试项覆盖性对照表}}}}}}
+\\vspace{{6pt}}
+\\centerline{{\\wuhaohei 表 1 主要要求和技术指标与测试项覆盖性对照表}}
+\\vspace{{6pt}}
 
 {full_table}
 

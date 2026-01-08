@@ -171,3 +171,85 @@
   \\%
   \hline%
 }
+
+% =================================================================
+% 数据驱动表格格式（用于自动生成章节）
+% =================================================================
+
+% 表格题注（居中，五号黑体，前后各6pt间距）
+% 用法: \DataTableCaption{表编号}{标题}
+\newcommand{\DataTableCaption}[2]{%
+  \vspace{6pt}%
+  \centerline{\wuhaohei 表 #1 #2}%
+  \vspace{6pt}%
+}
+
+% 开始longtable环境（支持跨页）
+% 用法: \BeginLongTable{列定义}
+\newcommand{\BeginLongTable}[1]{%
+  \bgroup%
+  \settablespacing%
+  \begin{longtable}{#1}%
+  \hline%  表格顶部边框
+}
+
+% 结束longtable环境
+\newcommand{\EndLongTable}{%
+  \end{longtable}%
+  \egroup%
+  \vspace{-6pt}%  表格后间距调整
+}
+
+% 表头单元格（小五号黑体，居中）
+% 用法: \TableHeaderCell{内容}
+\newcommand{\TableHeaderCell}[1]{%
+  \xiaowuhei #1%
+}
+
+% 普通表格内容单元格（小五号宋体，固定宽度parbox）
+% 用法: \TableCell{宽度}{内容}
+\newcommand{\TableCell}[2]{%
+  \parbox[t]{#1}{{\xiaowu #2}}%
+}
+
+% 标识列单元格（小五号宋体，固定宽度parbox，等宽字体）
+% 用法: \TableCellIdentifier{宽度}{内容}
+\newcommand{\TableCellIdentifier}[2]{%
+  \parbox[t]{#1}{{\xiaowu \ttfamily #2}}%
+}
+
+% 合并单元格（多列合并）
+% 用法: \TableCellMerged{列数}{宽度}{内容}
+\newcommand{\TableCellMerged}[3]{%
+  \multicolumn{#1}{p{#2}|}{{ \xiaowu #3}}%
+}
+
+% 测试项表的第一行（名称 + 标识）
+% 用法: \TestItemFirstRow{名称宽度}{名称内容}{标识宽度}{标识内容}
+\newcommand{\TestItemFirstRow}[4]{%
+  \xiaowuhei 测试项名称 & \TableCell{#1}{#2} & \xiaowuhei 标识 & \TableCellIdentifier{#3}{#4} \\%
+  \hline%
+}
+
+% 测试项表的普通行（标签 + 内容）
+% 用法: \TestItemRow{标签}{合并列数}{宽度}{内容}
+\newcommand{\TestItemRow}[4]{%
+  \xiaowuhei #1 & \TableCellMerged{#2}{#3}{#4} \\%
+  \hline%
+}
+
+% =================================================================
+% 完整的表格环境封装
+% =================================================================
+
+% 开始测试项表格（包含题注、longtable环境、列定义）
+% 用法: \BeginTestItemTable{表编号}{标题}
+\newcommand{\BeginTestItemTable}[2]{%
+  \DataTableCaption{#1}{#2}%
+  \BeginLongTable{|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|}%
+}
+
+% 结束测试项表格
+\newcommand{\EndTestItemTable}{%
+  \EndLongTable%
+}

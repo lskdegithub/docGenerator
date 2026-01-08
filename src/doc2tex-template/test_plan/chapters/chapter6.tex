@@ -3,15 +3,11 @@
 {\normalsize
 本次测试的终止条件如表13所示。
 
-% 表格使用[H]参数强制在当前位置，防止标题与内容分离
-\begin{table}[H]
-\centering
 \vspace{6pt}
-{\wuhaohei 表 13 缺陷级别}
-
+\centerline{\wuhaohei 表 13 缺陷级别}
 \vspace{6pt}
 {\settablespacing
-\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\begin{longtable}{|p{1.5cm}|p{3cm}|p{10cm}|}
 \hline
 \rowcolor{gray!20}
 \multicolumn{1}{|c|}{{\xiaowuhei 缺陷级别}} & \multicolumn{1}{c|}{{\xiaowuhei 描述}} & \multicolumn{1}{c|}{{\xiaowuhei 说明}} \\
@@ -24,10 +20,9 @@
 \hline
 \multicolumn{1}{|c|}{{\xiaowu 4级}} & {\xiaowu 改进建议} & {\xiaowu 辅助说明描述不清楚。输入输出不规范。可输入区域和只读区域没有明显的区分标志。某一项功能的冗余操作太多如对话框嵌套层次太多影响用户操作。不能记忆用户的设置或操作习惯用户每次进入系统都需要重新操作初始环境。不符合用户操作习惯（快捷键定义不科学不实用键位分布不合理按键太多甚至没有快捷键）。界面不规范。提示窗口文字未采用行业术语} \\
 \hline
-\end{tabular}
+\end{longtable}
 }
-\end{table}
-\vspace{6pt}  % 表格后为正文，总间距18pt
+\vspace{-6pt}
 
 测试终止条件为：
 （1）全部测试用例被执行完毕；

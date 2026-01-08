@@ -128,7 +128,7 @@ def wrap_identifier_by_width(identifier, col_width_cm=5.5):
 
 
 def generate_table_latex(plan_data, table_number, table_title):
-    """生成测试项表格的LaTeX代码（使用longtable支持跨页）"""
+    """生成测试项表格的LaTeX代码（使用样式文件中定义的高级命令）"""
     # 转义LaTeX特殊字符（如下划线）
     test_item_name = plan_data['测试项名称'].replace('_', '\\_')
     requirement = plan_data['测试要求'].replace('_', '\\_')
@@ -143,31 +143,16 @@ def generate_table_latex(plan_data, table_number, table_title):
     # 对标识字段进行智能换行处理
     identifier = wrap_identifier_by_width(plan_data['标识'])
 
-    latex = "\\vspace{6pt}\n"
-    latex += "\\centerline{{\\wuhaohei 表 " + str(table_number) + " {\\wuhaohei " + table_title.replace('_', '\\_') + "}}}\n\n"
-    latex += "\\vspace{6pt}\n"
-    latex += "% 使用longtable支持跨页\n"
-    latex += "{\\settablespacing\n"
-    latex += "\\begin{longtable}{|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|}\n"
-    latex += "\\hline\n"
-    # 第一行：测试项名称和标识列都用parbox包裹，使用表格默认行间距
-    latex += "\\xiaowuhei 测试项名称 & \\parbox[t]{6cm}{{\\xiaowu " + test_item_name + "}} & \\xiaowuhei 标识 & \\parbox[t]{5.5cm}{{\\xiaowu \\ttfamily " + identifier + "}} \\\\\n"
-    latex += "\\hline\n"
-    latex += "\\xiaowuhei 测试要求 & \\multicolumn{3}{p{13cm}|}{{ \\xiaowu " + requirement + "}} \\\\\n"
-    latex += "\\hline\n"
-    latex += "\\xiaowuhei 测试策略与方法 & \\multicolumn{3}{p{13cm}|}{{ \\xiaowu 测试策略：" + strategy + "\\newline 测试方法：" + method + "}} \\\\\n"
-    latex += "\\hline\n"
-    latex += "\\xiaowuhei 假设与约束 & \\multicolumn{3}{p{13cm}|}{{\\xiaowu 假设：" + assumption + "\\newline 约束：" + constraint + "}} \\\\\n"
-    latex += "\\hline\n"
-    latex += "\\xiaowuhei 优先级 & \\multicolumn{3}{p{13cm}|}{{\\xiaowu " + priority + "}} \\\\\n"
-    latex += "\\hline\n"
-    latex += "\\xiaowuhei 测试终止条件 & \\multicolumn{3}{p{13cm}|}{{\\xiaowu " + termination + "}} \\\\\n"
-    latex += "\\hline\n"
-    latex += "\\xiaowuhei 追踪关系 & \\multicolumn{3}{p{13cm}|}{{\\xiaowu " + traceability + "}} \\\\\n"
-    latex += "\\hline\n"
-    latex += "\\end{longtable}\n"
-    latex += "}\n"
-    latex += "\\vspace{-6pt}  % 表格后间距调整\n"
+    # 使用样式文件中定义的高级命令，脚本只负责数据填充
+    latex = "\\BeginTestItemTable{" + str(table_number) + "}{" + table_title.replace('_', '\\_') + "}\n"
+    latex += "\\TestItemFirstRow{6cm}{" + test_item_name + "}{5.5cm}{" + identifier + "}\n"
+    latex += "\\TestItemRow{测试要求}{3}{13cm}{" + requirement + "}\n"
+    latex += "\\TestItemRow{测试策略与方法}{3}{13cm}{测试策略：" + strategy + "\\newline 测试方法：" + method + "}\n"
+    latex += "\\TestItemRow{假设与约束}{3}{13cm}{假设：" + assumption + "\\newline 约束：" + constraint + "}\n"
+    latex += "\\TestItemRow{优先级}{3}{13cm}{" + priority + "}\n"
+    latex += "\\TestItemRow{测试终止条件}{3}{13cm}{" + termination + "}\n"
+    latex += "\\TestItemRow{追踪关系}{3}{13cm}{" + traceability + "}\n"
+    latex += "\\EndTestItemTable\n"
     return latex
 
 
