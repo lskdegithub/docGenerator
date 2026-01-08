@@ -210,7 +210,9 @@ def generate_section_1_2(data_dir):
 \\hline
 \\endhead
 
-% 每页底部（不画线，避免跨页时内容压线）
+% 每页底部横线
+\\hline
+\\vspace{{-6pt}}  % 减少底部间距，避免跨页时内容压线
 \\endfoot
 
 % 最后一页底部
