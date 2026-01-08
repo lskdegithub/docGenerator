@@ -99,37 +99,72 @@ def parse_plan_yaml(file_path):
         return None
 
 
+def wrap_identifier_by_width(identifier, col_width_cm=5.3):
+    """
+    根据列宽自动计算换行点（纯按字符数，不改变字体大小）
+    - col_width_cm: 列宽（厘米）
+    返回：添加了换行符的字符串
+    """
+    # 转义下划线
+    identifier = identifier.replace('_', '\\_')
+
+    # 计算每行能容纳的字符数
+    # 5.3cm ≈ 150pt，等宽字体每个字符约7pt（在正常大小下）
+    # 保守估计每行约20个字符
+    chars_per_line = 20
+
+    # 如果字符串长度不超过每行字符数，直接返回
+    if len(identifier) <= chars_per_line:
+        return identifier
+
+    # 按固定字符数换行
+    result = []
+    for i in range(0, len(identifier), chars_per_line):
+        result.append(identifier[i:i+chars_per_line])
+
+    # 使用LaTeX的换行符连接
+    return ' \\newline '.join(result)
+
+
 def generate_table_latex(plan_data, table_number, table_title):
     """生成测试项表格的LaTeX代码"""
-    # 对标识字段中的连续英文字符串进行断行处理
-    identifier = plan_data['标识']
-    # 如果标识是连续的英文字符且长度超过15个字符，每15个字符插入一个空格
-    if len(identifier) > 15 and '\\' not in identifier:
-        identifier = ' '.join([identifier[i:i+15] for i in range(0, len(identifier), 15)])
+    # 转义LaTeX特殊字符（如下划线）
+    test_item_name = plan_data['测试项名称'].replace('_', '\\_')
+    requirement = plan_data['测试要求'].replace('_', '\\_')
+    strategy = plan_data['测试策略'].replace('_', '\\_')
+    method = plan_data['测试方法'].replace('_', '\\_')
+    assumption = plan_data['假设'].replace('_', '\\_')
+    constraint = plan_data['约束'].replace('_', '\\_')
+    priority = plan_data['优先级'].replace('_', '\\_')
+    termination = plan_data['测试终止条件'].replace('_', '\\_')
+    traceability = plan_data['需求追踪关系'].replace('_', '\\_')
+
+    # 对标识字段进行智能换行处理
+    identifier = wrap_identifier_by_width(plan_data['标识'])
 
     latex = "\\begin{table}[H]\n"
     latex += "\\centering\n"
     latex += "\\vspace{6pt}\n"
     # 表格标题：不使用固定宽度的parbox，让内容自然居中
-    latex += "{\\wuhaohei 表 " + str(table_number) + " {\\xiaowuhei " + table_title + "}}\n\n"
+    latex += "{\\wuhaohei 表 " + str(table_number) + " {\\xiaowuhei " + table_title.replace('_', '\\_') + "}}\n\n"
     latex += "\\vspace{6pt}\n"
     latex += "{\\settablespacing\n"
     latex += "\\begin{tabular}{|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|}\n"
     latex += "\\hline\n"
-    # 第一行不使用parbox，保持与模板一致的格式
-    latex += "\\xiaowuhei 测试项名称 & \\xiaowu " + plan_data['测试项名称'] + " & \\xiaowuhei 标识 & \\xiaowu " + identifier + " \\\\\n"
+    # 第一行：标识列使用自动换行的标识（不改变字体大小）
+    latex += "\\xiaowuhei 测试项名称 & \\xiaowu " + test_item_name + " & \\xiaowuhei 标识 & \\parbox[t]{5.3cm}{{\\xiaowu \\ttfamily " + identifier + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 测试要求 & \\multicolumn{3}{p{11.6cm}|}{{ \\xiaowu " + plan_data['测试要求'] + "}} \\\\\n"
+    latex += "\\xiaowuhei 测试要求 & \\multicolumn{3}{p{11.6cm}|}{{ \\xiaowu " + requirement + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 测试策略与方法 & \\multicolumn{3}{p{11.6cm}|}{{ \\xiaowu 测试策略：" + plan_data['测试策略'] + "\\newline 测试方法：" + plan_data['测试方法'] + "}} \\\\\n"
+    latex += "\\xiaowuhei 测试策略与方法 & \\multicolumn{3}{p{11.6cm}|}{{ \\xiaowu 测试策略：" + strategy + "\\newline 测试方法：" + method + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 假设与约束 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu 假设：" + plan_data['假设'] + "\\newline 约束：" + plan_data['约束'] + "}} \\\\\n"
+    latex += "\\xiaowuhei 假设与约束 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu 假设：" + assumption + "\\newline 约束：" + constraint + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 优先级 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + plan_data['优先级'] + "}} \\\\\n"
+    latex += "\\xiaowuhei 优先级 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + priority + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 测试终止条件 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + plan_data['测试终止条件'] + "}} \\\\\n"
+    latex += "\\xiaowuhei 测试终止条件 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + termination + "}} \\\\\n"
     latex += "\\hline\n"
-    latex += "\\xiaowuhei 追踪关系 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + plan_data['需求追踪关系'] + "}} \\\\\n"
+    latex += "\\xiaowuhei 追踪关系 & \\multicolumn{3}{p{11.6cm}|}{{\\xiaowu " + traceability + "}} \\\\\n"
     latex += "\\hline\n"
     latex += "\\end{tabular}\n"
     latex += "}\n"
@@ -214,11 +249,8 @@ def generate_section_4_2(data_dir):
                     continue
 
                 # 生成五级子标题 (4.2.x.x.x) - 使用递增序号，格式：测试项名称(标识)
-                # 对标识进行断行处理
-                item_identifier = plan_data['标识']
-                if len(item_identifier) > 15 and '\\' not in item_identifier:
-                    item_identifier = ' '.join([item_identifier[i:i+15] for i in range(0, len(item_identifier), 15)])
-                item_title = plan_data['测试项名称'] + "（" + item_identifier + "）"
+                # 转义下划线等LaTeX特殊字符
+                item_title = plan_data['测试项名称'].replace('_', '\\_') + "（" + plan_data['标识'].replace('_', '\\_') + "）"
                 # 五级标题使用parbox实现换行
                 latex_output.append("\\subparagraph*{4.2." + str(metric_index) + "." + str(module_idx) + "." + str(item_idx) + " \\parbox[t]{12cm}{{" + item_title + "}}}")
                 latex_output.append("\n{\\normalsize")
