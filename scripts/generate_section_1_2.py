@@ -136,7 +136,7 @@ def generate_coverage_table(data_dir):
 
             # 如果有换行，需要额外间距
             if has_newline:
-                base_spacing += 6  # 换行时的基础额外间距
+                base_spacing += 12  # 换行时的基础额外间距（从6改为12）
 
             # 对于测试项数量>=4的情况，第3行（索引为2）需要更多空间避免穿模
             if num_items_in_group >= 4 and row_index == 2:
