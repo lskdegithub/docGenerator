@@ -24,6 +24,29 @@ def load_yaml(file_path):
         return None
 
 
+def escape_latex_basic(text):
+    if text is None:
+        return ""
+    text = str(text)
+    return (
+        text.replace('&', '\\&')
+        .replace('%', '\\%')
+        .replace('#', '\\#')
+        .replace('_', '\\_\\allowbreak ')
+    )
+
+
+def break_long_words(text, length=10):
+    if not text:
+        return ""
+
+    def replace(match):
+        s = match.group(0)
+        return r'\allowbreak '.join([s[i:i + length] for i in range(0, len(s), length)])
+
+    return re.sub(r'[a-zA-Z0-9]{' + str(length) + r',}', replace, text)
+
+
 def parse_plan_yaml(file_path):
     """解析plan.yaml文件，提取测试项名称和标识"""
     try:
@@ -38,6 +61,10 @@ def parse_plan_yaml(file_path):
         id_match = re.search(r'标识[：:]\s*(.+?)(?:\n|$)', content)
         test_item_id = id_match.group(1).strip() if id_match else ""
 
+        test_item_name = escape_latex_basic(test_item_name)
+        test_item_id = break_long_words(test_item_id)
+        test_item_id = escape_latex_basic(test_item_id)
+
         # 返回格式化后的字符串：测试项名称\newline（标识）- 使用换行
         if test_item_id:
             return f"{test_item_name}\\newline（{test_item_id}）"
@@ -48,15 +75,14 @@ def parse_plan_yaml(file_path):
         return None
 
 
-def generate_coverage_table(data_dir):
-    """生成覆盖性对照表的LaTeX代码"""
+def collect_coverage_data(data_dir):
+    """收集覆盖性对照表数据"""
     data_path = Path(data_dir)
     if not data_path.exists():
         print(f"错误：数据目录 {data_dir} 不存在")
-        return ""
+        return []
 
-    latex_lines = []
-    table_number = 1
+    metrics = []
     metric_number = 1  # 指标序号，用于表格显示
 
     # 获取所有test-metric目录并排序
@@ -75,7 +101,8 @@ def generate_coverage_table(data_dir):
             print(f"警告：{metric_file} 中缺少content字段")
             continue
 
-        metric_content = metric_data.get('content', '')
+        raw_metric_content = metric_data.get('content', '')
+        metric_content = escape_latex_basic(raw_metric_content)
 
         # 收集该指标下的所有测试项
         test_items = []
@@ -93,138 +120,80 @@ def generate_coverage_table(data_dir):
 
                 test_item_name = parse_plan_yaml(plan_file)
                 if test_item_name:
-                    # 转义LaTeX特殊字符（如下划线）
-                    test_item_name_escaped = test_item_name.replace('_', '\\_')
-                    test_items.append(test_item_name_escaped)
+                    test_items.append(test_item_name)
 
         # 如果没有测试项，跳过
         if not test_items:
             print(f"警告：指标 {metric_dir.name} 没有测试项")
             continue
 
-        # 生成表格行：第一列和第二列用multirow合并，第三列拆分
-        num_items = len(test_items)
+        # 如果没有测试项，跳过
+        if not test_items:
+            print(f"警告：指标 {metric_dir.name} 没有测试项")
+            continue
 
-        # 根据第二列内容长度估算需要的总高度（以正常行为单位）
-        # 假设每行约35个中文字符，根据字符数估算需要的行数
-        content_chars = len(metric_content)
-        estimated_rows = max(1, int(content_chars / 35) + 1)
-
-        # 计算最后一个测试项需要的行高
-        # 总需要高度 = (num_items - 1) 个正常行 + 最后一个超高行
-        # 最后一个超高行 = estimated_rows - (num_items - 1)
-        # 如果estimated_rows <= num_items，则最后一个行保持正常
-        base_spacing = 12  # 正常行高（可以调整这个值来改变最后一行高度）
-        if estimated_rows > num_items:
-            # 需要增加最后一个测试项的行高
-            extra_height = (estimated_rows - num_items + 1) * base_spacing
-            last_line_spacing = base_spacing + extra_height
-        else:
-            last_line_spacing = base_spacing
-
-        def calculate_line_spacing(item_text, row_index=0, num_items_in_group=1, is_last_row=False):
-            """根据内容高度动态计算行间距"""
-            # 如果是最后一行且需要增加行高来容纳第二列parbox
-            if is_last_row and estimated_rows > num_items:
-                return last_line_spacing
-
-            # 检测是否有换行符（\newline表示两行内容）
-            has_newline = "\\newline" in item_text
-
-            # 基础行间距
-            base_spacing = 6
-
-            # 如果有换行，需要额外间距
-            if has_newline:
-                base_spacing += 12  # 换行时的基础额外间距（从6改为12）
-
-            # 对于测试项数量>=4的情况，第3行（索引为2）需要更多空间避免穿模
-            if num_items_in_group >= 4 and row_index == 2:
-                base_spacing += 10  # 第三行增加10pt
-
-            # 最后一行适当增加（但不是通过这个逻辑，而是通过is_last_row参数）
-            if is_last_row and num_items_in_group >= 4:
-                base_spacing += 4  # 最后一行增加4pt
-
-            return int(base_spacing)
-
-        for idx, test_item in enumerate(test_items):
-            # 判断是否为最后一行
-            is_last = (idx == num_items - 1)
-
-            # 计算当前行的行间距（传入行索引、测试项数量、是否最后一行）
-            line_spacing = calculate_line_spacing(test_item, idx, num_items, is_last)
-
-            if idx == 0:
-                # 第一行：第一列和第二列都使用multirow
-                # 使用实际的测试项数量作为multirow行数
-                col1 = "\\multirow{" + str(num_items) + "}{*}{\\xiaowu " + str(metric_number) + "}"
-                col2 = "\\multirow{" + str(num_items) + "}{*}{\\parbox[t]{7.6cm}{\\xiaowu " + metric_content + "}}"
-                line = col1 + " & " + col2 + " & {\\xiaowu " + test_item + "} \\\\[" + str(line_spacing) + "pt]"
-                latex_lines.append(line)
-                # 根据是否为最后一行决定画线类型
-                if is_last:
-                    latex_lines.append("\\hline")
-                else:
-                    latex_lines.append("\\cline{3-3}")
-            else:
-                # 后续行：第一列和第二列为空（被multirow合并）
-                line = " &  & {\\xiaowu " + test_item + "} \\\\[" + str(line_spacing) + "pt]"
-                latex_lines.append(line)
-                # 根据是否为最后一行决定画线类型
-                if is_last:
-                    latex_lines.append("\\hline")
-                else:
-                    latex_lines.append("\\cline{3-3}")
+        metrics.append(
+            {
+                "metric_number": metric_number,
+                "metric_content": metric_content,
+                "test_items": test_items,
+            }
+        )
 
         # 指标编号递增
         metric_number += 1
 
-    return "\n".join(latex_lines)
+    return metrics
+
+
+def generate_table2_longtblr(metrics):
+    rows = []
+    for m in metrics:
+        metric_number = m["metric_number"]
+        metric_content = m["metric_content"]
+        test_items = m["test_items"]
+        rough_len = len(metric_content) + sum(len(t) for t in test_items)
+        should_split = rough_len >= 1200
+
+        def emit_block(block_items, content_text):
+            n = len(block_items)
+            for idx, test_item in enumerate(block_items):
+                row_end = r"\\*" if idx < n - 1 else r"\\"
+                if idx == 0:
+                    rows.append(
+                        f"\\SetCell[r={n}]{{valign=t}}{{\\xiaowu {metric_number}}} & "
+                        f"\\SetCell[r={n}]{{valign=t}}{{\\xiaowu {content_text}}} & "
+                        f"{{\\xiaowu {test_item}}} {row_end}"
+                    )
+                else:
+                    rows.append(f" &  & {{\\xiaowu {test_item}}} {row_end}")
+
+        if should_split and len(test_items) > 2:
+            chunk_size = 2
+            chunks = [test_items[i:i + chunk_size] for i in range(0, len(test_items), chunk_size)]
+            for chunk_idx, chunk in enumerate(chunks):
+                content = metric_content if chunk_idx == 0 else f"{metric_content}（续）"
+                emit_block(chunk, content)
+        else:
+            emit_block(test_items, metric_content)
+    return "\n".join(rows)
 
 
 def generate_section_1_2(data_dir):
     """生成完整的1.2章节LaTeX代码"""
-    # 生成表格行内容
-    table_rows = generate_coverage_table(data_dir)
+    metrics = collect_coverage_data(data_dir)
 
     # 如果没有数据，返回空字符串
-    if not table_rows:
+    if not metrics:
         print("警告：没有生成任何表格内容")
         return ""
 
-    # 构建完整表格（使用longtable支持跨页）
-    full_table = f"""% 使用longtable支持跨页，同时保留multirow
-\\begin{{longtable}}{{|p{{0.8cm}}|p{{8cm}}|p{{5.7cm}}|}}
-% 第一页表头
-\\hline
-\\rowcolor{{gray!20}}
-\\multicolumn{{1}}{{|c|}}{{{{\\xiaowuhei 序号}}}} & \\multicolumn{{1}}{{c|}}{{{{\\xiaowuhei 主要要求和技术指标}}}} & \\multicolumn{{1}}{{c|}}{{{{\\xiaowuhei 测试项}}}} \\\\
-\\hline
-\\endfirsthead
+    table2_rows = generate_table2_longtblr(metrics)
 
-% 后续页表头（每页重复）
-\\hline
-\\rowcolor{{gray!20}}
-\\multicolumn{{1}}{{|c|}}{{{{\\xiaowuhei 序号}}}} & \\multicolumn{{1}}{{c|}}{{{{\\xiaowuhei 主要要求和技术指标}}}} & \\multicolumn{{1}}{{c|}}{{{{\\xiaowuhei 测试项}}}} \\\\
-\\hline
-\\endhead
-
-% 下一页内容前增加间距，避免跨页时内容压线
-\\vspace{{8pt}}
-
-% 每页底部横线
-\\hline
-\\endfoot
-
-% 最后一页底部
-\\hline
-\\endlastfoot
-
-% 表格内容
-{table_rows}
-\\end{{longtable}}
-\\vspace{{-6pt}}  % 表格后间距调整"""
+    table1 = f"""\\begin{{longtblr}}[
+  theme=gjb,
+]{{\n  colspec={{p{{0.8cm}}p{{7.0cm}}p{{6.7cm}}}},\n  rowhead=1,\n  hlines={{0.2pt,solid,black}},\n  vlines={{0.2pt,solid,black}},\n  leftsep=3pt,\n  rightsep=3pt,\n  abovesep=6pt,\n  belowsep=6pt,\n  row{{1}}={{bg=gray!15,font=\\xiaowuhei,halign=c,valign=m}},\n  rows={{valign=t}},\n}}
+序号 & 主要要求和技术指标 & 测试项 \\\\\n{table2_rows}\n\\end{{longtblr}}"""
 
     # 构建1.2章节内容
     latex = f"""\\subsection*{{1.2 系统概述}}
@@ -238,7 +207,7 @@ xxxxxxx规定的本阶段主要要求和技术指标为：
 \\centerline{{\\wuhaohei 表 1 主要要求和技术指标与测试项覆盖性对照表}}
 \\vspace{{6pt}}
 
-{full_table}
+{table1}
 
 xxxxxxxxxx系统软件的需方是"M"项目管理办公室，开发方是xxxxx。
 

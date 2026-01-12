@@ -18,6 +18,8 @@
 \usepackage{float}         % 浮动体控制，用于[H]参数
 \usepackage{multirow}      % 表格多行合并
 \usepackage{longtable}     % 跨页表格
+\usepackage{tabularray}
+\IfFileExists{needspace.sty}{\usepackage{needspace}}{\newcommand{\Needspace}[1]{}}
 
 % =================================================================
 % 中文字体设置
@@ -252,4 +254,17 @@
 % 结束测试项表格
 \newcommand{\EndTestItemTable}{%
   \EndLongTable%
+}
+
+% =================================================================
+% Tabularray longtblr 统一样式（用于表2）
+% =================================================================
+\DefTblrTemplate{caption-tag}{default}{\wuhaohei 表\thetable}
+\DefTblrTemplate{caption-sep}{default}{\quad}
+\DefTblrTemplate{caption-text}{default}{\wuhaohei \InsertTblrText{caption}}
+\DefTblrTemplate{contfoot-text}{default}{\xiaowu (续表)}
+
+\NewTblrTheme{gjb}{
+  \SetTblrStyle{head}{font=\xiaowuhei}
+  \SetTblrStyle{foot}{font=\xiaowu}
 }
