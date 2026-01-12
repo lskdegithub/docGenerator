@@ -54,6 +54,7 @@ for doc in "${DOCS[@]}"; do
     echo "正在编译 $doc..."
 
     # 进入文档目录编译（解决\input路径问题）
+    (cd "$SOURCE_DIR/${doc}" && xelatex -interaction=nonstopmode -output-directory="../../../${OUTPUT_DIR}" main.tex > /tmp/compile_${doc}_pass1.log 2>&1) || true
     (cd "$SOURCE_DIR/${doc}" && xelatex -interaction=nonstopmode -output-directory="../../../${OUTPUT_DIR}" main.tex > /tmp/compile_${doc}.log 2>&1)
     EXIT_CODE=$?
 

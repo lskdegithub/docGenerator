@@ -39,47 +39,42 @@ python3 "$SCRIPT_DIR/generate_section_1_2.py"
 # 步骤3: 将生成的1.2章节内容插入到chapter1.tex中
 echo ""
 echo "步骤3: 插入1.2章节内容到模板..."
-python3 -c "
-import re
-import os
+python3 - <<'PY'
+import os, re
+
+chapter1_path = 'output/test_plan/chapters/chapter1.tex'
+gen_path = 'output/test_plan/chapters/chapter1_2_generated.tex'
 
 try:
-    with open('$OUTPUT_DIR/chapters/chapter1_2_generated.tex', 'r', encoding='utf-8') as f:
-        insert_content = f.read()
-    
-    chapter1_path = '$OUTPUT_DIR/chapters/chapter1.tex'
-    if os.path.exists(chapter1_path):
-        with open(chapter1_path, 'r', encoding='utf-8') as f:
-            template = f.read()
-            
-        # 定义替换的锚点
-        # 尝试匹配 \subsection*{1.2 系统概述} 或 \subsection*{系统概述}
-        # 并替换为生成的内容
-        
-        # 策略：如果找到 \input{...1_2...}，说明是新模板，不做处理（或者替换input）
+    insert_content = open(gen_path, 'r', encoding='utf-8').read()
+    if not os.path.exists(chapter1_path):
+        print(f'错误：找不到 {chapter1_path}')
+    else:
+        template = open(chapter1_path, 'r', encoding='utf-8').read()
+
+        # 如果模板已经包含input引用，则跳过
         if 'chapter1_2_generated.tex' in template:
             print('检测到新模板格式(包含input)，跳过物理插入。')
         else:
-            # 旧模板逻辑：寻找标题并替换其后的内容，或者直接替换标题
-            # 简单策略：替换 \subsection*{1.2 系统概述} 为 插入内容
-            if '\\subsection*{1.2 系统概述}' in template:
-                new_content = template.replace('\\subsection*{1.2 系统概述}', insert_content)
-                with open(chapter1_path, 'w', encoding='utf-8') as f:
-                    f.write(new_content)
-                print('已将1.2内容插入chapter1.tex')
-            elif '\\subsection*{系统概述}' in template:
-                 # 适配可能的变体
-                new_content = template.replace('\\subsection*{系统概述}', insert_content)
-                with open(chapter1_path, 'w', encoding='utf-8') as f:
-                    f.write(new_content)
-                print('已将1.2内容插入chapter1.tex (匹配系统概述)')
+            # 替换从 1.2 系统概述 到 1.3 文档概述 之前的整段内容（保留 1.3 标题）
+            start_token = '\\subsection*{1.2 系统概述}'
+            end_token = '\\subsection*{1.3 文档概述}'
+            start_idx = template.find(start_token)
+            if start_idx != -1:
+                end_idx = template.find(end_token, start_idx)
+                if end_idx != -1 and start_idx < end_idx:
+                    new_content = template[:start_idx] + insert_content + '\n\n' + template[end_idx:]
+                    open(chapter1_path, 'w', encoding='utf-8').write(new_content)
+                    print('已整体替换 1.2 章节，消除旧模板残留题注')
+                else:
+                    new_content = template.replace(start_token, insert_content)
+                    open(chapter1_path, 'w', encoding='utf-8').write(new_content)
+                    print('已替换 1.2 标题为生成内容')
             else:
-                print('警告：在chapter1.tex中未找到锚点，未进行插入。')
-    else:
-        print(f'错误：找不到 {chapter1_path}')
+                print('警告：在chapter1.tex中未找到 1.2 段落锚点')
 except Exception as e:
     print(f'发生错误: {e}')
-"
+PY
 
 # 步骤4: 生成4.2章节内容
 echo ""
@@ -89,37 +84,47 @@ python3 "$SCRIPT_DIR/generate_section_4_2.py"
 # 步骤5: 将生成的4.2章节内容插入到chapter4.tex中
 echo ""
 echo "步骤5: 插入4.2章节内容到模板..."
-python3 -c "
-import re
+python3 - <<'PY'
 import os
 
+chapter4_path = 'output/test_plan/chapters/chapter4.tex'
+gen_path = 'output/test_plan/chapters/chapter4_2_generated.tex'
+
 try:
-    with open('$OUTPUT_DIR/chapters/chapter4_2_generated.tex', 'r', encoding='utf-8') as f:
-        insert_content = f.read()
-    
-    chapter4_path = '$OUTPUT_DIR/chapters/chapter4.tex'
-    if os.path.exists(chapter4_path):
-        with open(chapter4_path, 'r', encoding='utf-8') as f:
-            template = f.read()
-            
+    insert_content = open(gen_path, 'r', encoding='utf-8').read()
+    if not os.path.exists(chapter4_path):
+        print(f'错误：找不到 {chapter4_path}')
+    else:
+        template = open(chapter4_path, 'r', encoding='utf-8').read()
+
         if 'chapter4_2_generated.tex' in template:
             print('检测到新模板格式(包含input)，跳过物理插入。')
         else:
-            if '\\subsection*{4.2 计划执行的测试}' in template:
-                new_content = template.replace('\\subsection*{4.2 计划执行的测试}', insert_content)
-                with open(chapter4_path, 'w', encoding='utf-8') as f:
-                    f.write(new_content)
-                print('已将4.2内容插入chapter4.tex')
-            elif '\\subsection*{计划执行的测试}' in template:
-                new_content = template.replace('\\subsection*{计划执行的测试}', insert_content)
-                with open(chapter4_path, 'w', encoding='utf-8') as f:
-                    f.write(new_content)
-                print('已将4.2内容插入chapter4.tex (匹配计划执行的测试)')
+            start_token = '\\subsection*{4.2 计划执行的测试}'
+            start_idx = template.find(start_token)
+            if start_idx == -1:
+                start_token = '\\subsection*{计划执行的测试}'
+                start_idx = template.find(start_token)
+
+            if start_idx == -1:
+                print('警告：在chapter4.tex中未找到 4.2 段落锚点，未进行插入。')
             else:
-                print('警告：在chapter4.tex中未找到锚点，未进行插入。')
+                end_token = '% =================== 第5章'
+                end_idx = template.find(end_token, start_idx)
+                if end_idx == -1:
+                    end_idx = len(template)
+
+                placeholder_token = '\\subsubsection*{4.2.1'
+                placeholder_idx = template.find(placeholder_token, start_idx, end_idx)
+                if placeholder_idx == -1:
+                    placeholder_idx = end_idx
+
+                new_content = template[:placeholder_idx] + insert_content + '\n\n' + template[end_idx:]
+                open(chapter4_path, 'w', encoding='utf-8').write(new_content)
+                print('已整体替换 4.2 小节的测试项详情内容')
 except Exception as e:
     print(f'发生错误: {e}')
-"
+PY
 
 echo ""
 
@@ -128,8 +133,8 @@ echo "步骤6: 编译LaTeX文档..."
 mkdir -p output/log
 
 # 进入输出目录编译
-(cd "$OUTPUT_DIR" && /usr/local/texlive/2025/bin/x86_64-linux/xelatex -interaction=nonstopmode -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan_pass1.log 2>&1) || true
-(cd "$OUTPUT_DIR" && /usr/local/texlive/2025/bin/x86_64-linux/xelatex -interaction=nonstopmode -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan.log 2>&1) || true
+(cd "$OUTPUT_DIR" && /usr/local/texlive/2025/bin/x86_64-linux/xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan_pass1.log 2>&1)
+(cd "$OUTPUT_DIR" && /usr/local/texlive/2025/bin/x86_64-linux/xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan.log 2>&1)
 
 # 重命名PDF文件
 if [ -f "output/log/main.pdf" ]; then

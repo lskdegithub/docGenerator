@@ -190,10 +190,11 @@ def generate_section_1_2(data_dir):
 
     table2_rows = generate_table2_longtblr(metrics)
 
-    table1 = f"""\\begin{{longtblr}}[
-  theme=gjb,
-]{{\n  colspec={{p{{0.8cm}}p{{7.0cm}}p{{6.7cm}}}},\n  rowhead=1,\n  hlines={{0.2pt,solid,black}},\n  vlines={{0.2pt,solid,black}},\n  leftsep=3pt,\n  rightsep=3pt,\n  abovesep=6pt,\n  belowsep=6pt,\n  row{{1}}={{bg=gray!15,font=\\xiaowuhei,halign=c,valign=m}},\n  rows={{valign=t}},\n}}
-序号 & 主要要求和技术指标 & 测试项 \\\\\n{table2_rows}\n\\end{{longtblr}}"""
+    table1 = f"""{{\\settablespacing
+\\begin{{longtblr}}[theme=gjb,caption={{主要要求和技术指标与测试项覆盖性对照表}},label={{tbl:plan-coverage}}]{{\n  colspec={{|p{{0.8cm}}|p{{8cm}}|p{{5.7cm}}|}},\n  rowhead=1,\n  hlines={{0.2pt,solid,black}},\n  vlines={{0.2pt,solid,black}},\n  leftsep=3pt,\n  rightsep=3pt,\n  rows={{valign=t}},\n  row{{1}}={{bg=gray!20,font=\\xiaowuhei,halign=c,valign=m}},\n  column{{1}}={{halign=c}},\n}}
+序号 & 主要要求和技术指标 & 测试项 \\\\\n{table2_rows}\n\\end{{longtblr}}
+}}
+\\vspace{{-6pt}}"""
 
     # 构建1.2章节内容
     latex = f"""\\subsection*{{1.2 系统概述}}
@@ -202,10 +203,6 @@ def generate_section_1_2(data_dir):
 系统用途部分内容敏感，不在此处列出。详见xxxxxx系统合同（xxxxxx）。
 
 xxxxxxx规定的本阶段主要要求和技术指标为：
-
-\\vspace{{6pt}}
-\\centerline{{\\wuhaohei 表 1 主要要求和技术指标与测试项覆盖性对照表}}
-\\vspace{{6pt}}
 
 {table1}
 

@@ -6,26 +6,28 @@
 
 {\normalsize
 所有测试用例的执行记录如表A-1所示。
+\setcounter{table}{0}
+\renewcommand{\thetable}{A-\arabic{table}}
 
 \begin{table}[H]
 \centering
-\vspace{6pt}
-{\wuhaohei 表 A-1 测试用例执行记录}
-
-\vspace{6pt}
 {\settablespacing
-\begin{tabular}{|p{0.5cm}|p{2.5cm}|p{4cm}|p{2cm}|p{2cm}|p{2.5cm}|}
-\hline
-\rowcolor{gray!20}
-\multicolumn{1}{|c|}{{\xiaowuhei 序号}} & \multicolumn{1}{c|}{{\xiaowuhei 用例ID}} & \multicolumn{1}{c|}{{\xiaowuhei 用例名称}} & \multicolumn{1}{c|}{{\xiaowuhei 执行人}} & \multicolumn{1}{c|}{{\xiaowuhei 执行日期}} & \multicolumn{1}{c|}{{\xiaowuhei 结果}} \\
-\hline
-\multicolumn{1}{|c|}{{\xiaowu 1}} & {\xiaowu TC-001} & {\xiaowu xxxxx功能测试} & {\xiaowu 张三} & {\xiaowu 2025.9.20} & {\xiaowu 通过} \\
-\hline
-\multicolumn{1}{|c|}{{\xiaowu 2}} & {\xiaowu TC-002} & {\xiaowu xxxxx功能测试} & {\xiaowu 李四} & {\xiaowu 2025.9.21} & {\xiaowu 通过} \\
-\hline
-\multicolumn{1}{|c|}{{\xiaowu 3}} & {\xiaowu TC-003} & {\xiaowu xxxxx功能测试} & {\xiaowu 王五} & {\xiaowu 2025.9.22} & {\xiaowu 失败} \\
-\hline
-\end{tabular}
+\SeqInit
+\begin{talltblr}[theme=gjb,caption={测试用例执行记录}]{
+  colspec={|p{0.8cm}|p{2.5cm}|p{4cm}|p{2cm}|p{2cm}|p{2.5cm}|},
+  hlines={0.2pt,solid,black},
+  vlines={0.2pt,solid,black},
+  leftsep=3pt,
+  rightsep=3pt,
+  rows={valign=t},
+  row{1}={bg=gray!20,font=\xiaowuhei,halign=c,valign=m},
+  column{1}={halign=c},
+}
+序号 & 用例ID & 用例名称 & 执行人 & 执行日期 & 结果 \\
+{\xiaowu 1} & {\xiaowu TC-001} & {\xiaowu xxxxx功能测试} & {\xiaowu 张三} & {\xiaowu 2025.9.20} & {\xiaowu 通过} \\
+{\xiaowu 2} & {\xiaowu TC-002} & {\xiaowu xxxxx功能测试} & {\xiaowu 李四} & {\xiaowu 2025.9.21} & {\xiaowu 通过} \\
+{\xiaowu 3} & {\xiaowu TC-003} & {\xiaowu xxxxx功能测试} & {\xiaowu 王五} & {\xiaowu 2025.9.22} & {\xiaowu 失败} \\
+\end{talltblr}
 }
 \end{table}
 \vspace{6pt}
@@ -36,26 +38,28 @@
 
 {\normalsize
 测试活动日志如表B-1所示。
+\setcounter{table}{0}
+\renewcommand{\thetable}{B-\arabic{table}}
 
 \begin{table}[H]
 \centering
-\vspace{6pt}
-{\wuhaohei 表 B-1 测试活动日志}
-
-\vspace{6pt}
 {\settablespacing
-\begin{tabular}{|p{0.5cm}|p{3cm}|p{6.5cm}|p{4cm}|}
-\hline
-\rowcolor{gray!20}
-\multicolumn{1}{|c|}{{\xiaowuhei 序号}} & \multicolumn{1}{c|}{{\xiaowuhei 日期}} & \multicolumn{1}{c|}{{\xiaowuhei 活动内容}} & \multicolumn{1}{c|}{{\xiaowuhei 参与人}} \\
-\hline
-\multicolumn{1}{|c|}{{\xiaowu 1}} & {\xiaowu 2025.9.10} & {\xiaowu 测试策划，编写测试大纲和细则} & {\xiaowu 李胜奎、李闺臣} \\
-\hline
-\multicolumn{1}{|c|}{{\xiaowu 2}} & {\xiaowu 2025.9.18} & {\xiaowu 测试环境部署和准备} & {\xiaowu 李胜奎、杭滔} \\
-\hline
-\multicolumn{1}{|c|}{{\xiaowu 3}} & {\xiaowu 2025.9.20} & {\xiaowu 执行功能测试用例} & {\xiaowu 喻昕、胡栋} \\
-\hline
-\end{tabular}
+\SeqInit
+\begin{talltblr}[theme=gjb,caption={测试活动日志}]{
+  colspec={|p{0.8cm}|p{3cm}|p{6.5cm}|p{4cm}|},
+  hlines={0.2pt,solid,black},
+  vlines={0.2pt,solid,black},
+  leftsep=3pt,
+  rightsep=3pt,
+  rows={valign=t},
+  row{1}={bg=gray!20,font=\xiaowuhei,halign=c,valign=m},
+  column{1}={halign=c},
+}
+序号 & 日期 & 活动内容 & 参与人 \\
+{\xiaowu 1} & {\xiaowu 2025.9.10} & {\xiaowu 测试策划，编写测试大纲和细则} & {\xiaowu 李胜奎、李闺臣} \\
+{\xiaowu 2} & {\xiaowu 2025.9.18} & {\xiaowu 测试环境部署和准备} & {\xiaowu 李胜奎、杭滔} \\
+{\xiaowu 3} & {\xiaowu 2025.9.20} & {\xiaowu 执行功能测试用例} & {\xiaowu 喻昕、胡栋} \\
+\end{talltblr}
 }
 \end{table}
 \vspace{6pt}
@@ -63,5 +67,3 @@
 }
 
 }
-
-\end{document}

@@ -126,9 +126,16 @@ def wrap_identifier_by_width(identifier, col_width_cm=5.5):
     # 使用LaTeX的换行符连接
     return ' \\newline '.join(result)
 
+def make_table_label(identifier, fallback_number):
+    raw = identifier or str(fallback_number)
+    raw = str(raw)
+    raw = re.sub(r'[^0-9a-zA-Z]+', '-', raw).strip('-').lower()
+    if not raw:
+        raw = str(fallback_number)
+    return f"tbl:plan-item-{raw}"
 
 def generate_table_latex(plan_data, table_number, table_title):
-    """生成测试项表格的LaTeX代码（使用样式文件中定义的高级命令）"""
+    """生成测试项表格的LaTeX代码（使用tabularray longtblr）"""
     # 转义LaTeX特殊字符（如下划线）
     test_item_name = plan_data['测试项名称'].replace('_', '\\_')
     requirement = plan_data['测试要求'].replace('_', '\\_')
@@ -143,16 +150,19 @@ def generate_table_latex(plan_data, table_number, table_title):
     # 对标识字段进行智能换行处理
     identifier = wrap_identifier_by_width(plan_data['标识'])
 
-    # 使用样式文件中定义的高级命令，脚本只负责数据填充
-    latex = "\\BeginTestItemTable{" + str(table_number) + "}{" + table_title.replace('_', '\\_') + "}\n"
-    latex += "\\TestItemFirstRow{6cm}{" + test_item_name + "}{5.5cm}{" + identifier + "}\n"
-    latex += "\\TestItemRow{测试要求}{3}{13cm}{" + requirement + "}\n"
-    latex += "\\TestItemRow{测试策略与方法}{3}{13cm}{测试策略：" + strategy + "\\newline 测试方法：" + method + "}\n"
-    latex += "\\TestItemRow{假设与约束}{3}{13cm}{假设：" + assumption + "\\newline 约束：" + constraint + "}\n"
-    latex += "\\TestItemRow{优先级}{3}{13cm}{" + priority + "}\n"
-    latex += "\\TestItemRow{测试终止条件}{3}{13cm}{" + termination + "}\n"
-    latex += "\\TestItemRow{追踪关系}{3}{13cm}{" + traceability + "}\n"
-    latex += "\\EndTestItemTable\n"
+    table_label = make_table_label(plan_data.get('标识', ''), table_number)
+    latex = "{\\settablespacing\n"
+    latex += "\\begin{longtblr}[theme=gjb,caption={" + table_title.replace('_', '\\_') + "},label={" + table_label + "}]{colspec={|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|},hlines={0.2pt,solid,black},vlines={0.2pt,solid,black},leftsep=3pt,rightsep=3pt,rows={valign=t}}\n"
+    latex += "{\\xiaowuhei 测试项名称} & \\TableCell{6cm}{" + test_item_name + "} & {\\xiaowuhei 标识} & \\TableCellIdentifier{5.5cm}{" + identifier + "} \\\\\n"
+    latex += "{\\xiaowuhei 测试要求} & \\SetCell[c=3]{wd=13cm}{\\xiaowu " + requirement + "} && \\\\\n"
+    latex += "{\\xiaowuhei 测试策略与方法} & \\SetCell[c=3]{wd=13cm}{\\xiaowu 测试策略：" + strategy + "\\newline 测试方法：" + method + "} && \\\\\n"
+    latex += "{\\xiaowuhei 假设与约束} & \\SetCell[c=3]{wd=13cm}{\\xiaowu 假设：" + assumption + "\\newline 约束：" + constraint + "} && \\\\\n"
+    latex += "{\\xiaowuhei 优先级} & \\SetCell[c=3]{wd=13cm}{\\xiaowu " + priority + "} && \\\\\n"
+    latex += "{\\xiaowuhei 测试终止条件} & \\SetCell[c=3]{wd=13cm}{\\xiaowu " + termination + "} && \\\\\n"
+    latex += "{\\xiaowuhei 追踪关系} & \\SetCell[c=3]{wd=13cm}{\\xiaowu " + traceability + "} && \\\\\n"
+    latex += "\\end{longtblr}\n"
+    latex += "}\n"
+    latex += "\\vspace{-6pt}\n"
     return latex
 
 
@@ -164,7 +174,7 @@ def generate_section_4_2(data_dir):
         return ""
 
     latex_output = []
-    table_number = 11  # 从表11开始编号
+    table_number = 11
 
     # 获取所有test-metric目录并排序
     metric_dirs = sorted([d for d in data_path.iterdir() if d.is_dir() and d.name.endswith('-test-metric')])

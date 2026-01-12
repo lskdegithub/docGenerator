@@ -26,34 +26,31 @@ xxxxxxx规定的本阶段主要要求和技术指标为：
 
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx。
 
-项目节点测试的测试项与xxxxxxx的覆盖性对应关系如表1所示。
-
-\vspace{6pt}
-\centerline{\wuhaohei 表 1 xxxxxx与测试项覆盖性对照表}
-\vspace{6pt}
+项目节点测试的测试项与xxxxxxx的覆盖性对应关系如表\ref{tbl:plan-coverage}所示。
+\vspace{-6pt}
 {\settablespacing
-\begin{longtable}{|p{0.8cm}|p{8cm}|p{5.7cm}|}
-\hline
-\rowcolor{gray!20}
-\multicolumn{1}{|c|}{{\xiaowuhei 序号}} & \multicolumn{1}{c|}{{\xiaowuhei xxxxxx}} & \multicolumn{1}{c|}{{\xiaowuhei 测试项}} \\
-\hline
-\multirow{4}{*}{\xiaowu 1} & \multirow{4}{*}{\xiaowu } & {\xiaowu } \\
-\cline{3-3}
-& & {\xiaowu } \\
-\cline{3-3}
-& & {\xiaowu } \\
-\cline{3-3}
-& & {\xiaowu } \\
-\hline
-\multirow{4}{*}{\xiaowu 2} & \multirow{4}{*}{\xiaowu } & {\xiaowu } \\
-\cline{3-3}
-& & {\xiaowu } \\
-\cline{3-3}
-& & {\xiaowu } \\
-\cline{3-3}
-& & {\xiaowu } \\
-\hline
-\end{longtable}
+\SeqInit
+\begin{longtblr}[theme=gjb,caption={xxxxxx与测试项覆盖性对照表},label={tbl:plan-coverage}]{
+  colspec={|p{0.8cm}|p{8cm}|p{5.7cm}|},
+  rowhead=1,
+  hlines={0.2pt,solid,black},
+  vlines={0.2pt,solid,black},
+  leftsep=3pt,
+  rightsep=3pt,
+  rows={valign=t},
+  row{1}={bg=gray!20,font=\xiaowuhei,halign=c,valign=m},
+  column{1}={halign=c},
+}
+序号 & xxxxxx & 测试项 \\
+\SetCell[r=4]{halign=c,valign=t}{\xiaowu 1} & \SetCell[r=4]{valign=t}{\xiaowu } & {\xiaowu } \\
+ &  & {\xiaowu } \\
+ &  & {\xiaowu } \\
+ &  & {\xiaowu } \\
+\SetCell[r=4]{halign=c,valign=t}{\xiaowu 2} & \SetCell[r=4]{valign=t}{\xiaowu } & {\xiaowu } \\
+ &  & {\xiaowu } \\
+ &  & {\xiaowu } \\
+ &  & {\xiaowu } \\
+\end{longtblr}
 }
 \vspace{-6pt}
 
