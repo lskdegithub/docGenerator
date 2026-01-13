@@ -22,3 +22,9 @@ output/
 # 操作系统文件
 .DS_Store
 Thumbs.db
+
+# 本地 IDE 配置
+.claude/settings.local.json
+
+# Office 临时/锁定文件
+templates/~$*.docx

@@ -151,19 +151,49 @@ def generate_table_latex(plan_data, table_number, table_title):
     identifier = wrap_identifier_by_width(plan_data['标识'])
 
     table_label = make_table_label(plan_data.get('标识', ''), table_number)
-    latex = "{\\settablespacing\n"
-    latex += "\\begin{longtblr}[theme=gjb,caption={" + table_title.replace('_', '\\_') + "},label={" + table_label + "}]{colspec={|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|},hlines={0.2pt,solid,black},vlines={0.2pt,solid,black},leftsep=3pt,rightsep=3pt,rows={valign=t}}\n"
-    latex += "{\\xiaowuhei 测试项名称} & \\TableCell{6cm}{" + test_item_name + "} & {\\xiaowuhei 标识} & \\TableCellIdentifier{5.5cm}{" + identifier + "} \\\\\n"
-    latex += "{\\xiaowuhei 测试要求} & \\SetCell[c=3]{wd=13cm}{\\xiaowu " + requirement + "} && \\\\\n"
-    latex += "{\\xiaowuhei 测试策略与方法} & \\SetCell[c=3]{wd=13cm}{\\xiaowu 测试策略：" + strategy + "\\newline 测试方法：" + method + "} && \\\\\n"
-    latex += "{\\xiaowuhei 假设与约束} & \\SetCell[c=3]{wd=13cm}{\\xiaowu 假设：" + assumption + "\\newline 约束：" + constraint + "} && \\\\\n"
-    latex += "{\\xiaowuhei 优先级} & \\SetCell[c=3]{wd=13cm}{\\xiaowu " + priority + "} && \\\\\n"
-    latex += "{\\xiaowuhei 测试终止条件} & \\SetCell[c=3]{wd=13cm}{\\xiaowu " + termination + "} && \\\\\n"
-    latex += "{\\xiaowuhei 追踪关系} & \\SetCell[c=3]{wd=13cm}{\\xiaowu " + traceability + "} && \\\\\n"
-    latex += "\\end{longtblr}\n"
-    latex += "}\n"
-    latex += "\\vspace{-6pt}\n"
-    return latex
+    def compact(s: str) -> str:
+        return " ".join(str(s or "").split())
+
+    return (
+        "\\GjbPlanItemTable{"
+        + "caption={"
+        + table_title.replace("_", "\\_")
+        + "},"
+        + "label={"
+        + table_label
+        + "},"
+        + "name={"
+        + compact(test_item_name)
+        + "},"
+        + "ident={"
+        + compact(identifier)
+        + "},"
+        + "req={"
+        + compact(requirement)
+        + "},"
+        + "strategy={"
+        + compact(strategy)
+        + "},"
+        + "method={"
+        + compact(method)
+        + "},"
+        + "assume={"
+        + compact(assumption)
+        + "},"
+        + "constraint={"
+        + compact(constraint)
+        + "},"
+        + "priority={"
+        + compact(priority)
+        + "},"
+        + "term={"
+        + compact(termination)
+        + "},"
+        + "trace={"
+        + compact(traceability)
+        + "}"
+        + "}\n"
+    )
 
 
 def generate_section_4_2(data_dir):
@@ -224,7 +254,6 @@ def generate_section_4_2(data_dir):
             # 生成四级子标题 (4.2.x.x) - 格式：MODULE_NAME (MODULE_ID)
             module_title = f"{module_name}（{module_id_escaped}）" if module_id else module_name
             latex_output.append(f"\\paragraph*{{4.2.{metric_index}.{module_idx} {module_title}}}")
-            latex_output.append("\n{\\normalsize")
 
             # 获取该module下的所有item目录并排序
             item_dirs = sorted([d for d in module_dir.iterdir() if d.is_dir() and 'item' in d.name])
@@ -246,17 +275,15 @@ def generate_section_4_2(data_dir):
                 item_title = plan_data['测试项名称'].replace('_', '\\_') + "（" + plan_data['标识'].replace('_', '\\_') + "）"
                 # 五级标题使用parbox实现换行
                 latex_output.append("\\subparagraph*{4.2." + str(metric_index) + "." + str(module_idx) + "." + str(item_idx) + " \\parbox[t]{12cm}{{" + item_title + "}}}")
-                latex_output.append("\n{\\normalsize")
 
                 # 生成表格
                 table_title = plan_data['测试项名称']
                 table_latex = generate_table_latex(plan_data, table_number, table_title)
                 latex_output.append(table_latex)
-                latex_output.append("}")
 
                 table_number += 1
 
-            latex_output.append("}")  # 结束四级section
+            # 三级标题不包含内容，无需结束标记
 
         # 三级标题不包含内容，无需结束标记
 

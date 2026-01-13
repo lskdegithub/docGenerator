@@ -161,12 +161,12 @@ def generate_table2_longtblr(metrics):
                 row_end = r"\\*" if idx < n - 1 else r"\\"
                 if idx == 0:
                     rows.append(
-                        f"\\SetCell[r={n}]{{valign=t}}{{\\xiaowu {metric_number}}} & "
-                        f"\\SetCell[r={n}]{{valign=t}}{{\\xiaowu {content_text}}} & "
-                        f"{{\\xiaowu {test_item}}} {row_end}"
+                        f"\\SetCell[r={n}]{{valign=t}}{{{metric_number}}} & "
+                        f"\\SetCell[r={n}]{{valign=t}}{{{content_text}}} & "
+                        f"{{{test_item}}} {row_end}"
                     )
                 else:
-                    rows.append(f" &  & {{\\xiaowu {test_item}}} {row_end}")
+                    rows.append(f" &  & {{{test_item}}} {row_end}")
 
         if should_split and len(test_items) > 2:
             chunk_size = 2
@@ -191,7 +191,7 @@ def generate_section_1_2(data_dir):
     table2_rows = generate_table2_longtblr(metrics)
 
     table1 = f"""{{\\settablespacing
-\\begin{{longtblr}}[theme=gjb,caption={{主要要求和技术指标与测试项覆盖性对照表}},label={{tbl:plan-coverage}}]{{\n  colspec={{|p{{0.8cm}}|p{{8cm}}|p{{5.7cm}}|}},\n  rowhead=1,\n  hlines={{0.2pt,solid,black}},\n  vlines={{0.2pt,solid,black}},\n  leftsep=3pt,\n  rightsep=3pt,\n  rows={{valign=t}},\n  row{{1}}={{bg=gray!20,font=\\xiaowuhei,halign=c,valign=m}},\n  column{{1}}={{halign=c}},\n}}
+\\begin{{longtblr}}[theme=gjb,caption={{主要要求和技术指标与测试项覆盖性对照表}},label={{tbl:plan-coverage}}]{{\n  colspec={{|p{{0.8cm}}|p{{8cm}}|p{{5.7cm}}|}},\n  rowhead=1,\n  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  column{{1}}={{halign=c}},\n}}
 序号 & 主要要求和技术指标 & 测试项 \\\\\n{table2_rows}\n\\end{{longtblr}}
 }}
 \\vspace{{-6pt}}"""
@@ -199,7 +199,6 @@ def generate_section_1_2(data_dir):
     # 构建1.2章节内容
     latex = f"""\\subsection*{{1.2 系统概述}}
 
-{{\\normalsize
 系统用途部分内容敏感，不在此处列出。详见xxxxxx系统合同（xxxxxx）。
 
 xxxxxxx规定的本阶段主要要求和技术指标为：
@@ -209,7 +208,6 @@ xxxxxxx规定的本阶段主要要求和技术指标为：
 xxxxxxxxxx系统软件的需方是"M"项目管理办公室，开发方是xxxxx。
 
 标识当前和计划运行的现场，测试地点为"xxxxxx"，测试环境包括1台国产ARM架构服务器，其搭载国产处理器（飞腾）和国产操作系统（银河麒麟服务器版）以及2台国产X86台式机，其中服务器部署xxxxxxxxxxreleaseV0.7.1版，两台台式机为客户端。
-}}
 
 """
 

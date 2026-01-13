@@ -18,6 +18,7 @@
 \usepackage{float}         % 浮动体控制，用于[H]参数
 \usepackage{multirow}      % 表格多行合并
 \usepackage{tabularray}
+\usepackage{xparse}
 \IfFileExists{needspace.sty}{\usepackage{needspace}}{\newcommand{\Needspace}[1]{}}
 
 % =================================================================
@@ -42,6 +43,10 @@
 \newcommand{\xiaowuhei}{\xiaowu\bfseries}
 % 三号黑体加粗（16pt, 18pt）
 \newcommand{\sanhao}{\fontsize{16pt}{18pt}\rmfamily\bfseries}
+
+\newcommand{\GjbTableRuleWd}{0.4pt}
+\newcommand{\GjbTableRuleColor}{black}
+\newcommand{\GjbTableColSep}{3pt}
 
 % =================================================================
 % 正文格式设置
@@ -191,16 +196,81 @@
   \xiaowuhei #1%
 }
 
+% 表单/字段类表格的 Key 单元格（小五号黑体）
+% 用法: \TableKeyCell{内容}
+\newcommand{\TableKeyCell}[1]{%
+  {\xiaowuhei #1}%
+}
+
+% 表单/字段类表格的 Identifier 值
+% 用法: \TableIdentifier{内容}
+\newcommand{\TableIdentifier}[1]{%
+  {\xiaowu #1}%
+}
+
+\ExplSyntaxOn
+\tl_new:N \l__gjb_planitem_caption_tl
+\tl_new:N \l__gjb_planitem_label_tl
+\tl_new:N \l__gjb_planitem_name_tl
+\tl_new:N \l__gjb_planitem_ident_tl
+\tl_new:N \l__gjb_planitem_req_tl
+\tl_new:N \l__gjb_planitem_strategy_tl
+\tl_new:N \l__gjb_planitem_method_tl
+\tl_new:N \l__gjb_planitem_assume_tl
+\tl_new:N \l__gjb_planitem_constraint_tl
+\tl_new:N \l__gjb_planitem_priority_tl
+\tl_new:N \l__gjb_planitem_term_tl
+\tl_new:N \l__gjb_planitem_trace_tl
+\keys_define:nn { gjb/planitem }
+  {
+    caption .tl_set:N = \l__gjb_planitem_caption_tl,
+    label .tl_set:N = \l__gjb_planitem_label_tl,
+    name .tl_set:N = \l__gjb_planitem_name_tl,
+    ident .tl_set:N = \l__gjb_planitem_ident_tl,
+    req .tl_set:N = \l__gjb_planitem_req_tl,
+    strategy .tl_set:N = \l__gjb_planitem_strategy_tl,
+    method .tl_set:N = \l__gjb_planitem_method_tl,
+    assume .tl_set:N = \l__gjb_planitem_assume_tl,
+    constraint .tl_set:N = \l__gjb_planitem_constraint_tl,
+    priority .tl_set:N = \l__gjb_planitem_priority_tl,
+    term .tl_set:N = \l__gjb_planitem_term_tl,
+    trace .tl_set:N = \l__gjb_planitem_trace_tl,
+  }
+\cs_new_protected:Npn \__gjb_planitem_table:
+  {
+    {\settablespacing
+    \begin{longtblr}[theme=gjbNoHead,caption={\l__gjb_planitem_caption_tl},label={\l__gjb_planitem_label_tl}]{
+      colspec={|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|},
+      hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+    }
+    \TableKeyCell{测试项名称} & \SetCell{wd=6cm,valign=t}{\l__gjb_planitem_name_tl} & \TableKeyCell{标识} & \SetCell{wd=5.5cm,valign=t}{\TableIdentifier{\l__gjb_planitem_ident_tl}} \\
+    \TableKeyCell{测试要求} & \SetCell[c=3]{wd=13cm,valign=t}{\l__gjb_planitem_req_tl} && \\
+    \TableKeyCell{测试策略与方法} & \SetCell[c=3]{wd=13cm,valign=t}{测试策略：\l__gjb_planitem_strategy_tl\newline 测试方法：\l__gjb_planitem_method_tl} && \\
+    \TableKeyCell{假设与约束} & \SetCell[c=3]{wd=13cm,valign=t}{假设：\l__gjb_planitem_assume_tl\newline 约束：\l__gjb_planitem_constraint_tl} && \\
+    \TableKeyCell{优先级} & \SetCell[c=3]{wd=13cm,valign=t}{\l__gjb_planitem_priority_tl} && \\
+    \TableKeyCell{测试终止条件} & \SetCell[c=3]{wd=13cm,valign=t}{\l__gjb_planitem_term_tl} && \\
+    \TableKeyCell{追踪关系} & \SetCell[c=3]{wd=13cm,valign=t}{\l__gjb_planitem_trace_tl} && \\
+    \end{longtblr}
+    }
+    \vspace{-6pt}
+  }
+\NewDocumentCommand{\GjbPlanItemTable}{ m }
+  {
+    \keys_set:nn { gjb/planitem } { #1 }
+    \__gjb_planitem_table:
+  }
+\ExplSyntaxOff
+
 % 普通表格内容单元格（小五号宋体，固定宽度parbox）
 % 用法: \TableCell{宽度}{内容}
 \newcommand{\TableCell}[2]{%
-  \parbox[t]{#1}{{\xiaowu #2}}%
+  {\xiaowu #2}%
 }
 
 % 标识列单元格（小五号宋体，固定宽度parbox，等宽字体）
 % 用法: \TableCellIdentifier{宽度}{内容}
 \newcommand{\TableCellIdentifier}[2]{%
-  \parbox[t]{#1}{{\xiaowu \ttfamily #2}}%
+  {\xiaowu #2}%
 }
 \ExplSyntaxOn
 \int_new:N \g__gjb_tabseq_int
@@ -240,9 +310,11 @@
 \DefTblrTemplate{caption}{gjb}{%
   \vspace{6pt}%
   \centerline{%
-    \UseTblrTemplate{caption-tag}{gjb}%
-    \UseTblrTemplate{caption-sep}{gjb}%
-    \UseTblrTemplate{caption-text}{gjb}%
+    {\color{black}%
+      \UseTblrTemplate{caption-tag}{gjb}%
+      \UseTblrTemplate{caption-sep}{gjb}%
+      \UseTblrTemplate{caption-text}{gjb}%
+    }%
   }%
   \vspace{6pt}%
 }
@@ -251,8 +323,30 @@
 \DefTblrTemplate{capcont}{default}{}
 
 \NewTblrTheme{gjb}{
-  \SetTblrStyle{head}{font=\xiaowuhei}
+  \SetTblrStyle{head}{fg=black,font=\xiaowuhei,halign=c}
   \SetTblrStyle{foot}{font=\xiaowu}
+  \SetTblrInner[tblr,longtblr,talltblr]{
+    width=14.5cm,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    row{1}={font=\xiaowuhei,halign=c},
+    rows={valign=t}
+  }
+  \SetTblrTemplate{caption}{gjb}
+  \SetTblrTemplate{caption-tag}{gjb}
+  \SetTblrTemplate{caption-sep}{gjb}
+  \SetTblrTemplate{caption-text}{gjb}
+}
+
+\NewTblrTheme{gjbNoHead}{
+  \SetTblrStyle{head}{fg=black,font=\xiaowuhei,halign=c}
+  \SetTblrStyle{foot}{font=\xiaowu}
+  \SetTblrInner[tblr,longtblr,talltblr]{
+    width=14.5cm,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    rows={valign=t}
+  }
   \SetTblrTemplate{caption}{gjb}
   \SetTblrTemplate{caption-tag}{gjb}
   \SetTblrTemplate{caption-sep}{gjb}

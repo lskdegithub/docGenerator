@@ -1,6 +1,5 @@
 \section*{4. 测试说明}
 
-{\normalsize
 \subsection*{4.1 一般信息}
 
 {\normalsize
@@ -37,16 +36,10 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 计划开展的测试按照优先级排序从高到低依次开展工作。计划的测试顺序如表\ref{tbl:plan-order}所示。
 
 {\settablespacing
-\SeqInit
 \begin{longtblr}[theme=gjb,caption={计划的测试顺序},label={tbl:plan-order}]{
-  colspec={|p{0.8cm}|p{4cm}|p{3cm}|p{3.5cm}|p{3.5cm}|},
+  colspec={|p{0.8cm}|p{4cm}|p{3cm}|p{3.35cm}|p{3.35cm}|},
   rowhead=1,
-  hlines={0.2pt,solid,black},
-  vlines={0.2pt,solid,black},
-  leftsep=3pt,
-  rightsep=3pt,
-  rows={valign=t},
-  row{1}={bg=gray!20,font=\xiaowuhei,halign=c,valign=m},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 测试项名称 & 计划开始测试时间 & 计划完成测试时间 & 测试类别 \\
@@ -89,16 +82,10 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 计划执行的测试如表\ref{tbl:plan-item-list}所示。
 
 {\settablespacing
-\SeqInit
 \begin{longtblr}[theme=gjb,caption={测试项列表},label={tbl:plan-item-list}]{
-  colspec={|p{0.8cm}|p{4cm}|p{3cm}|p{6.5cm}|},
+  colspec={|p{0.8cm}|p{4cm}|p{3cm}|p{6.7cm}|},
   rowhead=1,
-  hlines={0.2pt,solid,black},
-  vlines={0.2pt,solid,black},
-  leftsep=3pt,
-  rightsep=3pt,
-  rows={valign=t},
-  row{1}={bg=gray!20,font=\xiaowuhei,halign=c,valign=m},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 测试类别 & 测试项名称 & 说明 \\
@@ -122,31 +109,28 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 {\normalsize
 
 % 使用样式文件中定义的表格命令，格式统一由 .sty 文件控制
-{\settablespacing
-\begin{longtblr}[theme=gjb,caption={基于PQL查询语言的血缘演算功能测试},label={tbl:plan-item-bigfilestorage1}]{
-  colspec={|p{2.3cm}|p{6cm}|p{0.7cm}|p{5.5cm}|},
-  hlines={0.2pt,solid,black},
-  vlines={0.2pt,solid,black},
-  leftsep=3pt,
-  rightsep=3pt,
-  rows={valign=t},
+\GjbPlanItemTable{
+  caption={基于PQL查询语言的血缘演算功能测试},
+  label={tbl:plan-item-bigfilestorage1},
+  name={大文件存储xxx大文件存储xxx},
+  ident={bigfilestorage1},
+  req={测试项的测试要求},
+  strategy={测试策略描述},
+  method={测试方法描述},
+  assume={测试项的假设},
+  constraint={测试项的约束},
+  priority={高},
+  term={测试项的测试终止条件},
+  trace={SRS-01}
 }
-{\xiaowuhei 测试项名称} & \TableCell{6cm}{大文件存储xxx大文件存储xxx} & {\xiaowuhei 标识} & \TableCellIdentifier{5.5cm}{bigfilestorage1} \\
-{\xiaowuhei 测试要求} & \SetCell[c=3]{wd=13cm}{\xiaowu 测试项的测试要求} && \\
-{\xiaowuhei 测试策略与方法} & \SetCell[c=3]{wd=13cm}{\xiaowu 测试策略：测试策略描述\newline 测试方法：测试方法描述} && \\
-{\xiaowuhei 假设与约束} & \SetCell[c=3]{wd=13cm}{\xiaowu 假设：测试项的假设\newline 约束：测试项的约束} && \\
-{\xiaowuhei 优先级} & \SetCell[c=3]{wd=13cm}{\xiaowu 高} && \\
-{\xiaowuhei 测试终止条件} & \SetCell[c=3]{wd=13cm}{\xiaowu 测试项的终止条件} && \\
-{\xiaowuhei 追踪关系} & \SetCell[c=3]{wd=13cm}{\xiaowu SRS-01} && \\
-\end{longtblr}
-}
-\vspace{-6pt}
 
 测试方法：该测试使用手工测试的方法，测试人员通过界面执行相关功能测试用例，查看操作预期结果是否与实际相符。
 
 测试终止条件：全部测试用例被执行或因某种原因导致测试无法执行。
 
 测试通过准则：软件测试问题报告中1级、2级问题均已关闭，且3级、4级问题关闭率达到80\%以上，则测试通过，否则测试不通过。
+
+}
 
 }
 

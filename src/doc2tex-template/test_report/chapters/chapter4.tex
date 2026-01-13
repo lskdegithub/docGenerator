@@ -9,15 +9,10 @@
 \begin{table}[H]
 \centering
 {\settablespacing
-\SeqInit
 \begin{talltblr}[theme=gjb,caption={执行的测试项}]{
   colspec={|p{0.8cm}|p{4cm}|p{3cm}|p{2cm}|p{3.5cm}|},
-  hlines={0.2pt,solid,black},
-  vlines={0.2pt,solid,black},
-  leftsep=3pt,
-  rightsep=3pt,
-  rows={valign=t},
-  row{1}={bg=gray!20,font=\xiaowuhei,halign=c,valign=m},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 测试项名称 & 测试类别 & 用例数 & 通过率 \\
@@ -69,15 +64,10 @@
 \begin{table}[H]
 \centering
 {\settablespacing
-\SeqInit
 \begin{talltblr}[theme=gjb,caption={测试发现的问题}]{
   colspec={|p{0.8cm}|p{1.5cm}|p{6cm}|p{2cm}|p{2cm}|p{2cm}|},
-  hlines={0.2pt,solid,black},
-  vlines={0.2pt,solid,black},
-  leftsep=3pt,
-  rightsep=3pt,
-  rows={valign=t},
-  row{1}={bg=gray!20,font=\xiaowuhei,halign=c,valign=m},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 问题ID & 问题描述 & 严重程度 & 状态 & 备注 \\
@@ -106,12 +96,8 @@
 {\settablespacing
 \begin{talltblr}[theme=gjb,caption={需求覆盖统计}]{
   colspec={|p{2cm}|p{5cm}|p{3cm}|p{4cm}|},
-  hlines={0.2pt,solid,black},
-  vlines={0.2pt,solid,black},
-  leftsep=3pt,
-  rightsep=3pt,
-  rows={valign=t},
-  row{1}={bg=gray!20,font=\xiaowuhei,halign=c,valign=m},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
 }
 需求类别 & 需求数量 & 已覆盖 & 覆盖率 \\
 {\xiaowu 功能需求} & {\xiaowu 50} & {\xiaowu 50} & {\xiaowu 100\%} \\
