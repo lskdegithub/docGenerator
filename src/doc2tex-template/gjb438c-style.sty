@@ -100,6 +100,9 @@
 % 标题格式设置（1-5级标题）
 % =================================================================
 
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
+
 % 1级标题：五号宋体加粗，段前段后6pt
 \titleformat{\section}
   {\wuhao\bfseries}
@@ -125,20 +128,22 @@
 \titlespacing*{\subsubsection}{0pt}{6pt}{0pt}
 
 % 4级标题：五号宋体加粗，段前段后6pt
-\titleformat{\paragraph}
+\titleformat{\paragraph}[block]
   {\wuhao\bfseries}
-  {}
-  {0em}
+  {\theparagraph}
+  {1em}
   {}
 \titlespacing*{\paragraph}{0pt}{6pt}{0pt}
 
 % 5级标题：五号宋体加粗，段前段后6pt
-\titleformat{\subparagraph}
+\titleformat{\subparagraph}[block]
   {\wuhao\bfseries}
-  {}
-  {0em}
+  {\thesubparagraph}
+  {1em}
   {}
 \titlespacing*{\subparagraph}{0pt}{6pt}{0pt}
+
+\NewDocumentCommand{\subsubparagraph}{ s m }{\par\vspace{6pt}\noindent{\wuhao\bfseries #2}\par}
 
 % =================================================================
 % 辅助命令
@@ -325,11 +330,25 @@
 \NewTblrTheme{gjb}{
   \SetTblrStyle{head}{fg=black,font=\xiaowuhei,halign=c}
   \SetTblrStyle{foot}{font=\xiaowu}
-  \SetTblrInner[tblr,longtblr,talltblr]{
+  \SetTblrInner[tblr]{
     width=14.5cm,
     colsep=\GjbTableColSep,
     cells={font=\xiaowu},
-    row{1}={font=\xiaowuhei,halign=c},
+    row{1}={font=\xiaowuhei,halign=c,valign=m},
+    rows={valign=t}
+  }
+  \SetTblrInner[longtblr]{
+    width=14.5cm,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    row{1}={font=\xiaowuhei,halign=c,valign=m},
+    rows={valign=t}
+  }
+  \SetTblrInner[talltblr]{
+    width=14.5cm,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    row{1}={font=\xiaowuhei,halign=c,valign=m},
     rows={valign=t}
   }
   \SetTblrTemplate{caption}{gjb}
@@ -341,7 +360,19 @@
 \NewTblrTheme{gjbNoHead}{
   \SetTblrStyle{head}{fg=black,font=\xiaowuhei,halign=c}
   \SetTblrStyle{foot}{font=\xiaowu}
-  \SetTblrInner[tblr,longtblr,talltblr]{
+  \SetTblrInner[tblr]{
+    width=14.5cm,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    rows={valign=t}
+  }
+  \SetTblrInner[longtblr]{
+    width=14.5cm,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    rows={valign=t}
+  }
+  \SetTblrInner[talltblr]{
     width=14.5cm,
     colsep=\GjbTableColSep,
     cells={font=\xiaowu},

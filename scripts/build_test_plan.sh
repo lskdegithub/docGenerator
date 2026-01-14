@@ -126,15 +126,78 @@ except Exception as e:
     print(f'发生错误: {e}')
 PY
 
+# 步骤6: 生成第7章可追踪性表格行
+echo ""
+echo "步骤6: 生成第7章可追踪性表格行..."
+python3 "$SCRIPT_DIR/generate_section_7.py"
+
+# 步骤7: 将生成的第7章表格行插入到chapter7.tex中
+echo ""
+echo "步骤7: 插入第7章表格行到模板..."
+python3 - <<'PY'
+import re
+from pathlib import Path
+
+chapter7_path = Path('output/test_plan/chapters/chapter7.tex')
+trace_rows_path = Path('output/test_plan/chapters/chapter7_trace_rows.tex')
+trace_rev_rows_path = Path('output/test_plan/chapters/chapter7_trace_rev_rows.tex')
+
+trace_rows = trace_rows_path.read_text(encoding='utf-8').strip()
+trace_rev_rows = trace_rev_rows_path.read_text(encoding='utf-8').strip()
+
+lines = chapter7_path.read_text(encoding='utf-8').splitlines(True)
+
+out = []
+state = None
+replacing = False
+
+def startswith_any(s, parts):
+    return any(s.lstrip().startswith(p) for p in parts)
+
+for line in lines:
+    if 'label={tbl:plan-trace}' in line:
+        state = 'trace'
+    elif 'label={tbl:plan-trace-rev}' in line:
+        state = 'trace_rev'
+
+    if state == 'trace' and '需求名称/标识' in line and '需求规格说明章' in line:
+        out.append(line)
+        out.append(trace_rows + '\n')
+        replacing = True
+        continue
+
+    if state == 'trace_rev' and '测试项名称/标识' in line and '本文档的章' in line:
+        out.append(line)
+        out.append(trace_rev_rows + '\n')
+        replacing = True
+        continue
+
+    if replacing:
+        if line.lstrip().startswith('\\end{longtblr}'):
+            out.append(line)
+            replacing = False
+            continue
+        if line.lstrip().startswith('\\Seq'):
+            continue
+        if line.strip() == '':
+            continue
+        continue
+
+    out.append(line)
+
+chapter7_path.write_text(''.join(out), encoding='utf-8')
+print('已插入第7章两张追踪表的表体行')
+PY
+
 echo ""
 
-# 步骤6: 编译文档
-echo "步骤6: 编译LaTeX文档..."
+# 步骤8: 编译文档
+echo "步骤8: 编译LaTeX文档..."
 mkdir -p output/log
 
 # 进入输出目录编译
-(cd "$OUTPUT_DIR" && /usr/local/texlive/2025/bin/x86_64-linux/xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan_pass1.log 2>&1)
-(cd "$OUTPUT_DIR" && /usr/local/texlive/2025/bin/x86_64-linux/xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan.log 2>&1)
+(cd "$OUTPUT_DIR" && xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan_pass1.log 2>&1)
+(cd "$OUTPUT_DIR" && xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan.log 2>&1)
 
 # 重命名PDF文件
 if [ -f "output/log/main.pdf" ]; then

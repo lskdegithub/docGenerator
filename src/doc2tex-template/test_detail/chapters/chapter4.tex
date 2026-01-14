@@ -1,75 +1,71 @@
-\section*{4. 测试说明}
+\section{测试说明}
 
-{\normalsize
-\subsection*{4.1 计划执行的测试}
+\subsection{计划执行的测试}
 
-{\normalsize
-计划执行的测试如表4所示。
+围绕xxxx和《xxxx软件需求规格说明》的要求计划开展的测试共计5个测试项其中功能测试2个，接口测试2个和可靠性测试1个。
 
-\begin{table}[H]
-\centering
+计划执行的测试项列表如表 \ref{tbl:detail-testitems}所示。
+
 {\settablespacing
-\begin{talltblr}[theme=gjb,caption={测试项列表}]{
-  colspec={|p{0.8cm}|p{4cm}|p{3cm}|p{6.5cm}|},
+\begin{talltblr}[theme=gjb,caption={测试项列表},label={tbl:detail-testitems}]{
+  colspec={|p{0.8cm}|p{4.0cm}|p{9.7cm}|},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
-序号 & 测试类别 & 测试项名称 & 说明 \\
-{\xiaowu 1} & {\xiaowu 功能测试} & {\xiaowu xxxxxxxx功能测试} & {\xiaowu 基于PQL查询语言的数据血缘和可信查询功能测试} \\
-{\xiaowu 2} & {\xiaowu 功能测试} & {\xiaowu xxxxxxxx功能测试} & {\xiaowu 基于PQL查询语言的数据血缘和可信查询功能测试} \\
-{\xiaowu 3} & {\xiaowu 接口测试} & {\xiaowu xxxxxxxx接口测试} & {\xiaowu 测试各模块之间的接口参数传递正确性} \\
-{\xiaowu 4} & {\xiaowu 接口测试} & {\xiaowu xxxxxxxx接口测试} & {\xiaowu 测试各模块之间的接口参数传递正确性} \\
-{\xiaowu 5} & {\xiaowu 可靠性测试} & {\xiaowu xxxxxxxx可靠性测试} & {\xiaowu 测试系统在异常情况下的恢复能力} \\
+序号 & 测试类别 & 测试项名称 \\
+\Seq & 功能测试 &  \\
+\Seq & 功能测试 &  \\
+\Seq & 接口测试 &  \\
+\Seq & 接口测试 &  \\
+\Seq & 可靠性测试 &  \\
 \end{talltblr}
 }
-\end{table}
 \vspace{-6pt}
 
+针对本次节点要求共设置5个测试项，包括37个测试用例。具体内容参见4.1.1到4.1.3章节。本次测试共设计5个测试项，包括37个测试用例，总体结构包括基于xxxxx的xxxxx测试包含10个测试用例、基于xxxxx的xxxxx测试包含10个测试用例、基于xxxxx的xxxxx测试包含5个测试用例、基于xxxxx的xxxxx测试包含8个测试用例，xxxxx可靠性测试包含4个测试用例。
+
+\subsubsection{面向xxxxx的xxxxx功能测试（xxxx\_xxxxx\_GN）}
+
+\paragraph{基于xxxxx的xxxxx测试（xxxx\_xxxxx）}
+
+\subparagraph{xxxxx功能测试（xxxx\_xxxxx\_001）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={xxxxx功能测试},label={tbl:detail-tc-001}]{
+  colsep=2pt,
+  colspec={|p{2.3cm}|p{7.3cm}|p{2.3cm}|p{2.6cm}|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{4}={halign=c},
 }
-
-\subsubsection*{4.1.1 面向xxxxx的xxxxx功能测试（xxxx\_xxxxx\_GN）}
-
-{\normalsize
-本测试项的测试要求、策略与方法如下：
-
-测试要求：依据《xxxxxxxxxx系统软件需求规格说明》，对基于PQL查询语言的血缘演算功能进行测试。
-
-测试策略：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
-
-测试方法：该测试使用手工测试的方法，测试人员通过界面执行相关功能测试用例，查看操作预期结果是否与实际相符。
-
-测试终止条件：全部测试用例被执行或因某种原因导致测试无法执行。
-
-测试通过准则：软件测试问题报告中1级、2级问题均已关闭，且3级、4级问题关闭率达到80\%以上，则测试通过，否则测试不通过。
-
-\paragraph*{4.1.1.1 基于xxxxx的xxxxx测试（xxxx\_xxxxx）}
-
-{\normalsize
-\subparagraph*{4.1.1.1.1 xxxxx功能测试（xxxx\_xxxxx\_001）}
-
-{\normalsize
-用例ID：xxxx\_xxxxx\_001
-
-测试目标：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-前置条件：
-（1）xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx；
-（2）xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
-
-测试步骤：
-（1）xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx；
-（2）xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx；
-（3）xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
-
-预期结果：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-备注：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+\TableKeyCell{测试用例名称} & xxxxx功能测试 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{xxxx\_xxxxx\_001} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{基于xxxxx的xxxxx测试（xxxx\_xxxx\_xxxx\_GN）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{xxxxxxx} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{无} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{xxxxx正常运行，xxxxx中存在名称为xxxxx的节点} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei,bg=gray!20}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  colsep=2pt,
+  colspec={p{0.8cm}p{6.0cm}p{4.8cm}p{2.9cm}},
+  vline{2,3,4}={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  hline{2,3,4,5}={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1,4}={halign=c},
+  row{1}={font=\xiaowuhei,halign=c,bg=gray!20,valign=m},
+} 
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 &  &  &  \\
+2 &  &  &  \\
+3 &  &  &  \\
+4 &  &  &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{全部测试步骤被执行或因某种原因导致测试步骤无法执行} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{全部测试步骤都通过则本测试用例通过} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{xxxxxxx} && \\
+\TableKeyCell{设计人员} & 喻昕 & \SetCell{halign=c}{\TableKeyCell{操作人员}} &  \\
+\TableKeyCell{测试人员} &  & \SetCell{halign=c}{\TableKeyCell{测试时间}} &  \\
+\end{longtblr}
 }
-
-}
-
-}
-
-% =================== 第5章：需求的可追踪性 ===================
-\noindent
+\vspace{-6pt}

@@ -61,6 +61,7 @@ for doc in "${DOCS[@]}"; do
     # 重命名PDF文件
     if [ -f "output/main.pdf" ]; then
         mv -f "output/main.pdf" "output/${doc}.pdf" 2>/dev/null
+        cp -f "output/${doc}.pdf" "output/${doc}_fresh.pdf" 2>/dev/null || true
     fi
 
     if [ $EXIT_CODE -eq 0 ]; then

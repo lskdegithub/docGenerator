@@ -1,89 +1,73 @@
-\section*{3. 测试准备}
+\section{测试准备}
 
-{\normalsize
-\subsection*{3.1 测试环境概述}
+\subsection{测试环境概述}
 
-{\normalsize
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
+本次测试针对xxxxxxxx版本中的xxxxx功能。测试场地在“xxxx601室”。
 
-测试环境总体架构如下：
+测试环境包括1台国产ARM架构服务器，2台台式机如图\ref{fig:detail-env}所示。
 
-（1）硬件环境：包括服务器、客户端、网络设备等；
+ARM架构服务器搭载国产处理器（飞腾），安装国产操作系统（银河麒麟服务器版），安装docker基础环境，安装数据湖xxxx版本。台式机安装Ubuntu 22.04操作系统，安装火狐浏览器。
 
-（2）软件环境：包括操作系统、数据库系统、中间件等；
+本次测试环境位于xxxx，测试环境一旦建立并经过确认应保持其状态，任何对测试环境的更改和使用都要进行严格控制。
 
-（3）网络环境：xxx局域网，带宽xxxMbps；
-
-（4）测试工具：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
-}
-
-\subsection*{3.2 软件项}
-
-{\normalsize
-测试环境中的软件项如表2所示。
-
-\begin{table}[H]
+\begin{figure}[H]
 \centering
+\fbox{\parbox[c][4cm][c]{12cm}{\centering 测试环境示意图（待替换）}}
+\caption{测试环境}
+\label{fig:detail-env}
+\end{figure}
+\vspace{-6pt}
+
+\subsection{软件项}
+
+测试环境中的软件项如表 \ref{tbl:detail-sw-under-test}和表 \ref{tbl:detail-sw-support}所示。
+
 {\settablespacing
-\begin{talltblr}[theme=gjb,caption={测试环境被测软件}]{
-  colspec={|p{0.8cm}|p{3.5cm}|p{3cm}|p{3cm}|p{2.5cm}|p{2cm}|},
+\begin{talltblr}[theme=gjb,caption={测试环境被测软件},label={tbl:detail-sw-under-test}]{
+  colspec={|p{0.8cm}|p{3.5cm}|p{2.2cm}|p{2.8cm}|p{2.5cm}|p{2.7cm}|},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
-序号 & 软件名称 & 版本号 & 用途 & 供应商 & 备注 \\
-{\xiaowu 1} & {\xiaowu xxxxxxxx系统} & {\xiaowu V0.7.1} & {\xiaowu 被测软件} & {\xiaowu xxxxx} & {\xiaowu } \\
-{\xiaowu 2} & {\xiaowu 银河麒麟服务器版} & {\xiaowu V10} & {\xiaowu 操作系统} & {\xiaowu 麒麟软件} & {\xiaowu 国产} \\
-{\xiaowu 3} & {\xiaowu 数据库系统} & {\xiaowu V5.0} & {\xiaowu 数据存储} & {\xiaowu xxxxx} & {\xiaowu } \\
+序号 & 软件名称 & 版本号 & 用途 & 来源 & 存储介质 \\
+\Seq & xxxxx & xxxx & 被测软件 & 本单位 & 硬盘 \\
 \end{talltblr}
 }
-\end{table}
 \vspace{6pt}
 
-测试环境中的支撑软件包括操作系统、数据库系统等，为被测软件提供必要的运行环境。
-}
-
-\subsection*{3.3 硬件和固件项}
-
-{\normalsize
-测试环境中的硬件和固件项如表3所示。
-
-\begin{table}[H]
-\centering
 {\settablespacing
-\begin{talltblr}[theme=gjb,caption={测试环境硬件项}]{
-  colspec={|p{0.8cm}|p{3.5cm}|p{3.5cm}|p{1.5cm}|p{3.5cm}|p{2cm}|},
+\begin{talltblr}[theme=gjb,caption={测试环境陪测软件},label={tbl:detail-sw-support}]{
+  colspec={|p{0.8cm}|p{3.5cm}|p{2.2cm}|p{2.8cm}|p{2.5cm}|p{2.7cm}|},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
-序号 & 设备名称 & 型号/规格 & 数量 & 性能参数 & 备注 \\
-{\xiaowu 1} & {\xiaowu 服务器} & {\xiaowu 飞腾FT-2000+} & {\xiaowu 1台} & {\xiaowu 64核，128GB内存} & {\xiaowu 国产} \\
-{\xiaowu 2} & {\xiaowu 台式机} & {\xiaowu 联想开天N8系列} & {\xiaowu 2台} & {\xiaowu Intel i7，16GB内存} & {\xiaowu 客户端} \\
-{\xiaowu 3} & {\xiaowu 网络设备} & {\xiaowu xxxxx} & {\xiaowu 1台} & {\xiaowu 千兆以太网} & {\xiaowu } \\
+序号 & 软件名称 & 版本号 & 用途 & 来源 & 存储介质 \\
+\Seq & 火狐浏览器 & 123.0 & 操作页面 & 开源 & 硬盘 \\
+\Seq &  &  &  &  &  \\
+\Seq &  &  &  &  &  \\
 \end{talltblr}
 }
-\end{table}
-\vspace{6pt}
+\vspace{-6pt}
 
-硬件配置满足测试要求，所有设备均已安装调试完毕，运行正常。固件版本符合系统要求。
+\subsection{硬件和固件项}
+
+测试环境中的硬件和固件项如表 \ref{tbl:detail-hw}所示。
+
+{\settablespacing
+\begin{talltblr}[theme=gjb,caption={测试环境硬件项},label={tbl:detail-hw}]{
+  colspec={|p{0.8cm}|p{1.5cm}|p{1.8cm}|p{2.0cm}|p{0.8cm}|p{3.0cm}|p{1.0cm}|p{2.6cm}|p{1.0cm}|},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
 }
-
-\subsection*{3.4 其他测试准备}
-
-{\normalsize
-测试所需的其他材料包括：
-
-（1）测试数据：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx；
-
-（2）测试用例：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx；
-
-（3）用户手册：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx；
-
-（4）技术文档：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
+序号 & 硬件名称 & 型号 & 编号/序列号 & 数量 & 配置 & 用途 & 软件部署环境 & 来源 \\
+\Seq & 服务器 & 长城 & / & 1 & CPU：FT-2000+ *2 内存：256G & 测试机 & 操作系统：Kylin V10，docker & 本单位 \\
+\Seq & 台式机 & 联想Think station & / & 2 & CPU：Intel Corei7-12700 内存：32G & 测试机 & 操作系统：Ubuntu 22.04，docker & 本单位 \\
+\end{talltblr}
 }
+\vspace{-6pt}
 
-}
+\subsection{其他测试准备}
 
-% =================== 第4章：测试说明 ===================
-\noindent
+无。

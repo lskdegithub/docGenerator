@@ -1,57 +1,37 @@
-% =================== 附录 ===================
-\noindent\section*{附录}
+\section{附录}
 
-{\normalsize
-\subsection*{附录A 测试用例清单}
+\subsection{测试用例清单}
 
-{\normalsize
-本文档涉及的所有测试用例清单如表A-1所示。
-\setcounter{table}{0}
-\renewcommand{\thetable}{A-\arabic{table}}
+本文档涉及的所有测试用例清单如表 \ref{tbl:detail-tc-list}所示。
 
-\begin{table}[H]
-\centering
 {\settablespacing
-\begin{talltblr}[theme=gjb,caption={测试用例清单}]{
-  colspec={|p{0.8cm}|p{2cm}|p{3cm}|p{3cm}|p{2cm}|p{3cm}|},
+\begin{talltblr}[theme=gjb,caption={测试用例清单},label={tbl:detail-tc-list}]{
+  colspec={|p{0.8cm}|p{2.2cm}|p{3.5cm}|p{2.5cm}|p{2.0cm}|p{3.0cm}|},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 用例ID & 用例名称 & 测试类型 & 优先级 & 状态 \\
-{\xiaowu 1} & {\xiaowu TC-001} & {\xiaowu xxxxx功能测试} & {\xiaowu 功能测试} & {\xiaowu 高} & {\xiaowu 待执行} \\
-{\xiaowu 2} & {\xiaowu TC-002} & {\xiaowu xxxxx功能测试} & {\xiaowu 功能测试} & {\xiaowu 中} & {\xiaowu 待执行} \\
+\Seq & TC-001 & xxxxx功能测试 & 功能测试 & 高 & 待执行 \\
+\Seq & TC-002 & xxxxx功能测试 & 功能测试 & 中 & 待执行 \\
 \end{talltblr}
 }
-\end{table}
-\vspace{6pt}
+\vspace{-6pt}
 
-}
+\subsection{测试数据}
 
-\subsection*{附录B 测试数据}
+测试所需的数据文件清单如表 \ref{tbl:detail-data-list}所示。
 
-{\normalsize
-测试所需的数据文件清单如表B-1所示。
-\setcounter{table}{0}
-\renewcommand{\thetable}{B-\arabic{table}}
-
-\begin{table}[H]
-\centering
 {\settablespacing
-\begin{talltblr}[theme=gjb,caption={测试数据清单}]{
-  colspec={|p{0.8cm}|p{4cm}|p{4cm}|p{5.5cm}|},
+\begin{talltblr}[theme=gjb,caption={测试数据清单},label={tbl:detail-data-list}]{
+  colspec={|p{0.8cm}|p{4.0cm}|p{3.0cm}|p{6.7cm}|},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 数据名称 & 数据格式 & 说明 \\
-{\xiaowu 1} & {\xiaowu xxxxx测试数据} & {\xiaowu CSV} & {\xiaowu 用于xxxxx功能测试} \\
-{\xiaowu 2} & {\xiaowu xxxxx测试数据} & {\xiaowu JSON} & {\xiaowu 用于xxxxx功能测试} \\
+\Seq & xxxxx测试数据 & CSV & 用于xxxxx功能测试 \\
+\Seq & xxxxx测试数据 & JSON & 用于xxxxx功能测试 \\
 \end{talltblr}
 }
-\end{table}
-\vspace{6pt}
-
-}
-
-}
+\vspace{-6pt}

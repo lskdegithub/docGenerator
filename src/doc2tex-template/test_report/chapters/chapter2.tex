@@ -1,24 +1,21 @@
-\section*{2. 引用文档}
+\section*{2. 引用文档}\addcontentsline{toc}{section}{2. 引用文档}
 
 {\normalsize
-本文档引用的文档一览表如表1所示。
+本文档引用的文档一览表如表\ref{tbl:ref-docs}所示。
 
-\begin{table}[H]
-\centering
 {\settablespacing
-\begin{talltblr}[theme=gjb,caption={引用文档一览表}]{
+\begin{longtblr}[theme=gjb,caption={引用文档一览表},label={tbl:ref-docs}]{
   colspec={|p{0.8cm}|p{2.5cm}|p{5.5cm}|p{2.5cm}|p{1.5cm}|p{2cm}|},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 编号 & 标题 & 编写单位 & 日期 & 备注 \\
-{\xiaowu 1} & {\xiaowu GJB 438C-2021} & {\xiaowu 军用软件开发文档通用要求} & {\xiaowu xxxxx} & {\xiaowu 2021} & {\xiaowu /} \\
-{\xiaowu 2} & {\xiaowu /} & {\xiaowu xxxxxxxxxx} & {\xiaowu xxxxx} & {\xiaowu 2025} & {\xiaowu /} \\
-{\xiaowu 3} & {\xiaowu xxxxxxxxxx–SRS} & {\xiaowu xxxxxxxxxx系统软件需求规格说明} & {\xiaowu xxxxx} & {\xiaowu 2025} & {\xiaowu /} \\
-\end{talltblr}
+\Seq & GJB 438C-2021 & 军用软件开发文档通用要求 & 装备发展部 & 2021 & / \\
+\Seq & / & xxxxx & xxxxx管理办公室 & 2025 & / \\
+\Seq & xxxxx–SRS & xxxxx系统软件需求规格说明 & xxxxxxxx & 2025 & / \\
+\end{longtblr}
 }
-\end{table}
 \vspace{-6pt}
 
 }
