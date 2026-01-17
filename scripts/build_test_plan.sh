@@ -133,8 +133,11 @@ python3 "$SCRIPT_DIR/generate_section_7.py"
 
 # 步骤7: 将生成的第7章表格行插入到chapter7.tex中
 echo ""
-echo "步骤7: 插入第7章表格行到模板..."
-python3 - <<'PY'
+echo "步骤7: 插入第7章表格行到模板... (已改为使用 \\input，跳过注入)"
+
+if ! grep -q "input{chapters/chapter7_trace_rows.tex}" "$OUTPUT_DIR/chapters/chapter7.tex"; then
+  echo "检测到旧模板(无input)，执行表格行插入..."
+  python3 - <<'PY'
 import re
 from pathlib import Path
 
@@ -152,7 +155,7 @@ state = None
 replacing = False
 
 def startswith_any(s, parts):
-    return any(s.lstrip().startswith(p) for p in parts)
+    retun any(s.lstrip().startswith(p) for p in parts)
 
 for line in lines:
     if 'label={tbl:plan-trace}' in line:
@@ -188,6 +191,7 @@ for line in lines:
 chapter7_path.write_text(''.join(out), encoding='utf-8')
 print('已插入第7章两张追踪表的表体行')
 PY
+fi
 
 echo ""
 

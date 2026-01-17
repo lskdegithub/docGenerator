@@ -50,12 +50,120 @@ def escape_latex(text: str) -> str:
     text = text.replace("%", "\\%")
     text = text.replace("$", "\\$")
     text = text.replace("#", "\\#")
-    text = text.replace("_", "\\_")
+    text = text.replace("_", "\\_\\allowbreak ")
     text = text.replace("{", "\\{")
     text = text.replace("}", "\\}")
     text = text.replace("~", "\\textasciitilde ")
     text = text.replace("^", "\\textasciicircum ")
+
+    def break_long(match: re.Match) -> str:
+        s = match.group(0)
+        chunk = 10
+        return r"\allowbreak ".join([s[i:i + chunk] for i in range(0, len(s), chunk)])
+
+    text = re.sub(r"(?<!\\)[A-Za-z0-9]{20,}", break_long, text)
     return " ".join(text.split())
+
+
+def split_into_n_chunks(text: str, n: int):
+    text = str(text or "")
+    if n <= 1:
+        return [text]
+    if not text:
+        return [""] * n
+
+    candidates = [m.end() for m in re.finditer(r"[。！？；;!?]\s*", text)]
+    if not candidates:
+        avg = max(1, len(text) // n)
+        out = [text[i * avg : (i + 1) * avg] for i in range(n - 1)]
+        out.append(text[(n - 1) * avg :])
+        return out
+
+    targets = [round(len(text) * k / n) for k in range(1, n)]
+    cuts = []
+    start = 0
+    for t in targets:
+        best = None
+        best_dist = None
+        for c in candidates:
+            if c <= start:
+                continue
+            dist = abs(c - t)
+            if best is None or dist < best_dist:
+                best = c
+                best_dist = dist
+        if best is None:
+            break
+        cuts.append(best)
+        start = best
+
+    if len(cuts) < n - 1:
+        avg = max(1, len(text) // n)
+        out = [text[i * avg : (i + 1) * avg] for i in range(n - 1)]
+        out.append(text[(n - 1) * avg :])
+        return out
+
+    parts = []
+    s = 0
+    for c in cuts:
+        parts.append(text[s:c])
+        s = c
+    parts.append(text[s:])
+    while len(parts) < n:
+        parts.append("")
+    return parts[:n]
+
+
+def split_front_small_rest_last(text: str, n: int, head_max_chars: int = 240):
+    text = str(text or "")
+    if n <= 1:
+        return [text]
+    if not text:
+        return [""] * n
+
+    parts = []
+    s = 0
+    for _ in range(n - 1):
+        remaining = text[s:]
+        if not remaining:
+            parts.append("")
+            continue
+        if len(remaining) <= head_max_chars:
+            parts.append(remaining)
+            s = len(text)
+            continue
+        window = remaining[: head_max_chars + 60]
+        m = re.search(r".*([。！？；;!?])\s*", window)
+        if m:
+            cut = s + m.end()
+        else:
+            cut = s + head_max_chars
+        parts.append(text[s:cut])
+        s = cut
+
+    parts.append(text[s:])
+    while len(parts) < n:
+        parts.append("")
+    return parts[:n]
+
+
+def split_by_max_chars(text: str, max_chars: int):
+    text = str(text or "")
+    if not text:
+        return [""]
+    if max_chars <= 0:
+        return [text]
+    parts = []
+    s = 0
+    while s < len(text):
+        end = min(len(text), s + max_chars)
+        window = text[s : min(len(text), end + 80)]
+        m = re.search(r".*([。！？；;!?])\s*", window)
+        if m and s + m.end() > s:
+            end = s + m.end()
+        parts.append(text[s:end])
+        s = end
+    return parts
 
 
 def collect_plan_items(data_dir: Path):
@@ -69,7 +177,9 @@ def collect_plan_items(data_dir: Path):
 
         metric_data = load_yaml(metric_files[0]) or {}
         metric_index = str(metric_data.get("index") or metric_dir.name.split("-")[0]).strip()
-        metric_cell = metric_data.get("content") or metric_data.get("title") or metric_index
+        metric_title = (metric_data.get("title") or "").strip()
+        metric_content = (metric_data.get("content") or "").strip()
+        metric_cell = metric_content or metric_index
 
         module_dirs = sorted([d for d in metric_dir.iterdir() if d.is_dir() and d.name.endswith("-module")])
         for module_idx, module_dir in enumerate(module_dirs, start=1):
@@ -86,6 +196,8 @@ def collect_plan_items(data_dir: Path):
                     {
                         "metric_index": metric_index,
                         "metric_cell": metric_cell,
+                        "metric_title": metric_title,
+                        "metric_content": metric_content,
                         "requirement": plan_data.get("需求追踪关系", ""),
                         "srs_chapter": plan_data.get("需规章节", ""),
                         "test_item_name": plan_data.get("测试项名称", ""),
@@ -101,22 +213,53 @@ def build_rows_forward(items):
     i = 0
     while i < len(items):
         j = i
-        metric_cell = items[i]["metric_cell"]
         metric_index = items[i]["metric_index"]
         while j < len(items) and items[j]["metric_index"] == metric_index:
             j += 1
-        span = j - i
+        group = items[i:j]
+        metric_content = group[0].get("metric_content") or group[0].get("metric_cell") or ""
 
-        for k in range(i, j):
-            it = items[k]
-            metric_tex = ""
-            if k == i:
-                metric_tex = f"\\SetCell[r={span}]{{valign=t}}{{{escape_latex(metric_cell)}}}"
+        head_parts = split_front_small_rest_last(metric_content, len(group), head_max_chars=60)
+        tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
+
+        for row_idx, it in enumerate(group):
+            if row_idx == len(group) - 1:
+                content_piece = tail_chunks[0]
+            else:
+                content_piece = head_parts[row_idx]
+
+            content_tex = escape_latex(content_piece)
+
+            if row_idx == 0:
+                c1 = r"\Seq"
+            else:
+                c1 = ""
+
+            c2 = content_tex
+
             req = escape_latex(it["requirement"])
             srs = escape_latex(it["srs_chapter"])
-            test_item = escape_latex(it['test_item_name']) + "（" + escape_latex(it["test_item_ident"]) + "）"
+            test_item_name = escape_latex(it["test_item_name"])
+            test_item_ident = escape_latex(it["test_item_ident"])
+            test_item = test_item_name + "（" + test_item_ident + "）"
             sec = escape_latex(it["section"])
-            out.append(f"\\Seq & {metric_tex} & {req} & {srs} & {test_item} & {sec} \\\\")
+
+            line = f"{c1} & {c2} & {req} & {srs} & {test_item} & {sec} \\\\"
+            if row_idx == len(group) - 1:
+                if len(tail_chunks) > 1:
+                    line += r" \cline{3-6}"
+                else:
+                    line += r" \hline"
+            else:
+                line += r" \cline{3-6}"
+
+            out.append(line)
+
+        for extra_idx, extra in enumerate(tail_chunks[1:]):
+            content_tex = escape_latex(extra)
+            out.append(f" & {content_tex} &  &  &  &  \\\\")
+            if extra_idx == len(tail_chunks[1:]) - 1:
+                out.append(r" \hline")
         i = j
     return "\n".join(out)
 
@@ -126,30 +269,64 @@ def build_rows_reverse(items):
     i = 0
     while i < len(items):
         j = i
-        metric_cell = items[i]["metric_cell"]
         metric_index = items[i]["metric_index"]
         while j < len(items) and items[j]["metric_index"] == metric_index:
             j += 1
-        span = j - i
+        group = items[i:j]
+        metric_content = group[0].get("metric_content") or group[0].get("metric_cell") or ""
 
-        for k in range(i, j):
-            it = items[k]
-            metric_tex = ""
-            if k == i:
-                metric_tex = f"\\SetCell[r={span}]{{valign=t}}{{{escape_latex(metric_cell)}}}"
-            test_item = escape_latex(it['test_item_name']) + "（" + escape_latex(it["test_item_ident"]) + "）"
-            sec = escape_latex(it["section"])
+        head_parts = split_front_small_rest_last(metric_content, len(group), head_max_chars=60)
+        tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
+
+        for row_idx, it in enumerate(group):
+            if row_idx == len(group) - 1:
+                content_piece = tail_chunks[0]
+            else:
+                content_piece = head_parts[row_idx]
+
+            content_tex = escape_latex(content_piece)
+
+            if row_idx == 0:
+                c1 = r"\Seq"
+            else:
+                c1 = ""
+            c2 = content_tex
+
             req = escape_latex(it["requirement"])
             srs = escape_latex(it["srs_chapter"])
-            out.append(f"\\Seq & {metric_tex} & {test_item} & {sec} & {req} & {srs} \\\\")
+            test_item_name = escape_latex(it["test_item_name"])
+            test_item_ident = escape_latex(it["test_item_ident"])
+            test_item = test_item_name + "（" + test_item_ident + "）"
+            sec = escape_latex(it["section"])
+
+            line = f"{c1} & {c2} & {test_item} & {sec} & {req} & {srs} \\\\"
+
+            if row_idx == len(group) - 1:
+                if len(tail_chunks) > 1:
+                    line += r" \cline{3-6}"
+                else:
+                    line += r" \hline"
+            else:
+                line += r" \cline{3-6}"
+
+            out.append(line)
+
+        for extra_idx, extra in enumerate(tail_chunks[1:]):
+            content_tex = escape_latex(extra)
+            out.append(f" & {content_tex} &  &  &  &  \\\\")
+            if extra_idx == len(tail_chunks[1:]) - 1:
+                out.append(r" \hline")
         i = j
     return "\n".join(out)
 
 
 def write_output(forward_rows: str, reverse_rows: str, out_dir: Path):
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "chapter7_trace_rows.tex").write_text(forward_rows + "\n", encoding="utf-8")
-    (out_dir / "chapter7_trace_rev_rows.tex").write_text(reverse_rows + "\n", encoding="utf-8")
+    forward_rows = forward_rows.strip()
+    reverse_rows = reverse_rows.strip()
+
+    (out_dir / "chapter7_trace_rows.tex").write_text(forward_rows, encoding="utf-8")
+    (out_dir / "chapter7_trace_rev_rows.tex").write_text(reverse_rows, encoding="utf-8")
 
 
 def main():

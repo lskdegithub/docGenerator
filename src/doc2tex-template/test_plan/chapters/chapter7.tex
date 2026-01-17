@@ -3,62 +3,59 @@
 {\normalsize
 需求的双向可追踪关系见下表：
 
-{\settablespacing
-\begin{longtblr}[theme=gjb,caption={xxxxxxxxxx与需求规格说明以及测试项的追踪关系表},label={tbl:plan-trace}]{
-  colspec={|p{0.8cm}|p{2.3cm}|p{2.7cm}|p{2.5cm}|p{4.5cm}|p{1.7cm}|},
-  rowhead=2,
-  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
-  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
-  column{1}={halign=c},
-  column{2}={halign=l},
-  column{3-4}={halign=c},
-  column{5}={halign=l},
-  column{6}={halign=c},
-  row{1-2}={font=\xiaowuhei,halign=c,valign=m},
-}
-\SetCell[r=2]{c}{序号} & \SetCell[r=2]{c}{\underline{xxxxx}} & \SetCell[c=2]{c}{需求规格说明} &  & \SetCell[c=2]{c}{测试大纲} &  \\
- &  & 需求名称/标识 & 需求规格说明章\newline 节号 & 测试项名称/标识 & 本文档的章\newline 节号 \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\end{longtblr}
-}
-\vspace{-6pt}
+{\settablespacing\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\xiaowu\centering\arraybackslash}p{0.8cm}|>{\xiaowu\raggedright\arraybackslash}p{2.8cm}|>{\xiaowu\centering\arraybackslash}p{2.2cm}|>{\xiaowu\centering\arraybackslash}p{1.8cm}|>{\xiaowu\raggedright\arraybackslash}p{4.4cm}|>{\xiaowu\centering\arraybackslash}p{1.4cm}|}
+\caption{xxxxxxxxxx与需求规格说明以及测试项的追踪关系表} \label{tbl:plan-trace} \\
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{\xiaowuhei 序号}} & \multicolumn{1}{c|}{\multirow{2}{*}{\xiaowuhei \underline{xxxxx}}} & \multicolumn{2}{c|}{\xiaowuhei 需求规格说明} & \multicolumn{2}{c|}{\xiaowuhei 测试大纲} \\
+\cline{3-6}
+ & & \multicolumn{1}{c|}{\xiaowuhei 需求名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.8cm}|}{\xiaowuhei 需求规格说明章节号} & \multicolumn{1}{c|}{\xiaowuhei 测试项名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.4cm}|}{\xiaowuhei 本文档的章节号} \\
+\hline
+\endfirsthead
 
-{\settablespacing
-\begin{longtblr}[theme=gjb,caption={xxxxxxxxxx与需求规格说明以及测试项的逆向追踪关系表},label={tbl:plan-trace-rev}]{
-  colspec={|p{0.8cm}|p{2.3cm}|p{4.4cm}|p{2cm}|p{2.4cm}|p{2.6cm}|},
-  rowhead=2,
-  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
-  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
-  column{1}={halign=c},
-  column{2}={halign=l},
-  column{3}={halign=l},
-  column{4}={halign=c},
-  column{5}={halign=l},
-  column{6}={halign=c},
-  row{1-2}={font=\xiaowuhei,halign=c,valign=m},
+\caption[]{xxxxxxxxxx与需求规格说明以及测试项的追踪关系表（续）} \\
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{\xiaowuhei 序号}} & \multicolumn{1}{c|}{\multirow{2}{*}{\xiaowuhei \underline{xxxxx}}} & \multicolumn{2}{c|}{\xiaowuhei 需求规格说明} & \multicolumn{2}{c|}{\xiaowuhei 测试大纲} \\
+\cline{3-6}
+ & & \multicolumn{1}{c|}{\xiaowuhei 需求名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.8cm}|}{\xiaowuhei 需求规格说明章节号} & \multicolumn{1}{c|}{\xiaowuhei 测试项名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.4cm}|}{\xiaowuhei 本文档的章节号} \\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\endlastfoot
+\input{chapters/chapter7_trace_rows.tex}%
+\end{longtable}
 }
-\SetCell[r=2]{c}{序号} & \SetCell[r=2]{c}{\underline{xxxxx}} & \SetCell[c=2]{c}{测试大纲} &  & \SetCell[c=2]{c}{需求规格说明} &  \\
- &  & 测试项名称/标识 & 本文档的章\newline 节号 & 需求名称/标识 & 需求规格说明章\newline 节号 \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\Seq &  &  &  &  &  \\
-\end{longtblr}
+\vspace{0pt}
+
+{\settablespacing\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\xiaowu\centering\arraybackslash}p{0.8cm}|>{\xiaowu\raggedright\arraybackslash}p{2.8cm}|>{\xiaowu\raggedright\arraybackslash}p{4.0cm}|>{\xiaowu\centering\arraybackslash}p{1.4cm}|>{\xiaowu\raggedright\arraybackslash}p{1.8cm}|>{\xiaowu\centering\arraybackslash}p{1.6cm}|}
+\caption{xxxxxxxxxx与需求规格说明以及测试项的逆向追踪关系表} \label{tbl:plan-trace-rev} \\
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{\xiaowuhei 序号}} & \multicolumn{1}{c|}{\multirow{2}{*}{\xiaowuhei \underline{xxxxx}}} & \multicolumn{2}{c|}{\xiaowuhei 测试大纲} & \multicolumn{2}{c|}{\xiaowuhei 需求规格说明} \\
+\cline{3-6}
+ & & \multicolumn{1}{c|}{\xiaowuhei 测试项名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.4cm}|}{\xiaowuhei 本文档的章节号} & \multicolumn{1}{c|}{\xiaowuhei 需求名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.6cm}|}{\xiaowuhei 需求规格说明章节号} \\
+\hline
+\endfirsthead
+
+\caption[]{xxxxxxxxxx与需求规格说明以及测试项的逆向追踪关系表（续）} \\
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{\xiaowuhei 序号}} & \multicolumn{1}{c|}{\multirow{2}{*}{\xiaowuhei \underline{xxxxx}}} & \multicolumn{2}{c|}{\xiaowuhei 测试大纲} & \multicolumn{2}{c|}{\xiaowuhei 需求规格说明} \\
+\cline{3-6}
+ & & \multicolumn{1}{c|}{\xiaowuhei 测试项名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.4cm}|}{\xiaowuhei 本文档的章节号} & \multicolumn{1}{c|}{\xiaowuhei 需求名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.6cm}|}{\xiaowuhei 需求规格说明章节号} \\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\endlastfoot
+\input{chapters/chapter7_trace_rev_rows.tex}%
+\end{longtable}
 }
-\vspace{-6pt}
+\vspace{0pt}
 
 }
 
