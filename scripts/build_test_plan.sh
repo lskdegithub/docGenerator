@@ -134,64 +134,8 @@ python3 "$SCRIPT_DIR/generate_section_7.py"
 # 步骤7: 将生成的第7章表格行插入到chapter7.tex中
 echo ""
 echo "步骤7: 插入第7章表格行到模板... (已改为使用 \\input，跳过注入)"
-
-if ! grep -q "input{chapters/chapter7_trace_rows.tex}" "$OUTPUT_DIR/chapters/chapter7.tex"; then
-  echo "检测到旧模板(无input)，执行表格行插入..."
-  python3 - <<'PY'
-import re
-from pathlib import Path
-
-chapter7_path = Path('output/test_plan/chapters/chapter7.tex')
-trace_rows_path = Path('output/test_plan/chapters/chapter7_trace_rows.tex')
-trace_rev_rows_path = Path('output/test_plan/chapters/chapter7_trace_rev_rows.tex')
-
-trace_rows = trace_rows_path.read_text(encoding='utf-8').strip()
-trace_rev_rows = trace_rev_rows_path.read_text(encoding='utf-8').strip()
-
-lines = chapter7_path.read_text(encoding='utf-8').splitlines(True)
-
-out = []
-state = None
-replacing = False
-
-def startswith_any(s, parts):
-    retun any(s.lstrip().startswith(p) for p in parts)
-
-for line in lines:
-    if 'label={tbl:plan-trace}' in line:
-        state = 'trace'
-    elif 'label={tbl:plan-trace-rev}' in line:
-        state = 'trace_rev'
-
-    if state == 'trace' and '需求名称/标识' in line and '需求规格说明章' in line:
-        out.append(line)
-        out.append(trace_rows + '\n')
-        replacing = True
-        continue
-
-    if state == 'trace_rev' and '测试项名称/标识' in line and '本文档的章' in line:
-        out.append(line)
-        out.append(trace_rev_rows + '\n')
-        replacing = True
-        continue
-
-    if replacing:
-        if line.lstrip().startswith('\\end{longtblr}'):
-            out.append(line)
-            replacing = False
-            continue
-        if line.lstrip().startswith('\\Seq'):
-            continue
-        if line.strip() == '':
-            continue
-        continue
-
-    out.append(line)
-
-chapter7_path.write_text(''.join(out), encoding='utf-8')
-print('已插入第7章两张追踪表的表体行')
-PY
-fi
+# 由于模板已修改为使用 \input{chapters/chapter7_content.tex}，无需再运行Python脚本进行文本替换
+echo "✅ 模板已配置为自动包含生成的内容"
 
 echo ""
 
@@ -205,8 +149,8 @@ mkdir -p output/log
 
 # 重命名PDF文件
 if [ -f "output/log/main.pdf" ]; then
-    mv -f "output/log/main.pdf" "output/test_plan.pdf"
-    echo "✅ 文档编译成功: output/test_plan.pdf"
+    mv -f "output/log/main.pdf" "output/test_plan_final.pdf"
+    echo "✅ 文档编译成功: output/test_plan_final.pdf"
 else
     echo "❌ 文档编译失败，请查看日志: output/log/compile_test_plan.log"
     exit 1
