@@ -3,6 +3,7 @@
 
 import re
 from pathlib import Path
+
 import yaml
 
 
@@ -54,7 +55,6 @@ def escape_latex(text: str) -> str:
     text = text.replace("}", "\\}")
     text = text.replace("~", "\\textasciitilde ")
     text = text.replace("^", "\\textasciicircum ")
-
     def break_long(match: re.Match) -> str:
         s = match.group(0)
         chunk = 10
@@ -63,6 +63,106 @@ def escape_latex(text: str) -> str:
     text = re.sub(r"(?<!\\)[A-Za-z0-9]{20,}", break_long, text)
     return " ".join(text.split())
 
+
+def split_into_n_chunks(text: str, n: int):
+    text = str(text or "")
+    if n <= 1:
+        return [text]
+    if not text:
+        return [""] * n
+
+    candidates = [m.end() for m in re.finditer(r"[。！？；;!?]\s*", text)]
+    if not candidates:
+        avg = max(1, len(text) // n)
+        out = [text[i * avg : (i + 1) * avg] for i in range(n - 1)]
+        out.append(text[(n - 1) * avg :])
+        return out
+
+    targets = [round(len(text) * k / n) for k in range(1, n)]
+    cuts = []
+    start = 0
+    for t in targets:
+        best = None
+        best_dist = None
+        for c in candidates:
+            if c <= start:
+                continue
+            dist = abs(c - t)
+            if best is None or dist < best_dist:
+                best = c
+                best_dist = dist
+        if best is None:
+            break
+        cuts.append(best)
+        start = best
+
+    if len(cuts) < n - 1:
+        avg = max(1, len(text) // n)
+        out = [text[i * avg : (i + 1) * avg] for i in range(n - 1)]
+        out.append(text[(n - 1) * avg :])
+        return out
+
+    parts = []
+    s = 0
+    for c in cuts:
+        parts.append(text[s:c])
+        s = c
+    parts.append(text[s:])
+    while len(parts) < n:
+        parts.append("")
+    return parts[:n]
+
+
+def split_front_small_rest_last(text: str, n: int, head_max_chars: int = 240):
+    text = str(text or "")
+    if n <= 1:
+        return [text]
+    if not text:
+        return [""] * n
+
+    parts = []
+    s = 0
+    for _ in range(n - 1):
+        remaining = text[s:]
+        if not remaining:
+            parts.append("")
+            continue
+        if len(remaining) <= head_max_chars:
+            parts.append(remaining)
+            s = len(text)
+            continue
+        window = remaining[: head_max_chars + 60]
+        m = re.search(r".*([。！？；;!?])\s*", window)
+        if m:
+            cut = s + m.end()
+        else:
+            cut = s + head_max_chars
+        parts.append(text[s:cut])
+        s = cut
+
+    parts.append(text[s:])
+    while len(parts) < n:
+        parts.append("")
+    return parts[:n]
+
+
+def split_by_max_chars(text: str, max_chars: int):
+    text = str(text or "")
+    if not text:
+        return [""]
+    if max_chars <= 0:
+        return [text]
+    parts = []
+    s = 0
+    while s < len(text):
+        end = min(len(text), s + max_chars)
+        window = text[s : min(len(text), end + 80)]
+        m = re.search(r".*([。！？；;!?])\s*", window)
+        if m and s + m.end() > s:
+            end = s + m.end()
+        parts.append(text[s:end])
+        s = end
+    return parts
 
 def collect_plan_items(data_dir: Path):
     rows = []
@@ -106,166 +206,139 @@ def collect_plan_items(data_dir: Path):
     return rows
 
 
-def split_text_smart(text, max_chars=300):
-    text = str(text or "")
-    if not text:
-        return [""]
-    
-    # Simple chunking by length, respecting some punctuation could be better but length is primary constraint
-    chunks = []
-    current_pos = 0
-    text_len = len(text)
-    
-    while current_pos < text_len:
-        # If remaining text fits, take it all
-        if text_len - current_pos <= max_chars:
-            chunks.append(text[current_pos:])
-            break
-            
-        # Try to find a split point
-        end_pos = min(current_pos + max_chars, text_len)
-        
-        # Look for punctuation near the end
-        search_window = text[max(current_pos, end_pos - 50):end_pos]
-        # Punctuation: 。！？；，、
-        match = re.search(r'[。！？；，、\.\!\?\;\,]\s*$', search_window)
-        
-        if match:
-            # Split after punctuation
-            real_end = max(current_pos, end_pos - 50) + match.end()
-        else:
-            # Hard split
-            real_end = end_pos
-            
-        chunks.append(text[current_pos:real_end])
-        current_pos = real_end
-        
-    return chunks
-
-def build_rows_generic(items, is_reverse=False):
+def build_rows_forward(items):
     out = []
     i = 0
-    seq_counter = 1
-    
     while i < len(items):
         j = i
-        metric_index_str = items[i]["metric_index"]
-        while j < len(items) and items[j]["metric_index"] == metric_index_str:
+        metric_index = items[i]["metric_index"]
+        while j < len(items) and items[j]["metric_index"] == metric_index:
             j += 1
         group = items[i:j]
-        
         metric_content = group[0].get("metric_content") or group[0].get("metric_cell") or ""
         
-        # Split metric content into manageable chunks
-        text_chunks = split_text_smart(metric_content, max_chars=300)
-        
-        # We need to map test items (group) to text chunks.
-        # Case 1: More text chunks than items (or equal)
-        # We need to create extra rows for the extra text chunks.
-        
-        # Case 2: More items than text chunks
-        # We need to distribute items among text chunks.
-        
-        mapped_rows = [] # List of (text_chunk, list_of_items)
-        
-        if len(text_chunks) >= len(group):
-            # One item per chunk for the first N chunks
-            for k, item in enumerate(group):
-                mapped_rows.append((text_chunks[k], [item]))
-            # Remaining chunks get empty items
-            for k in range(len(group), len(text_chunks)):
-                mapped_rows.append((text_chunks[k], []))
-        else:
-            # More items than chunks. Distribute items evenly.
-            # E.g. 5 items, 2 chunks -> [3, 2]
-            n_items = len(group)
-            n_chunks = len(text_chunks)
-            base_size = n_items // n_chunks
-            remainder = n_items % n_chunks
-            
-            current_item_idx = 0
-            for k in range(n_chunks):
-                size = base_size + (1 if k < remainder else 0)
-                chunk_items = group[current_item_idx : current_item_idx + size]
-                mapped_rows.append((text_chunks[k], chunk_items))
-                current_item_idx += size
+        # Split content to distribute across rows
+        head_parts = split_front_small_rest_last(metric_content, len(group), head_max_chars=60)
+        tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
 
-        # Now generate LaTeX rows
-        try:
-            display_seq = str(int(metric_index_str))
-        except:
-            display_seq = metric_index_str
-            
-        for chunk_idx, (txt, sub_items) in enumerate(mapped_rows):
-            # Determine row span for this chunk
-            # If sub_items is empty, it's an extra row -> r=1
-            # If sub_items has M items, r=M
-            r_span = max(1, len(sub_items))
-            
-            c_tex = escape_latex(txt)
-            if chunk_idx > 0 and not txt.startswith("（续）"):
-                 c_tex = r"（续）" + c_tex
-            
-            # Generate rows for this chunk
-            if not sub_items:
-                # Extra row with empty test item slots
-                # Only left side has content
-                seq_cell = f"\\SetCell[r=1]{{c,m}} " # Empty seq cell unless it's the very first row of the whole metric?
-                # Actually, "Seq" column should span ALL rows of this metric.
-                # But longtblr doesn't support spanning across pages easily if we define it once at top.
-                # However, if we split into multiple chunks, visual continuity is better if we repeat Seq or leave empty.
-                # Standard practice: First chunk has Seq, others empty.
-                
-                if chunk_idx == 0:
-                    seq_str = display_seq
-                else:
-                    seq_str = "" 
-                    
-                # Wait, if we use separate \SetCell for each chunk, the vertical alignment of Seq number might be off 
-                # if we want it centered across ALL chunks.
-                # But since we are splitting the metric content physically, 
-                # it's better to treat each chunk as a "sub-row" group.
-                # Let's just put Seq num in the first chunk's first row.
-                
-                cols_empty = ["", "", "", ""]
-                line = f"{seq_str} & {c_tex} & " + " & ".join(cols_empty) + " \\\\"
-                out.append(line)
+        for row_idx, it in enumerate(group):
+            if row_idx == len(group) - 1:
+                content_piece = tail_chunks[0]
             else:
-                # We have items
-                for sub_idx, it in enumerate(sub_items):
-                    req = escape_latex(it["requirement"])
-                    srs = escape_latex(it["srs_chapter"])
-                    test_item_name = escape_latex(it["test_item_name"])
-                    test_item_ident = escape_latex(it["test_item_ident"])
-                    test_item = f"{test_item_name}（{test_item_ident}）"
-                    sec = escape_latex(it["section"])
-                    
-                    if is_reverse:
-                        cols = [test_item, sec, req, srs]
-                    else:
-                        cols = [req, srs, test_item, sec]
-                        
-                    line = ""
-                    if sub_idx == 0:
-                        # First row of this chunk
-                        if chunk_idx == 0:
-                             seq_cell = f"\\SetCell[r={r_span}]{{c,m}} {display_seq}"
-                        else:
-                             # For subsequent chunks, we don't merge with previous. 
-                             # We just leave Seq column empty (but merge it for this chunk's rows?)
-                             # If we merge r=r_span with empty content, it looks clean.
-                             seq_cell = f"\\SetCell[r={r_span}]{{c,m}} "
-                        
-                        metric_cell = f"\\SetCell[r={r_span}]{{l,t}} {c_tex}"
-                        line = f"{seq_cell} & {metric_cell} & " + " & ".join(cols) + " \\\\"
-                    else:
-                        line = "& & " + " & ".join(cols) + " \\\\"
-                    out.append(line)
-                    
+                content_piece = head_parts[row_idx]
+
+            content_tex = escape_latex(content_piece)
+            
+            # Seq only in first row
+            if row_idx == 0:
+                c1 = r"\Seq"
+            else:
+                c1 = ""
+            
+            c2 = content_tex
+            
+            req = escape_latex(it["requirement"])
+            srs = escape_latex(it["srs_chapter"])
+            test_item_name = escape_latex(it["test_item_name"])
+            test_item_ident = escape_latex(it["test_item_ident"])
+            test_item = test_item_name + "（" + test_item_ident + "）"
+            sec = escape_latex(it["section"])
+            
+            # Columns: Seq, Metric, Req, SRS, TestItem, Section
+            line = f"{c1} & {c2} & {req} & {srs} & {test_item} & {sec} \\\\"
+            
+            if row_idx == len(group) - 1:
+                # If there are more tail chunks, add extra rows
+                if len(tail_chunks) > 1:
+                     line += r" \cline{3-6}" # Close item part
+                else:
+                     line += r" \hline"
+            else:
+                line += r" \cline{3-6}"
+            
+            out.append(line)
+
+        # Append extra rows for remaining text
+        for extra_idx, extra in enumerate(tail_chunks[1:]):
+            content_tex = escape_latex(extra)
+            # Empty cells for other columns
+            out.append(f" & {content_tex} &  &  &  &  \\\\")
+            if extra_idx == len(tail_chunks[1:]) - 1:
+                out.append(r" \hline")
+            else:
+                pass 
+
         i = j
-        seq_counter += 1
-        
     return "\n".join(out)
+
+
+def build_rows_reverse(items):
+    out = []
+    i = 0
+    while i < len(items):
+        j = i
+        metric_index = items[i]["metric_index"]
+        while j < len(items) and items[j]["metric_index"] == metric_index:
+            j += 1
+        group = items[i:j]
+        metric_content = group[0].get("metric_content") or group[0].get("metric_cell") or ""
+        
+        head_parts = split_front_small_rest_last(metric_content, len(group), head_max_chars=60)
+        tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
+
+        for row_idx, it in enumerate(group):
+            if row_idx == len(group) - 1:
+                content_piece = tail_chunks[0]
+            else:
+                content_piece = head_parts[row_idx]
+
+            content_tex = escape_latex(content_piece)
+            
+            if row_idx == 0:
+                c1 = r"\Seq"
+            else:
+                c1 = ""
+            c2 = content_tex
+
+            req = escape_latex(it["requirement"])
+            srs = escape_latex(it["srs_chapter"])
+            test_item_name = escape_latex(it["test_item_name"])
+            test_item_ident = escape_latex(it["test_item_ident"])
+            test_item = test_item_name + "（" + test_item_ident + "）"
+            sec = escape_latex(it["section"])
+            
+            # Columns: Seq, Metric, TestItem, Section, Req, SRS
+            line = f"{c1} & {c2} & {test_item} & {sec} & {req} & {srs} \\\\"
+            
+            if row_idx == len(group) - 1:
+                if len(tail_chunks) > 1:
+                     line += r" \cline{3-6}"
+                else:
+                     line += r" \hline"
+            else:
+                line += r" \cline{3-6}"
+                
+            out.append(line)
+
+        for extra_idx, extra in enumerate(tail_chunks[1:]):
+            content_tex = escape_latex(extra)
+            out.append(f" & {content_tex} &  &  &  &  \\\\")
+            if extra_idx == len(tail_chunks[1:]) - 1:
+                out.append(r" \hline")
+
+        i = j
+    return "\n".join(out)
+
+
+def write_output(forward_rows: str, reverse_rows: str, out_dir: Path):
+    out_dir.mkdir(parents=True, exist_ok=True)
+    # Write without trailing newline to avoid longtable empty row issue
+    # Ensure strict stripping
+    forward_rows = forward_rows.strip()
+    reverse_rows = reverse_rows.strip()
+    
+    (out_dir / "chapter7_trace_rows.tex").write_text(forward_rows, encoding="utf-8")
+    (out_dir / "chapter7_trace_rev_rows.tex").write_text(reverse_rows, encoding="utf-8")
 
 
 def main():
@@ -274,49 +347,11 @@ def main():
     out_dir = repo / "output" / "test_plan" / "chapters"
 
     items = collect_plan_items(data_dir)
-    # Generate content
-    out_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Generate Forward Table
-    forward_rows = build_rows_generic(items, is_reverse=False)
-    forward_table = f"""{{\\settablespacing
-\\begin{{longtblr}}[theme=gjb,caption={{xxxxxxxxxx与需求规格说明以及测试项的追踪关系表}},label={{tbl:plan-trace}}]{{
-  colspec={{|Q[c,0.8cm]|Q[l,2.8cm]|X[l,1]|Q[c,2.0cm]|X[l,1.5]|Q[c,2.0cm]|}},
-  rowhead=2,
-  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
-  cell{{1}}{{1,2}}={{r=2}}{{c,m}},
-  cell{{1}}{{3,5}}={{c=2}}{{c,m}},
-  cell{{2}}{{3,4,5,6}}={{c,m}},
-  row{{2}}={{font=\\xiaowuhei,halign=c,valign=m}},
-}}
-  序号 & xxxxxx & 需求规格说明 & & 测试大纲 & \\\\
-  & & 需求名称/标识 & 需求规格说明章节号 & 测试项名称/标识 & 本文档的章节号 \\\\
-{forward_rows}
-\\end{{longtblr}}
-}}"""
+    forward = build_rows_forward(items)
+    reverse = build_rows_reverse(items)
+    write_output(forward, reverse, out_dir)
 
-    # Generate Reverse Table
-    reverse_rows = build_rows_generic(items, is_reverse=True)
-    reverse_table = f"""{{\\settablespacing
-\\begin{{longtblr}}[theme=gjb,caption={{xxxxxxxxxx与需求规格说明以及测试项的逆向追踪关系表}},label={{tbl:plan-trace-rev}}]{{
-  colspec={{|Q[c,0.8cm]|Q[l,2.8cm]|X[l,1.5]|Q[c,2.0cm]|X[l,1]|Q[c,2.0cm]|}},
-  rowhead=2,
-  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
-  cell{{1}}{{1,2}}={{r=2}}{{c,m}},
-  cell{{1}}{{3,5}}={{c=2}}{{c,m}},
-  cell{{2}}{{3,4,5,6}}={{c,m}},
-  row{{2}}={{font=\\xiaowuhei,halign=c,valign=m}},
-}}
-  序号 & xxxxxx & 测试大纲 & & 需求规格说明 & \\\\
-  & & 测试项名称/标识 & 本文档的章节号 & 需求名称/标识 & 需求规格说明章节号 \\\\
-{reverse_rows}
-\\end{{longtblr}}
-}}"""
-
-    full_content = forward_table + "\n\\vspace{0pt}\n\n" + reverse_table
-    (out_dir / "chapter7_content.tex").write_text(full_content, encoding="utf-8")
-
-    print(f"✅ 第七章完整表格内容已生成到: {out_dir / 'chapter7_content.tex'}")
+    print(f"✅ 第七章追踪表行已生成到: {out_dir}")
 
 
 if __name__ == "__main__":

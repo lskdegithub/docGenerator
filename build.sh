@@ -11,6 +11,12 @@ echo "======================================"
 echo "  LaTeX 文档编译脚本"
 echo "======================================"
 
+# 优先使用较新的 TeX Live（避免 ctex/expl3 版本过旧导致编译中断）
+XELATEX="xelatex"
+if [ -x "/usr/local/texlive/2025/bin/x86_64-linux/xelatex" ]; then
+    XELATEX="/usr/local/texlive/2025/bin/x86_64-linux/xelatex"
+fi
+
 # 创建输出目录
 mkdir -p output/log
 
@@ -18,6 +24,8 @@ mkdir -p output/log
 SOURCE_DIR="src/doc2tex-template"
 OUTPUT_DIR="output"
 LOG_DIR="output/log"
+BUILD_DIR="/tmp/latex-test-build"
+mkdir -p "$BUILD_DIR"
 
 # 确定要编译的文档
 if [ -z "$1" ]; then
@@ -43,6 +51,25 @@ SUCCESS_COUNT=0
 FAIL_COUNT=0
 
 for doc in "${DOCS[@]}"; do
+    if [ "$doc" = "test_detail" ]; then
+        echo "正在构建 $doc..."
+        bash "scripts/build_test_detail.sh" </dev/null 2>&1 | tee "/tmp/compile_${doc}.log"
+        EXIT_CODE=${PIPESTATUS[0]}
+
+        if [ -f "output/${doc}.pdf" ]; then
+            cp -f "/tmp/compile_${doc}.log" "output/log/${doc}.log" 2>/dev/null || true
+        fi
+
+        if [ $EXIT_CODE -eq 0 ]; then
+            echo "✅ $doc 编译成功"
+            ((SUCCESS_COUNT++))
+        else
+            echo "❌ $doc 编译失败"
+            ((FAIL_COUNT++))
+        fi
+        continue
+    fi
+
     MAIN_FILE="$SOURCE_DIR/${doc}/main.tex"
 
     if [ ! -f "$MAIN_FILE" ]; then
@@ -54,14 +81,19 @@ for doc in "${DOCS[@]}"; do
     echo "正在编译 $doc..."
 
     # 进入文档目录编译（解决\input路径问题）
-    (cd "$SOURCE_DIR/${doc}" && xelatex -interaction=nonstopmode -output-directory="../../../${OUTPUT_DIR}" main.tex > /tmp/compile_${doc}_pass1.log 2>&1) || true
-    (cd "$SOURCE_DIR/${doc}" && xelatex -interaction=nonstopmode -output-directory="../../../${OUTPUT_DIR}" main.tex > /tmp/compile_${doc}.log 2>&1)
-    EXIT_CODE=$?
+    JOBNAME="${doc}_build"
+    DOC_BUILD_DIR="${BUILD_DIR}/${JOBNAME}"
+    rm -rf "$DOC_BUILD_DIR" 2>/dev/null || true
+    mkdir -p "$DOC_BUILD_DIR"
+    (cd "$SOURCE_DIR/${doc}" && TEXINPUTS="..//:" "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="${DOC_BUILD_DIR}" main.tex </dev/null 2>&1 | tee "/tmp/compile_${doc}.log")
+    EXIT_CODE=${PIPESTATUS[0]}
 
-    # 重命名PDF文件
-    if [ -f "output/main.pdf" ]; then
-        mv -f "output/main.pdf" "output/${doc}.pdf" 2>/dev/null
-        cp -f "output/${doc}.pdf" "output/${doc}_fresh.pdf" 2>/dev/null || true
+    if [ -f "${DOC_BUILD_DIR}/${JOBNAME}.pdf" ]; then
+        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.pdf" "output/${doc}.pdf" 2>/dev/null || true
+        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.pdf" "output/${doc}_fresh.pdf" 2>/dev/null || true
+        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.log" "output/log/${doc}.log" 2>/dev/null || true
+        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.aux" "output/log/${doc}.aux" 2>/dev/null || true
+        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.toc" "output/log/${doc}.toc" 2>/dev/null || true
     fi
 
     if [ $EXIT_CODE -eq 0 ]; then
@@ -72,9 +104,6 @@ for doc in "${DOCS[@]}"; do
         ((FAIL_COUNT++))
     fi
 done
-
-# 移动日志文件（无论编译成功与否）
-mv -f "$OUTPUT_DIR"/*.log "$OUTPUT_DIR"/*.aux "$OUTPUT_DIR"/*.out "$OUTPUT_DIR"/*.toc "$OUTPUT_DIR"/*.fls "$OUTPUT_DIR"/*.fdb_latexmk "$OUTPUT_DIR"/*.synctex.gz "$LOG_DIR/" 2>/dev/null
 
 echo ""
 echo "======================================"

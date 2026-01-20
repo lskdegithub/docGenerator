@@ -26,8 +26,7 @@ rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 cp -r "$TEMPLATE_DIR"/* "$OUTPUT_DIR/"
 
-# 修改main.tex中的样式文件路径，指向源目录的样式文件
-sed -i 's|../gjb438c-style|../../src/doc2tex-template/gjb438c-style|g' "$OUTPUT_DIR/main.tex"
+cp "src/doc2tex-template/gjb438c-style.sty" "$OUTPUT_DIR/gjb438c-style.sty"
 
 echo "✅ 模板文件已复制"
 
@@ -133,9 +132,10 @@ python3 "$SCRIPT_DIR/generate_section_7.py"
 
 # 步骤7: 将生成的第7章表格行插入到chapter7.tex中
 echo ""
-echo "步骤7: 插入第7章表格行到模板... (已改为使用 \\input，跳过注入)"
-# 由于模板已修改为使用 \input{chapters/chapter7_content.tex}，无需再运行Python脚本进行文本替换
-echo "✅ 模板已配置为自动包含生成的内容"
+echo "步骤7: 插入第7章表格行到模板... (已改为使用 \input，跳过注入)"
+# python3 - <<'PY'
+# (Script removed as chapter7.tex now uses \input)
+# PY
 
 echo ""
 
@@ -149,8 +149,8 @@ mkdir -p output/log
 
 # 重命名PDF文件
 if [ -f "output/log/main.pdf" ]; then
-    mv -f "output/log/main.pdf" "output/test_plan_final.pdf"
-    echo "✅ 文档编译成功: output/test_plan_final.pdf"
+    mv -f "output/log/main.pdf" "output/test_plan.pdf"
+    echo "✅ 文档编译成功: output/test_plan.pdf"
 else
     echo "❌ 文档编译失败，请查看日志: output/log/compile_test_plan.log"
     exit 1

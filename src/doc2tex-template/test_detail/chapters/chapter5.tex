@@ -2,24 +2,32 @@
 
 本文档中定义的测试用例与《xxxx 软件需求规格说明》中的需求具有可追踪性，具体追踪关系如表 \ref{tbl:detail-req-to-case}所示。
 
-{\settablespacing
-\begin{longtblr}[theme=gjb,caption={需求到测试用例的追踪关系表},label={tbl:detail-req-to-case}]{
-  colspec={|p{0.8cm}|p{3.4cm}|p{2.5cm}|p{1.6cm}|p{2.3cm}|p{1.5cm}|p{1.6cm}|p{0.8cm}|},
-  rowhead=2,
-  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
-  column{1}={halign=c},
-  row{1,2}={font=\xiaowuhei,halign=c,valign=m},
+{\normalsize
+{\settablespacing\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\xiaowu\centering\arraybackslash}p{0.8cm}|>{\xiaowu\raggedright\arraybackslash}p{2.0cm}|>{\xiaowu\centering\arraybackslash}p{1.8cm}|>{\xiaowu\centering\arraybackslash}p{1.6cm}|>{\xiaowu\raggedright\arraybackslash}p{3.2cm}|>{\xiaowu\centering\arraybackslash}p{1.3cm}|>{\xiaowu\raggedright\arraybackslash}p{3.2cm}|>{\xiaowu\centering\arraybackslash}p{1.3cm}|}
+\caption{需求到测试用例的追踪关系表} \label{tbl:detail-req-to-case} \\
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{\xiaowuhei 序号}} & \multicolumn{1}{c|}{\multirow{2}{*}{\xiaowuhei 合同/补充协议/xxxxx/xxxxx}} & \multicolumn{2}{c|}{\xiaowuhei 需求规格说明书} & \multicolumn{2}{c|}{\xiaowuhei 测试项} & \multicolumn{2}{c|}{\xiaowuhei 测试用例} \\
+\cline{3-8}
+ & & \multicolumn{1}{c|}{\xiaowuhei 需求名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.6cm}|}{\xiaowuhei 需规章节号} & \multicolumn{1}{c|}{\xiaowuhei 测试项名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.3cm}|}{\xiaowuhei 本文档章节号} & \multicolumn{1}{c|}{\xiaowuhei 测试用例名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.3cm}|}{\xiaowuhei 测试章节号} \\
+\hline
+\endfirsthead
+
+\caption[]{需求到测试用例的追踪关系表（续）} \\
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{\xiaowuhei 序号}} & \multicolumn{1}{c|}{\multirow{2}{*}{\xiaowuhei 合同/补充协议/xxxxx/xxxxx}} & \multicolumn{2}{c|}{\xiaowuhei 需求规格说明书} & \multicolumn{2}{c|}{\xiaowuhei 测试项} & \multicolumn{2}{c|}{\xiaowuhei 测试用例} \\
+\cline{3-8}
+ & & \multicolumn{1}{c|}{\xiaowuhei 需求名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.6cm}|}{\xiaowuhei 需规章节号} & \multicolumn{1}{c|}{\xiaowuhei 测试项名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.3cm}|}{\xiaowuhei 本文档章节号} & \multicolumn{1}{c|}{\xiaowuhei 测试用例名称/标识} & \multicolumn{1}{>{\centering\arraybackslash}p{1.3cm}|}{\xiaowuhei 测试章节号} \\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\endlastfoot
+\input{chapters/chapter5_trace_rows.tex}%
+\end{longtable}
 }
-序号 & 合同/补充协议/xxxxx/xxxxx & 需求名称/标识 & 需规章节号 & 测试项名称/标识 & 本文档的章节号 & 测试名称/标识 & 测试章节号 \\
-序号 & 合同/补充协议/xxxxx/xxxxx & 需求规格说明书 & 需求规格说明书 & 测试大纲 & 测试大纲 & 测试细则 & 测试细则 \\
-\Seq &  &  &  &  &  &  &  \\
-\Seq &  &  &  &  &  &  &  \\
-\Seq &  &  &  &  &  &  &  \\
-\Seq &  &  &  &  &  &  &  \\
-\Seq &  &  &  &  &  &  &  \\
-\Seq &  &  &  &  &  &  &  \\
-\Seq &  &  &  &  &  &  &  \\
-\Seq &  &  &  &  &  &  &  \\
-\end{longtblr}
+\vspace{0pt}
+
 }
-\vspace{-6pt}

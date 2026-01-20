@@ -21,6 +21,8 @@
 \usepackage{tabularray}
 \usepackage{xparse}
 \IfFileExists{needspace.sty}{\usepackage{needspace}}{\newcommand{\Needspace}[1]{}}
+\let\GjbOrigUnderscore\_
+\renewcommand{\_}{\GjbOrigUnderscore\allowbreak}
 
 % =================================================================
 % 中文字体设置
@@ -93,7 +95,7 @@
 % 定义表格行间距倍数（设置为1.0，使用默认表格行间距）
 \newcommand{\tablearraystretch}{1.0}
 % 应用表格行间距的辅助命令
-\newcommand{\settablespacing}{\renewcommand{\arraystretch}{\tablearraystretch}\SeqInit}
+\newcommand{\settablespacing}{\renewcommand{\arraystretch}{\tablearraystretch}\SeqInit\sloppy\emergencystretch=2em\relax\hyphenpenalty=50\exhyphenpenalty=50}
 % 重置表格行间距
 \newcommand{\resettablespacing}{\renewcommand{\arraystretch}{1.0}}
 
@@ -101,8 +103,8 @@
 % 标题格式设置（1-5级标题）
 % =================================================================
 
-\setcounter{secnumdepth}{5}
-\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{6}
+\setcounter{tocdepth}{6}
 
 % 1级标题：五号宋体加粗，段前段后6pt
 \titleformat{\section}
@@ -144,7 +146,15 @@
   {}
 \titlespacing*{\subparagraph}{0pt}{6pt}{0pt}
 
-\NewDocumentCommand{\subsubparagraph}{ s m }{\par\vspace{6pt}\noindent{\wuhao\bfseries #2}\par}
+\titleclass{\subsubparagraph}{straight}[\subparagraph]
+\newcounter{subsubparagraph}[subparagraph]
+\renewcommand\thesubsubparagraph{\thesubparagraph.\arabic{subsubparagraph}}
+\titleformat{\subsubparagraph}[block]
+  {\wuhao\bfseries}
+  {\thesubsubparagraph}
+  {1em}
+  {}
+\titlespacing*{\subsubparagraph}{0pt}{6pt}{0pt}
 
 % =================================================================
 % 辅助命令
@@ -211,7 +221,7 @@
 % 表单/字段类表格的 Identifier 值
 % 用法: \TableIdentifier{内容}
 \newcommand{\TableIdentifier}[1]{%
-  {\xiaowu #1}%
+  {\xiaowu\ttfamily\raggedright\hspace{0pt}#1}%
 }
 
 \ExplSyntaxOn
@@ -276,7 +286,7 @@
 % 标识列单元格（小五号宋体，固定宽度parbox，等宽字体）
 % 用法: \TableCellIdentifier{宽度}{内容}
 \newcommand{\TableCellIdentifier}[2]{%
-  {\xiaowu #2}%
+  {\xiaowu\ttfamily\raggedright\hspace{0pt}#2}%
 }
 \ExplSyntaxOn
 \int_new:N \g__gjb_tabseq_int
@@ -332,21 +342,21 @@
   \SetTblrStyle{head}{fg=black,font=\xiaowuhei,halign=c}
   \SetTblrStyle{foot}{font=\xiaowu}
   \SetTblrInner[tblr]{
-    width=14.5cm,
+    width=\linewidth,
     colsep=\GjbTableColSep,
     cells={font=\xiaowu},
     row{1}={font=\xiaowuhei,halign=c,valign=m},
     rows={valign=t}
   }
   \SetTblrInner[longtblr]{
-    width=14.5cm,
+    width=\linewidth,
     colsep=\GjbTableColSep,
     cells={font=\xiaowu},
     row{1}={font=\xiaowuhei,halign=c,valign=m},
     rows={valign=t}
   }
   \SetTblrInner[talltblr]{
-    width=14.5cm,
+    width=\linewidth,
     colsep=\GjbTableColSep,
     cells={font=\xiaowu},
     row{1}={font=\xiaowuhei,halign=c,valign=m},
@@ -362,19 +372,19 @@
   \SetTblrStyle{head}{fg=black,font=\xiaowuhei,halign=c}
   \SetTblrStyle{foot}{font=\xiaowu}
   \SetTblrInner[tblr]{
-    width=14.5cm,
+    width=\linewidth,
     colsep=\GjbTableColSep,
     cells={font=\xiaowu},
     rows={valign=t}
   }
   \SetTblrInner[longtblr]{
-    width=14.5cm,
+    width=\linewidth,
     colsep=\GjbTableColSep,
     cells={font=\xiaowu},
     rows={valign=t}
   }
   \SetTblrInner[talltblr]{
-    width=14.5cm,
+    width=\linewidth,
     colsep=\GjbTableColSep,
     cells={font=\xiaowu},
     rows={valign=t}

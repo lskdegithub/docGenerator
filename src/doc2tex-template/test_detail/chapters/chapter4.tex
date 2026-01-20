@@ -2,70 +2,1239 @@
 
 \subsection{计划执行的测试}
 
-围绕xxxx和《xxxx软件需求规格说明》的要求计划开展的测试共计5个测试项其中功能测试2个，接口测试2个和可靠性测试1个。
+围绕《xxxx软件需求规格说明》的要求计划开展的测试共计14个测试项，其中功能测试12个。
 
 计划执行的测试项列表如表 \ref{tbl:detail-testitems}所示。
 
 {\settablespacing
-\begin{talltblr}[theme=gjb,caption={测试项列表},label={tbl:detail-testitems}]{
+\begin{longtblr}[theme=gjb,caption={测试项列表},label={tbl:detail-testitems}]{
   colspec={|p{0.8cm}|p{4.0cm}|p{9.7cm}|},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 测试类别 & 测试项名称 \\
-\Seq & 功能测试 &  \\
-\Seq & 功能测试 &  \\
-\Seq & 接口测试 &  \\
-\Seq & 接口测试 &  \\
-\Seq & 可靠性测试 &  \\
-\end{talltblr}
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标1模块1的测试项1指标1模块1的测试项1（bigfilestorage1\_\allowbreak bigfilestorage1\_\allowbreak bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标1模块1的测试项2（bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标1模块2的测试项1（bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标1模块2的测试项2（bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标1模块2的测试项3（bigfilestorage1）} \\
+\Seq & {\xiaowu —} & {\xiaowu 指标2模块1的测试项1（bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标2模块1的测试项2（bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标2模块2的测试项1（bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标2模块2的测试项2（bigfilestorage1）} \\
+\Seq & {\xiaowu —} & {\xiaowu 指标3模块1的测试项1（bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标1模块1的测试项1指标1模块1的测试项1（bigfilestorage1b\allowbreak igfilestorage1bi\allowbreak gfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标1模块1的测试项2（bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标1模块2的测试项1（bigfilestorage1）} \\
+\Seq & {\xiaowu 功能测试} & {\xiaowu 指标1模块2的测试项2（bigfilestorage1）} \\
+\end{longtblr}
 }
 \vspace{-6pt}
 
-针对本次节点要求共设置5个测试项，包括37个测试用例。具体内容参见4.1.1到4.1.3章节。本次测试共设计5个测试项，包括37个测试用例，总体结构包括基于xxxxx的xxxxx测试包含10个测试用例、基于xxxxx的xxxxx测试包含10个测试用例、基于xxxxx的xxxxx测试包含5个测试用例、基于xxxxx的xxxxx测试包含8个测试用例，xxxxx可靠性测试包含4个测试用例。
+针对本次节点要求共设置14个测试项，包括28个测试用例。具体内容参见4.1.1到4.1.4章节。
 
-\subsubsection{面向xxxxx的xxxxx功能测试（xxxx\_xxxxx\_GN）}
 
-\paragraph{基于xxxxx的xxxxx测试（xxxx\_xxxxx）}
+\subsubsection{大规模数据存储}
 
-\subparagraph{xxxxx功能测试（xxxx\_xxxxx\_001）}
+\paragraph{模块1模块1模块1（LARGE\_\allowbreak FILE\_\allowbreak 001）}
+
+\subparagraph{指标1模块1的测试项1指标1模块1的测试项1（bigfilestorage1\_\allowbreak bigfilestorage1\_\allowbreak bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
 
 {\settablespacing
-\begin{longtblr}[theme=gjbNoHead,caption={xxxxx功能测试},label={tbl:detail-tc-001}]{
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-bigfilestorage1-bigfilestorage1-1-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
   colsep=2pt,
-  colspec={|p{2.3cm}|p{7.3cm}|p{2.3cm}|p{2.6cm}|},
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
+  column{3}={halign=c},
   column{4}={halign=c},
 }
-\TableKeyCell{测试用例名称} & xxxxx功能测试 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{xxxx\_xxxxx\_001} \\
-\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{基于xxxxx的xxxxx测试（xxxx\_xxxx\_xxxx\_GN）} && \\
-\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{xxxxxxx} && \\
-\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{无} && \\
-\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{xxxxx正常运行，xxxxx中存在名称为xxxxx的节点} && \\
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块1的测试项1指标1模块1的测试项1（bigfilestorage1\_\allowbreak bigfilestorage1\_\allowbreak bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
 \TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
-\SetCell[c=4]{halign=c,font=\xiaowuhei,bg=gray!20}{测试步骤} &&& \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
 \SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
   colsep=2pt,
-  colspec={p{0.8cm}p{6.0cm}p{4.8cm}p{2.9cm}},
-  vline{2,3,4}={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
-  hline{2,3,4,5}={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
-  column{1,4}={halign=c},
-  row{1}={font=\xiaowuhei,halign=c,bg=gray!20,valign=m},
-} 
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
 序号 & 输入及操作 & 期望结果 & 测试结果 \\
-1 &  &  &  \\
-2 &  &  &  \\
-3 &  &  &  \\
-4 &  &  &  \\
+1 & 描述测试步骤1描述测试步骤1描述测试步骤1描述测试步骤1描述测试步骤1描述测试步xxxxxxxxsssssdas\allowbreak dasdasdasdasdasd\allowbreak asdasd骤1描述测试步骤1描述测试步骤1描述测试步骤1描述测试步骤1描述测试步骤1 & 描述预期结果1描述预期结果1描述预期结果1描述预期结果1描述预期结果1描述预期结果1描xxxxxxxxsssssdas\allowbreak dasdasdasdasdasd\allowbreak asdasd述预期结果1描述预期结果1描述预期结果1描述预期结果1描述预期结果1描述预期结果1描述预期结果1描述预期结果1描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
 \end{tblr}} &&& \\
-\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{全部测试步骤被执行或因某种原因导致测试步骤无法执行} && \\
-\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{全部测试步骤都通过则本测试用例通过} && \\
-\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{xxxxxxx} && \\
-\TableKeyCell{设计人员} & 喻昕 & \SetCell{halign=c}{\TableKeyCell{操作人员}} &  \\
-\TableKeyCell{测试人员} &  & \SetCell{halign=c}{\TableKeyCell{测试时间}} &  \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-bigfilestorage1-bigfilestorage1-1-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块1的测试项1指标1模块1的测试项1（bigfilestorage1\_\allowbreak bigfilestorage1\_\allowbreak bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subparagraph{指标1模块1的测试项2（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-2-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块1的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-2-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块1的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\paragraph{模块2模块2模块2（LARGE\_\allowbreak FILE\_\allowbreak 002）}
+
+\subparagraph{指标1模块2的测试项1（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-1-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-1-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subparagraph{指标1模块2的测试项2（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-2-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-2-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subparagraph{指标1模块2的测试项3（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-3-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项3（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-3-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项3（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+
+
+\subsubsection{指标2指标2指标2}
+
+\paragraph{指标2的模块1（LARGE\_\allowbreak FILE\_\allowbreak 001）}
+
+\subparagraph{指标2模块1的测试项1（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-1-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标2模块1的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-1-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标2模块1的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subparagraph{指标2模块1的测试项2（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-2-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标2模块1的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-2-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标2模块1的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\paragraph{指标2的模块2（LARGE\_\allowbreak FILE\_\allowbreak 002）}
+
+\subparagraph{指标2模块2的测试项1（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-1-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标2模块2的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-1-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标2模块2的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subparagraph{指标2模块2的测试项2（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-2-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标2模块2的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-2-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标2模块2的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+
+
+\subsubsection{指标3指标3指标3}
+
+\paragraph{指标3的模块1（LARGE\_\allowbreak FILE\_\allowbreak 001）}
+
+\subparagraph{指标3模块1的测试项1（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-1-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标3模块1的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-1-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标3模块1的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+
+
+\subsubsection{大规模数据存储}
+
+\paragraph{模块1模块1模块1（LARGE\_\allowbreak FILE\_\allowbreak 001）}
+
+\subparagraph{指标1模块1的测试项1指标1模块1的测试项1（bigfilestorage1b\allowbreak igfilestorage1bi\allowbreak gfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1bigfilestorage1bigfilestorage1-1-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块1的测试项1指标1模块1的测试项1（bigfilestorage1b\allowbreak igfilestorage1bi\allowbreak gfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1bigfilestorage1bigfilestorage1-1-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块1的测试项1指标1模块1的测试项1（bigfilestorage1b\allowbreak igfilestorage1bi\allowbreak gfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subparagraph{指标1模块1的测试项2（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-2-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块1的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-2-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块1的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\paragraph{模块2模块2模块2（LARGE\_\allowbreak FILE\_\allowbreak 002）}
+
+\subparagraph{指标1模块2的测试项1（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-1-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-1-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项1（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subparagraph{指标1模块2的测试项2（bigfilestorage1）}
+
+\subsubparagraph{测试用例名称-01（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-01},label={tbl:detail-tc-bigfilestorage1-2-1-test-allowbreak-case-allowbreak-00-allowbreak-template-01}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-01 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-01} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+\subsubparagraph{测试用例名称-02（test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={测试用例名称-02},label={tbl:detail-tc-bigfilestorage1-2-2-test-allowbreak-case-allowbreak-00-allowbreak-template-02}]{
+  colsep=2pt,
+  colspec={|Q[c,wd=2.3cm]|X[l]|Q[c,wd=2.3cm]|Q[c,wd=2.6cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+}
+\TableKeyCell{测试用例名称} & 测试用例名称-02 & \SetCell{halign=c}{\TableKeyCell{标识}} & \TableIdentifier{test\_\allowbreak case\_\allowbreak 00\_\allowbreak template-02} \\
+\TableKeyCell{追踪关系} & \SetCell[c=3]{valign=t}{指标1模块2的测试项2（bigfilestorage1）} && \\
+\TableKeyCell{测试用例综述} & \SetCell[c=3]{valign=t}{测试用例的综述} && \\
+\TableKeyCell{用例初始化} & \SetCell[c=3]{valign=t}{初始化条件} && \\
+\TableKeyCell{前提和约束} & \SetCell[c=3]{valign=t}{前提与约束} && \\
+\TableKeyCell{测试用例类型} & \SetCell[c=3]{valign=t}{有效类} && \\
+\SetCell[c=4]{halign=c,font=\xiaowuhei}{测试步骤} &&& \\
+\SetCell[c=4]{valign=t}{\begin{tblr}[theme=gjbNoHead]{
+  width=\linewidth,
+  colsep=2pt,
+  colspec={|Q[c,wd=0.8cm]|X[l,2]|X[l,2]|Q[c,wd=2.9cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  row{1}={font=\xiaowuhei,halign=c,valign=m},
+  rowsep=2pt,
+}
+序号 & 输入及操作 & 期望结果 & 测试结果 \\
+1 & 描述测试步骤1 & 描述预期结果1 &  \\
+2 & 描述测试步骤2 & 描述预期结果2 &  \\
+\end{tblr}} &&& \\
+\TableKeyCell{测试用例终止条件} & \SetCell[c=3]{valign=t}{测试用例的终止条件} && \\
+\TableKeyCell{测试结果评估标准} & \SetCell[c=3]{valign=t}{测试结果的判定准则} && \\
+\TableKeyCell{测试用例执行结果} & \SetCell[c=3]{valign=t}{测试用例的执行结果} && \\
+\TableKeyCell{设计人员} & 设计人员姓名 & \SetCell{halign=c}{\TableKeyCell{操作人员}} & 操作人员姓名 \\
+\TableKeyCell{测试人员} & 测试人员姓名 & \SetCell{halign=c}{\TableKeyCell{测试时间}} & 测试用例的测试时间 \\
 \end{longtblr}
 }
 \vspace{-6pt}
