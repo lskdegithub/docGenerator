@@ -252,7 +252,8 @@ def build_rows_forward(items):
                 if len(tail_chunks) > 1:
                      line += r" \cline{3-6}" # Close item part
                 else:
-                     line += r" \hline"
+                     if j < len(items):
+                         line += r" \hline"
             else:
                 line += r" \cline{3-6}"
             
@@ -264,9 +265,16 @@ def build_rows_forward(items):
             # Empty cells for other columns
             out.append(f" & {content_tex} &  &  &  &  \\\\")
             if extra_idx == len(tail_chunks[1:]) - 1:
-                out[-1] += r" \hline"
+                if j < len(items):
+                    out[-1] += r" \hline"
 
         i = j
+    if out:
+        while out and out[-1].strip() in {r"\hline", r"\cline{3-6}"}:
+            out.pop()
+        if out:
+            out[-1] = re.sub(r"\s*\\\\\s*$", "", out[-1]).rstrip()
+            out[-1] = re.sub(r"\s*(\\cline\{3-6\}|\\hline)\s*$", "", out[-1]).rstrip()
     return "\n".join(out)
 
 
@@ -312,7 +320,8 @@ def build_rows_reverse(items):
                 if len(tail_chunks) > 1:
                      line += r" \cline{3-6}"
                 else:
-                     line += r" \hline"
+                     if j < len(items):
+                         line += r" \hline"
             else:
                 line += r" \cline{3-6}"
                 
@@ -322,9 +331,16 @@ def build_rows_reverse(items):
             content_tex = escape_latex(extra)
             out.append(f" & {content_tex} &  &  &  &  \\\\")
             if extra_idx == len(tail_chunks[1:]) - 1:
-                out[-1] += r" \hline"
+                if j < len(items):
+                    out[-1] += r" \hline"
 
         i = j
+    if out:
+        while out and out[-1].strip() in {r"\hline", r"\cline{3-6}"}:
+            out.pop()
+        if out:
+            out[-1] = re.sub(r"\s*\\\\\s*$", "", out[-1]).rstrip()
+            out[-1] = re.sub(r"\s*(\\cline\{3-6\}|\\hline)\s*$", "", out[-1]).rstrip()
     return "\n".join(out)
 
 
