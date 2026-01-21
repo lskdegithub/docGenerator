@@ -264,9 +264,7 @@ def build_rows_forward(items):
             # Empty cells for other columns
             out.append(f" & {content_tex} &  &  &  &  \\\\")
             if extra_idx == len(tail_chunks[1:]) - 1:
-                out.append(r" \hline")
-            else:
-                pass 
+                out[-1] += r" \hline"
 
         i = j
     return "\n".join(out)
@@ -324,7 +322,7 @@ def build_rows_reverse(items):
             content_tex = escape_latex(extra)
             out.append(f" & {content_tex} &  &  &  &  \\\\")
             if extra_idx == len(tail_chunks[1:]) - 1:
-                out.append(r" \hline")
+                out[-1] += r" \hline"
 
         i = j
     return "\n".join(out)
