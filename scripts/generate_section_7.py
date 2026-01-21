@@ -1,168 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+生成测试计划文档 第7章（需求的可追踪性）的追踪表
+使用 tabularray (longtblr) 生成完整的表格代码
+修复问题：
+1. 移除 SetCell 和 Chunking 逻辑，允许表格自然分页，彻底解决页码被覆盖问题
+2. 移除全局 hlines，使用 \cline{3-6} 仅在右侧画线，左侧 Metric/序号列无横线，实现“连续表”视觉效果
+3. 采用 valign=t (顶部对齐)，确保长文本显示自然
+"""
 
-import re
+import math
 from pathlib import Path
-
-import yaml
-
-
-def load_yaml(file_path: Path):
-    try:
-        content = file_path.read_text(encoding="utf-8")
-        content = content.replace("：", ":")
-        return yaml.safe_load(content)
-    except Exception as e:
-        print(f"错误：无法读取文件 {file_path}: {e}")
-        return None
+import utils
 
 
-def parse_plan_yaml(file_path: Path):
-    try:
-        content = file_path.read_text(encoding="utf-8")
-
-        data = {
-            "测试项名称": "",
-            "标识": "",
-            "需求追踪关系": "",
-            "需规章节": "",
-        }
-
-        def pick(pattern: str):
-            m = re.search(pattern, content)
-            return m.group(1).strip() if m else ""
-
-        data["测试项名称"] = pick(r"测试项名称[：:]\s*(.+?)(?:\n|$)")
-        data["标识"] = pick(r"标识[：:]\s*(.+?)(?:\n|$)")
-        data["需求追踪关系"] = pick(r"(?:需求追踪关系|需求的追踪关系)[：:]\s*(.+?)(?:\n|$)")
-        data["需规章节"] = pick(r"需规章节[：:]\s*(.+?)(?:\n|$)")
-
-        return data
-    except Exception as e:
-        print(f"错误：解析文件 {file_path} 失败: {e}")
-        return None
-
-
-def escape_latex(text: str) -> str:
-    text = str(text or "")
-    text = text.replace("\\", "\\textbackslash ")
-    text = text.replace("&", "\\&")
-    text = text.replace("%", "\\%")
-    text = text.replace("$", "\\$")
-    text = text.replace("#", "\\#")
-    text = text.replace("_", "\\_\\allowbreak ")
-    text = text.replace("{", "\\{")
-    text = text.replace("}", "\\}")
-    text = text.replace("~", "\\textasciitilde ")
-    text = text.replace("^", "\\textasciicircum ")
-    def break_long(match: re.Match) -> str:
-        s = match.group(0)
-        chunk = 10
-        return r"\allowbreak ".join([s[i:i + chunk] for i in range(0, len(s), chunk)])
-
-    text = re.sub(r"(?<!\\)[A-Za-z0-9]{20,}", break_long, text)
-    return " ".join(text.split())
-
-
-def split_into_n_chunks(text: str, n: int):
-    text = str(text or "")
-    if n <= 1:
-        return [text]
+def split_text_by_length(text, length=50):
+    """
+    Split text into chunks of specified length.
+    Returns a list of strings.
+    """
     if not text:
-        return [""] * n
+        return []
+    return [text[i:i+length] for i in range(0, len(text), length)]
 
-    candidates = [m.end() for m in re.finditer(r"[。！？；;!?]\s*", text)]
-    if not candidates:
-        avg = max(1, len(text) // n)
-        out = [text[i * avg : (i + 1) * avg] for i in range(n - 1)]
-        out.append(text[(n - 1) * avg :])
-        return out
-
-    targets = [round(len(text) * k / n) for k in range(1, n)]
-    cuts = []
-    start = 0
-    for t in targets:
-        best = None
-        best_dist = None
-        for c in candidates:
-            if c <= start:
-                continue
-            dist = abs(c - t)
-            if best is None or dist < best_dist:
-                best = c
-                best_dist = dist
-        if best is None:
-            break
-        cuts.append(best)
-        start = best
-
-    if len(cuts) < n - 1:
-        avg = max(1, len(text) // n)
-        out = [text[i * avg : (i + 1) * avg] for i in range(n - 1)]
-        out.append(text[(n - 1) * avg :])
-        return out
-
-    parts = []
-    s = 0
-    for c in cuts:
-        parts.append(text[s:c])
-        s = c
-    parts.append(text[s:])
-    while len(parts) < n:
-        parts.append("")
-    return parts[:n]
-
-
-def split_front_small_rest_last(text: str, n: int, head_max_chars: int = 240):
-    text = str(text or "")
-    if n <= 1:
-        return [text]
-    if not text:
-        return [""] * n
-
-    parts = []
-    s = 0
-    for _ in range(n - 1):
-        remaining = text[s:]
-        if not remaining:
-            parts.append("")
-            continue
-        if len(remaining) <= head_max_chars:
-            parts.append(remaining)
-            s = len(text)
-            continue
-        window = remaining[: head_max_chars + 60]
-        m = re.search(r".*([。！？；;!?])\s*", window)
-        if m:
-            cut = s + m.end()
-        else:
-            cut = s + head_max_chars
-        parts.append(text[s:cut])
-        s = cut
-
-    parts.append(text[s:])
-    while len(parts) < n:
-        parts.append("")
-    return parts[:n]
-
-
-def split_by_max_chars(text: str, max_chars: int):
-    text = str(text or "")
-    if not text:
-        return [""]
-    if max_chars <= 0:
-        return [text]
-    parts = []
-    s = 0
-    while s < len(text):
-        end = min(len(text), s + max_chars)
-        window = text[s : min(len(text), end + 80)]
-        m = re.search(r".*([。！？；;!?])\s*", window)
-        if m and s + m.end() > s:
-            end = s + m.end()
-        parts.append(text[s:end])
-        s = end
-    return parts
 
 def collect_plan_items(data_dir: Path):
     rows = []
@@ -173,7 +33,7 @@ def collect_plan_items(data_dir: Path):
         if not metric_files:
             continue
 
-        metric_data = load_yaml(metric_files[0]) or {}
+        metric_data = utils.load_yaml(metric_files[0]) or {}
         metric_index = str(metric_data.get("index") or metric_dir.name.split("-")[0]).strip()
         metric_title = (metric_data.get("title") or "").strip()
         metric_content = (metric_data.get("content") or "").strip()
@@ -186,7 +46,7 @@ def collect_plan_items(data_dir: Path):
                 plan_file = item_dir / "plan.yaml"
                 if not plan_file.exists():
                     continue
-                plan_data = parse_plan_yaml(plan_file)
+                plan_data = utils.parse_plan_yaml(plan_file)
                 if not plan_data:
                     continue
                 section = f"4.2.{metric_index}.{module_idx}.{item_idx}"
@@ -206,166 +66,241 @@ def collect_plan_items(data_dir: Path):
     return rows
 
 
-def build_rows_forward(items):
-    out = []
+def generate_forward_table(items):
+    """
+    生成表1：xxxxxxxxxx与需求规格说明以及测试项的追踪关系
+    Columns:
+    1. 序号 (Seq)
+    2. xxxxx (Metric Content)
+    3. 需求名称/标识 (Req)
+    4. 需求规格说明章节号 (SRS)
+    5. 测试项名称/标识 (Test Item)
+    6. 本文档的章节号 (Section)
+    """
+    
+    rows_tex = []
+    
+    # Process items grouping by Metric
     i = 0
+    seq = 1
+    
     while i < len(items):
         j = i
         metric_index = items[i]["metric_index"]
         while j < len(items) and items[j]["metric_index"] == metric_index:
             j += 1
+        
         group = items[i:j]
         metric_content = group[0].get("metric_content") or group[0].get("metric_cell") or ""
         
-        # Split content to distribute across rows
-        head_parts = split_front_small_rest_last(metric_content, len(group), head_max_chars=60)
-        tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
-
-        for row_idx, it in enumerate(group):
-            if row_idx == len(group) - 1:
-                content_piece = tail_chunks[0]
-            else:
-                content_piece = head_parts[row_idx]
-
-            content_tex = escape_latex(content_piece)
+        # Split metric content into chunks
+        metric_chunks = split_text_by_length(metric_content, 60)
+        
+        num_rows = max(len(metric_chunks), len(group))
+        if num_rows == 0:
+            num_rows = 1
             
-            # Seq only in first row
-            if row_idx == 0:
-                c1 = r"\Seq"
+        for k in range(num_rows):
+            if k == 0:
+                seq_str = str(seq)
+            else:
+                seq_str = ""
+            
+            if k < len(metric_chunks):
+                metric_tex = utils.escape_latex(metric_chunks[k])
+            else:
+                metric_tex = ""
+            
+            if k < len(group):
+                item = group[k]
+                req = utils.escape_latex(item["requirement"])
+                srs = utils.escape_latex(item["srs_chapter"])
+                test_item_name = utils.escape_latex(item["test_item_name"])
+                test_item_ident = utils.escape_latex(item["test_item_ident"])
+                test_item = f"{test_item_name}（{test_item_ident}）"
+                sec = utils.escape_latex(item["section"])
+            else:
+                req = ""
+                srs = ""
+                test_item = ""
+                sec = ""
+            
+            # Row construction
+            if k == 0:
+                c1 = f"{{{seq_str}}}"
             else:
                 c1 = ""
             
-            c2 = content_tex
+            c2 = f"{{{metric_tex}}}"
             
-            req = escape_latex(it["requirement"])
-            srs = escape_latex(it["srs_chapter"])
-            test_item_name = escape_latex(it["test_item_name"])
-            test_item_ident = escape_latex(it["test_item_ident"])
-            test_item = test_item_name + "（" + test_item_ident + "）"
-            sec = escape_latex(it["section"])
-            
-            # Columns: Seq, Metric, Req, SRS, TestItem, Section
             line = f"{c1} & {c2} & {req} & {srs} & {test_item} & {sec} \\\\"
             
-            if row_idx == len(group) - 1:
-                # If there are more tail chunks, add extra rows
-                if len(tail_chunks) > 1:
-                     line += r" \cline{3-6}" # Close item part
-                else:
-                     if j < len(items):
-                         line += r" \hline"
-            else:
+            if k == num_rows - 1:
+                line += r" \hline"
+            elif k < len(group) - 1:
                 line += r" \cline{3-6}"
+            elif k == len(group) - 1:
+                line += r" \cline{3-6}"
+            else:
+                pass
             
-            out.append(line)
-
-        # Append extra rows for remaining text
-        for extra_idx, extra in enumerate(tail_chunks[1:]):
-            content_tex = escape_latex(extra)
-            # Empty cells for other columns
-            out.append(f" & {content_tex} &  &  &  &  \\\\")
-            if extra_idx == len(tail_chunks[1:]) - 1:
-                if j < len(items):
-                    out[-1] += r" \hline"
-
+            rows_tex.append(line)
+        
         i = j
-    if out:
-        while out and out[-1].strip() in {r"\hline", r"\cline{3-6}"}:
-            out.pop()
-        if out:
-            out[-1] = re.sub(r"\s*\\\\\s*$", "", out[-1]).rstrip()
-            out[-1] = re.sub(r"\s*(\\cline\{3-6\}|\\hline)\s*$", "", out[-1]).rstrip()
-    return "\n".join(out)
+        seq += 1
+
+    body = "\n".join(rows_tex)
+
+    latex = f"""
+{{\\settablespacing
+\\begin{{longtblr}}[
+  theme=gjb,
+  caption={{xxxxxxxxxx与需求规格说明以及测试项的追踪关系}},
+  label={{tbl:plan-trace}},
+]{{
+  colspec={{|Q[c,t,0.8cm]|Q[l,t,3.0cm]|Q[l,t,2.4cm]|Q[c,t,1.8cm]|Q[l,t,5.0cm]|Q[c,t,1.4cm]|}},
+  rowhead=2,
+  % Remove global hlines to avoid lines crossing the Metric column
+  % hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  row{{1,2}}={{font=\\xiaowuhei}},
+}}
+\\hline
+\\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} xxxxx & \\SetCell[c=2]{{c}} 需求规格说明 & & \\SetCell[c=2]{{c}} 测试大纲 & \\\\
+\\hline
+ & & 需求名称/标识 & 需求规格说明章节号 & 测试项名称/标识 & 本文档的章节号 \\\\
+\\hline
+{body}
+\\end{{longtblr}}
+}}
+"""
+    return latex
 
 
-def build_rows_reverse(items):
-    out = []
+def generate_reverse_table(items):
+    """
+    生成表2：xxxxxxxxxx与需求规格说明以及测试项的逆向追踪关系
+    Columns:
+    1. 序号 (Seq)
+    2. xxxxx (Metric Content)
+    3. 测试项名称/标识 (Test Item)
+    4. 本文档的章节号 (Section)
+    5. 需求名称/标识 (Req)
+    6. 需求规格说明章节号 (SRS)
+    """
+    
+    rows_tex = []
+    
     i = 0
+    seq = 1
+    
     while i < len(items):
         j = i
         metric_index = items[i]["metric_index"]
         while j < len(items) and items[j]["metric_index"] == metric_index:
             j += 1
+        
         group = items[i:j]
         metric_content = group[0].get("metric_content") or group[0].get("metric_cell") or ""
         
-        head_parts = split_front_small_rest_last(metric_content, len(group), head_max_chars=60)
-        tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
-
-        for row_idx, it in enumerate(group):
-            if row_idx == len(group) - 1:
-                content_piece = tail_chunks[0]
-            else:
-                content_piece = head_parts[row_idx]
-
-            content_tex = escape_latex(content_piece)
+        # Split metric content into chunks
+        metric_chunks = split_text_by_length(metric_content, 60)
+        
+        num_rows = max(len(metric_chunks), len(group))
+        if num_rows == 0:
+            num_rows = 1
             
-            if row_idx == 0:
-                c1 = r"\Seq"
+        for k in range(num_rows):
+            if k == 0:
+                seq_str = str(seq)
             else:
-                c1 = ""
-            c2 = content_tex
-
-            req = escape_latex(it["requirement"])
-            srs = escape_latex(it["srs_chapter"])
-            test_item_name = escape_latex(it["test_item_name"])
-            test_item_ident = escape_latex(it["test_item_ident"])
-            test_item = test_item_name + "（" + test_item_ident + "）"
-            sec = escape_latex(it["section"])
+                seq_str = ""
             
-            # Columns: Seq, Metric, TestItem, Section, Req, SRS
+            if k < len(metric_chunks):
+                metric_tex = utils.escape_latex(metric_chunks[k])
+            else:
+                metric_tex = ""
+            
+            if k < len(group):
+                item = group[k]
+                req = utils.escape_latex(item["requirement"])
+                srs = utils.escape_latex(item["srs_chapter"])
+                test_item_name = utils.escape_latex(item["test_item_name"])
+                test_item_ident = utils.escape_latex(item["test_item_ident"])
+                test_item = f"{test_item_name}（{test_item_ident}）"
+                sec = utils.escape_latex(item["section"])
+            else:
+                req = ""
+                srs = ""
+                test_item = ""
+                sec = ""
+            
+            if k == 0:
+                c1 = f"{{{seq_str}}}"
+            else:
+                c1 = "" # Seq only on first row
+            
+            # Metric chunk on every row (if available)
+            c2 = f"{{{metric_tex}}}"
+            
             line = f"{c1} & {c2} & {test_item} & {sec} & {req} & {srs} \\\\"
             
-            if row_idx == len(group) - 1:
-                if len(tail_chunks) > 1:
-                     line += r" \cline{3-6}"
-                else:
-                     if j < len(items):
-                         line += r" \hline"
-            else:
+            if k == num_rows - 1:
+                line += r" \hline"
+            elif k < len(group) - 1:
                 line += r" \cline{3-6}"
-                
-            out.append(line)
-
-        for extra_idx, extra in enumerate(tail_chunks[1:]):
-            content_tex = escape_latex(extra)
-            out.append(f" & {content_tex} &  &  &  &  \\\\")
-            if extra_idx == len(tail_chunks[1:]) - 1:
-                if j < len(items):
-                    out[-1] += r" \hline"
-
+            elif k == len(group) - 1:
+                line += r" \cline{3-6}"
+            else:
+                pass
+            
+            rows_tex.append(line)
+        
         i = j
-    if out:
-        while out and out[-1].strip() in {r"\hline", r"\cline{3-6}"}:
-            out.pop()
-        if out:
-            out[-1] = re.sub(r"\s*\\\\\s*$", "", out[-1]).rstrip()
-            out[-1] = re.sub(r"\s*(\\cline\{3-6\}|\\hline)\s*$", "", out[-1]).rstrip()
-    return "\n".join(out)
+        seq += 1
 
+    body = "\n".join(rows_tex)
 
-def write_output(forward_rows: str, reverse_rows: str, out_dir: Path):
-    out_dir.mkdir(parents=True, exist_ok=True)
-    # Write without trailing newline to avoid longtable empty row issue
-    # Ensure strict stripping
-    forward_rows = forward_rows.strip()
-    reverse_rows = reverse_rows.strip()
-    
-    (out_dir / "chapter7_trace_rows.tex").write_text(forward_rows, encoding="utf-8")
-    (out_dir / "chapter7_trace_rev_rows.tex").write_text(reverse_rows, encoding="utf-8")
+    latex = f"""
+{{\\settablespacing
+\\begin{{longtblr}}[
+  theme=gjb,
+  caption={{xxxxxxxxxx与需求规格说明以及测试项的逆向追踪关系}},
+  label={{tbl:plan-trace-rev}},
+]{{
+  colspec={{|Q[c,t,0.8cm]|Q[l,t,3.0cm]|Q[l,t,5.2cm]|Q[c,t,1.4cm]|Q[l,t,2.0cm]|Q[c,t,1.6cm]|}},
+  rowhead=2,
+  % Remove global hlines
+  row{{1,2}}={{font=\\xiaowuhei}},
+}}
+\\hline
+\\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} xxxxx & \\SetCell[c=2]{{c}} 测试大纲 & & \\SetCell[c=2]{{c}} 需求规格说明 & \\\\
+\\hline
+ & & 测试项名称/标识 & 本文档的章节号 & 需求名称/标识 & 需求规格说明章节号 \\\\
+\\hline
+{body}
+\\end{{longtblr}}
+}}
+"""
+    return latex
 
 
 def main():
-    repo = Path(__file__).resolve().parents[1]
-    data_dir = repo / "data"
-    out_dir = repo / "output" / "test_plan" / "chapters"
+    repo_root = utils.get_project_root()
+    data_dir = repo_root / "data"
+    out_dir = repo_root / "output" / "test_plan" / "chapters"
 
     items = collect_plan_items(data_dir)
-    forward = build_rows_forward(items)
-    reverse = build_rows_reverse(items)
-    write_output(forward, reverse, out_dir)
+    
+    forward_table = generate_forward_table(items)
+    reverse_table = generate_reverse_table(items)
+    
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "chapter7_forward_table.tex").write_text(forward_table, encoding="utf-8")
+    (out_dir / "chapter7_reverse_table.tex").write_text(reverse_table, encoding="utf-8")
 
-    print(f"✅ 第七章追踪表行已生成到: {out_dir}")
+    print(f"✅ 第七章追踪表已生成到: {out_dir}")
+    print("  - chapter7_forward_table.tex")
+    print("  - chapter7_reverse_table.tex")
 
 
 if __name__ == "__main__":
