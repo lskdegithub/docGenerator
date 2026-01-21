@@ -38,12 +38,51 @@ def escape_latex(text: str) -> str:
     text = text.replace("}", "\\}")
     text = text.replace("~", "\\textasciitilde ")
     text = text.replace("^", "\\textasciicircum ")
+    text = re.sub(r"([/-])", r"\1\\allowbreak ", text)
     def break_long(match: re.Match) -> str:
         s = match.group(0)
         chunk = 16
         return r"\allowbreak ".join([s[i:i + chunk] for i in range(0, len(s), chunk)])
     text = re.sub(r"(?<!\\)[A-Za-z0-9]{20,}", break_long, text)
     return " ".join(text.split())
+
+
+def escape_latex_no_wordbreak(text: str) -> str:
+    text = str(text or "")
+    text = text.replace("\\", "\\textbackslash ")
+    text = text.replace("&", "\\&")
+    text = text.replace("%", "\\%")
+    text = text.replace("$", "\\$")
+    text = text.replace("#", "\\#")
+    text = text.replace("_", "\\_\\allowbreak ")
+    text = text.replace("{", "\\{")
+    text = text.replace("}", "\\}")
+    text = text.replace("~", "\\textasciitilde ")
+    text = text.replace("^", "\\textasciicircum ")
+    text = re.sub(r"([/-])", r"\1\\allowbreak ", text)
+    return " ".join(text.split())
+
+
+def wrap_alnum_runs_by_chars(text: str, chars_per_line: int) -> str:
+    if not text:
+        return ""
+    chars_per_line = int(chars_per_line or 0)
+    if chars_per_line <= 0:
+        return text
+
+    def repl(match: re.Match) -> str:
+        s = match.group(0)
+        if len(s) <= chars_per_line:
+            return s
+        parts = [s[i:i + chars_per_line] for i in range(0, len(s), chars_per_line)]
+        return r" \allowbreak ".join(parts)
+
+    pattern = rf"(?<!\\)[A-Za-z0-9]{{{chars_per_line + 1},}}"
+    return re.sub(pattern, repl, text)
+
+
+def escape_latex_table_cell(text: str, chars_per_line: int) -> str:
+    return wrap_alnum_runs_by_chars(escape_latex_no_wordbreak(text), chars_per_line)
 
 
 def normalize_index(value: str) -> str:
@@ -201,9 +240,11 @@ def build_steps_table(steps):
         steps = [{"序号": 1, "输入及操作": "", "期望结果": ""}]
     for idx, step in enumerate(steps, start=1):
         seq = step.get("序号", idx)
-        action = escape_latex(step.get("输入及操作", ""))
-        expect = escape_latex(step.get("期望结果", ""))
-        rows.append(f"{seq} & {action} & {expect} &  \\\\")
+        action = escape_latex_table_cell(step.get("输入及操作", ""), chars_per_line=30)
+        expect = escape_latex_table_cell(step.get("期望结果", ""), chars_per_line=30)
+        rows.append(
+            f"{seq} & \\SetCell[c=3]{{valign=t}}{{{action}}} &  &  & \\SetCell[c=2]{{valign=t}}{{{expect}}} &  & \\SetCell[c=2]{{valign=t}}{{}} &  \\\\"
+        )
     return "\n".join(rows)
 
 
@@ -225,27 +266,22 @@ def build_case_table(case_data, test_item_label, label_suffix):
     label = f"tbl:detail-tc-{sanitize_label(label_suffix)}"
     caption = case_name or "测试用例"
     table = f"""{{\\settablespacing
-\\begin{{tblr}}[theme=gjbNoHead,caption={{{caption}}},label={{{label}}}]{{\n  colsep=2pt,\n  colspec={{|p{{2.3cm}}|p{{7.3cm}}|p{{2.3cm}}|p{{2.6cm}}|}},\n  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  column{{1}}={{halign=c}},\n  column{{3}}={{halign=c}},\n  column{{4}}={{halign=c}},\n}}
-\\TableKeyCell{{测试用例名称}} & {case_name} & \\SetCell{{halign=c}}{{\\TableKeyCell{{标识}}}} & \\TableIdentifier{{{case_ident}}} \\\\
-\\TableKeyCell{{追踪关系}} & \\SetCell[c=3]{{valign=t}}{{{test_item_label}}} && \\\\
-\\TableKeyCell{{测试用例综述}} & \\SetCell[c=3]{{valign=t}}{{{summary}}} && \\\\
-\\TableKeyCell{{用例初始化}} & \\SetCell[c=3]{{valign=t}}{{{init}}} && \\\\
-\\TableKeyCell{{前提和约束}} & \\SetCell[c=3]{{valign=t}}{{{prereq}}} && \\\\
-\\TableKeyCell{{测试用例类型}} & \\SetCell[c=3]{{valign=t}}{{{case_type}}} && \\\\
-\\SetCell[c=4]{{halign=c,font=\\xiaowuhei}}{{测试步骤}} &&& \\\\
-\\end{{tblr}}
-\\vspace*{{-6pt}}
-\\begin{{longtblr}}[theme=gjbNoHead]{{\n  colsep=2pt,\n  colspec={{|p{{0.8cm}}|p{{6.0cm}}|p{{4.8cm}}|p{{2.9cm}}|}},\n  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  column{{1,4}}={{halign=c}},\n  rowhead=1,\n  row{{1}}={{font=\\xiaowuhei,halign=c,valign=m}},\n}}
-序号 & 输入及操作 & 期望结果 & 测试结果 \\\\\n{steps_rows}
+\\begin{{longtblr}}[theme=gjbNoHead,caption={{{caption}}},label={{{label}}}]{{\n  colspec={{|p{{0.8cm}}|p{{1.5cm}}|p{{2.25cm}}|p{{2.25cm}}|p{{2.4cm}}|p{{2.4cm}}|p{{1.45cm}}|p{{1.45cm}}|}},\n  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  column{{1}}={{halign=c}},\n}}
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例名称}}}} & & \\SetCell[c=3]{{valign=t}}{{{case_name}}} &  &  & \\TableKeyCell{{标识}} & \\SetCell[c=2]{{valign=t}}{{\\TableIdentifier{{{case_ident}}}}} & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{追踪关系}}}} & & \\SetCell[c=6]{{valign=t}}{{{test_item_label}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例综述}}}} & & \\SetCell[c=6]{{valign=t}}{{{summary}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{用例初始化}}}} & & \\SetCell[c=6]{{valign=t}}{{{init}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{前提和约束}}}} & & \\SetCell[c=6]{{valign=t}}{{{prereq}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例类型}}}} & & \\SetCell[c=6]{{valign=t}}{{{case_type}}} &  &  &  &  & \\\\
+\\SetCell[c=8]{{halign=c,font=\\xiaowuhei}}{{测试步骤}} &  &  &  &  &  &  & \\\\
+\\SetCell{{font=\\xiaowuhei,halign=c,valign=m}}{{序号}} & \\SetCell[c=3]{{font=\\xiaowuhei,halign=c,valign=m}}{{输入及操作}} &  &  & \\SetCell[c=2]{{font=\\xiaowuhei,halign=c,valign=m}}{{期望结果}} &  & \\SetCell[c=2]{{font=\\xiaowuhei,halign=c,valign=m}}{{测试结果}} &  \\\\
+{steps_rows}
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例终止条件}}}} & & \\SetCell[c=6]{{valign=t}}{{{term}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试结果评估标准}}}} & & \\SetCell[c=6]{{valign=t}}{{{criteria}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例执行结果}}}} & & \\SetCell[c=6]{{valign=t}}{{{result}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{设计人员}}}} & & \\SetCell[c=3]{{valign=t}}{{{designer}}} &  &  & \\TableKeyCell{{操作人员}} & \\SetCell[c=2]{{valign=t}}{{{operator}}} & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试人员}}}} & & \\SetCell[c=3]{{valign=t}}{{{tester}}} &  &  & \\TableKeyCell{{测试时间}} & \\SetCell[c=2]{{valign=t}}{{{test_time}}} & \\\\
 \\end{{longtblr}}
-\\vspace*{{-6pt}}
-\\begin{{tblr}}[theme=gjbNoHead]{{\n  colsep=2pt,\n  colspec={{|p{{2.3cm}}|p{{7.3cm}}|p{{2.3cm}}|p{{2.6cm}}|}},\n  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  column{{1}}={{halign=c}},\n  column{{3}}={{halign=c}},\n  column{{4}}={{halign=c}},\n}}
-\\TableKeyCell{{测试用例终止条件}} & \\SetCell[c=3]{{valign=t}}{{{term}}} && \\\\
-\\TableKeyCell{{测试结果评估标准}} & \\SetCell[c=3]{{valign=t}}{{{criteria}}} && \\\\
-\\TableKeyCell{{测试用例执行结果}} & \\SetCell[c=3]{{valign=t}}{{{result}}} && \\\\
-\\TableKeyCell{{设计人员}} & {designer} & \\SetCell{{halign=c}}{{\\TableKeyCell{{操作人员}}}} & {operator} \\\\
-\\TableKeyCell{{测试人员}} & {tester} & \\SetCell{{halign=c}}{{\\TableKeyCell{{测试时间}}}} & {test_time} \\\\
-\\end{{tblr}}
 }}
 \\vspace{{-6pt}}"""
     return table
@@ -278,9 +314,7 @@ def build_chapter4(metrics):
         item_type = escape_latex(item["type"])
         table_rows.append(f"\\Seq & {{\\xiaowu {item_type}}} & {{\\xiaowu {label}}} \\\\")
     table_rows_text = "\n".join(table_rows)
-    content = f"""\\section{{测试说明}}
-
-\\subsection{{计划执行的测试}}
+    content = f"""\\subsection{{计划执行的测试}}
 
 {intro}
 
@@ -320,7 +354,7 @@ def build_chapter4(metrics):
                     case_ident = escape_latex(case_data.get("标识", ""))
                     case_title = f"{case_name}（{case_ident}）" if case_ident else case_name
                     content += f"\\subsubparagraph{{{case_title}}}\n\n"
-                    label_suffix = f"{item.get('ident','')}-{item.get('order','')}-{case.get('order','')}-{case_ident or case_name}"
+                    label_suffix = f"m{metric['order']}-mo{module['order']}-i{item['order']}-c{case['order']}"
                     content += build_case_table(case_data, test_item_label, label_suffix)
                     content += "\n\n"
     return content.rstrip() + "\n"
@@ -349,77 +383,197 @@ def build_trace_rows(metrics):
 
 def build_trace_longtable_rows_forward(metrics):
     rows = build_trace_rows(metrics)
+    rows.sort(
+        key=lambda r: (
+            r.get("metric_content", ""),
+            r.get("requirement", ""),
+            r.get("srs_chapter", ""),
+            r.get("test_item", ""),
+            r.get("item_section", ""),
+            r.get("case_name", ""),
+            r.get("case_section", ""),
+        )
+    )
     out = []
-    i = 0
-    while i < len(rows):
-        j = i
-        content = rows[i]["metric_content"]
-        while j < len(rows) and rows[j]["metric_content"] == content:
-            j += 1
-        group = rows[i:j]
-        metric_content = group[0].get("metric_content") or ""
-        head_parts = split_front_small_rest_last(metric_content, len(group), head_max_chars=60)
+    mi = 0
+    while mi < len(rows):
+        mj = mi
+        metric_content = rows[mi].get("metric_content") or ""
+        while mj < len(rows) and (rows[mj].get("metric_content") or "") == metric_content:
+            mj += 1
+        metric_group = rows[mi:mj]
+        head_parts = split_front_small_rest_last(metric_content, len(metric_group), head_max_chars=60)
         tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
-        for row_idx, row in enumerate(group):
-            content_piece = tail_chunks[0] if row_idx == len(group) - 1 else head_parts[row_idx]
-            c1 = r"\Seq" if row_idx == 0 else ""
-            c2 = escape_latex(content_piece)
-            req = escape_latex(row["requirement"])
-            srs = escape_latex(row["srs_chapter"])
-            test_item = escape_latex(row["test_item"])
-            item_sec = escape_latex(row["item_section"])
-            case_name = escape_latex(row["case_name"])
-            case_sec = escape_latex(row["case_section"])
-            line = f"{c1} & {c2} & {req} & {srs} & {test_item} & {item_sec} & {case_name} & {case_sec} \\\\"
-            if row_idx == len(group) - 1:
-                line += r" \cline{3-8}" if len(tail_chunks) > 1 else r" \hline"
-            else:
-                line += r" \cline{3-8}"
-            out.append(line)
+        metric_row_idx = 0
+
+        ri = 0
+        while ri < len(metric_group):
+            rj = ri
+            req_key = (metric_group[ri].get("requirement") or "", metric_group[ri].get("srs_chapter") or "")
+            while rj < len(metric_group) and (
+                (metric_group[rj].get("requirement") or "", metric_group[rj].get("srs_chapter") or "") == req_key
+            ):
+                rj += 1
+            req_group = metric_group[ri:rj]
+            req_cell = escape_latex_table_cell(req_key[0], chars_per_line=14)
+            srs_cell = escape_latex_table_cell(req_key[1], chars_per_line=12)
+
+            ii = 0
+            while ii < len(req_group):
+                ij = ii
+                item_key = (req_group[ii].get("test_item") or "", req_group[ii].get("item_section") or "")
+                while ij < len(req_group) and (
+                    (req_group[ij].get("test_item") or "", req_group[ij].get("item_section") or "") == item_key
+                ):
+                    ij += 1
+                item_group = req_group[ii:ij]
+                item_cell = escape_latex_table_cell(item_key[0], chars_per_line=22)
+                item_sec_cell = escape_latex(item_key[1])
+
+                for ci, row in enumerate(item_group):
+                    is_first_metric_row = metric_row_idx == 0
+                    is_first_req_row = (ii == 0 and ci == 0)
+                    is_first_item_row = (ci == 0)
+                    is_last_case_in_item = (ci == len(item_group) - 1)
+                    is_last_item_in_req = (ij == len(req_group))
+                    is_last_req_in_metric = (rj == len(metric_group))
+                    is_last_row_in_metric = is_last_case_in_item and is_last_item_in_req and is_last_req_in_metric
+
+                    if metric_row_idx == len(metric_group) - 1:
+                        metric_piece = tail_chunks[0]
+                    else:
+                        metric_piece = head_parts[metric_row_idx]
+                    metric_row_idx += 1
+
+                    c1 = r"\Seq" if is_first_metric_row else ""
+                    c2 = escape_latex_table_cell(metric_piece, chars_per_line=18)
+                    c3 = req_cell if is_first_req_row else ""
+                    c4 = srs_cell if is_first_req_row else ""
+                    c5 = item_cell if is_first_item_row else ""
+                    c6 = item_sec_cell if is_first_item_row else ""
+                    c7 = escape_latex_table_cell(row.get("case_name") or "", chars_per_line=22)
+                    c8 = escape_latex(row.get("case_section") or "")
+
+                    line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
+                    if is_last_row_in_metric:
+                        line += r" \cline{3-8}" if len(tail_chunks) > 1 else r" \hline"
+                    elif not is_last_case_in_item:
+                        line += r" \cline{7-8}"
+                    elif not is_last_item_in_req:
+                        line += r" \cline{5-8}"
+                    else:
+                        line += r" \cline{3-8}"
+
+                    out.append(line)
+
+                ii = ij
+            ri = rj
+
         for extra_idx, extra in enumerate(tail_chunks[1:]):
-            content_tex = escape_latex(extra)
+            content_tex = escape_latex_table_cell(extra, chars_per_line=18)
             out.append(f" & {content_tex} &  &  &  &  &  &  \\\\")
             if extra_idx == len(tail_chunks[1:]) - 1:
                 out.append(r" \hline")
-        i = j
+        mi = mj
+
     return "\n".join(out).strip()
 
 
 def build_trace_longtable_rows_reverse(metrics):
     rows = build_trace_rows(metrics)
+    rows.sort(
+        key=lambda r: (
+            r.get("metric_content", ""),
+            r.get("case_name", ""),
+            r.get("case_section", ""),
+            r.get("test_item", ""),
+            r.get("item_section", ""),
+            r.get("requirement", ""),
+            r.get("srs_chapter", ""),
+        )
+    )
     out = []
-    i = 0
-    while i < len(rows):
-        j = i
-        content = rows[i]["metric_content"]
-        while j < len(rows) and rows[j]["metric_content"] == content:
-            j += 1
-        group = rows[i:j]
-        metric_content = group[0].get("metric_content") or ""
-        head_parts = split_front_small_rest_last(metric_content, len(group), head_max_chars=60)
+    mi = 0
+    while mi < len(rows):
+        mj = mi
+        metric_content = rows[mi].get("metric_content") or ""
+        while mj < len(rows) and (rows[mj].get("metric_content") or "") == metric_content:
+            mj += 1
+        metric_group = rows[mi:mj]
+        head_parts = split_front_small_rest_last(metric_content, len(metric_group), head_max_chars=60)
         tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
-        for row_idx, row in enumerate(group):
-            content_piece = tail_chunks[0] if row_idx == len(group) - 1 else head_parts[row_idx]
-            c1 = r"\Seq" if row_idx == 0 else ""
-            c2 = escape_latex(content_piece)
-            case_name = escape_latex(row["case_name"])
-            case_sec = escape_latex(row["case_section"])
-            test_item = escape_latex(row["test_item"])
-            item_sec = escape_latex(row["item_section"])
-            req = escape_latex(row["requirement"])
-            srs = escape_latex(row["srs_chapter"])
-            line = f"{c1} & {c2} & {case_name} & {case_sec} & {test_item} & {item_sec} & {req} & {srs} \\\\"
-            if row_idx == len(group) - 1:
-                line += r" \cline{3-8}" if len(tail_chunks) > 1 else r" \hline"
-            else:
-                line += r" \cline{3-8}"
-            out.append(line)
+        metric_row_idx = 0
+
+        ci0 = 0
+        while ci0 < len(metric_group):
+            cj0 = ci0
+            case_key = (metric_group[ci0].get("case_name") or "", metric_group[ci0].get("case_section") or "")
+            while cj0 < len(metric_group) and (
+                (metric_group[cj0].get("case_name") or "", metric_group[cj0].get("case_section") or "") == case_key
+            ):
+                cj0 += 1
+            case_group = metric_group[ci0:cj0]
+            case_cell = escape_latex_table_cell(case_key[0], chars_per_line=22)
+            case_sec_cell = escape_latex(case_key[1])
+
+            ii = 0
+            while ii < len(case_group):
+                ij = ii
+                item_key = (case_group[ii].get("test_item") or "", case_group[ii].get("item_section") or "")
+                while ij < len(case_group) and (
+                    (case_group[ij].get("test_item") or "", case_group[ij].get("item_section") or "") == item_key
+                ):
+                    ij += 1
+                item_group = case_group[ii:ij]
+                item_cell = escape_latex_table_cell(item_key[0], chars_per_line=22)
+                item_sec_cell = escape_latex(item_key[1])
+
+                for ri, row in enumerate(item_group):
+                    is_first_metric_row = metric_row_idx == 0
+                    is_first_case_row = (ii == 0 and ri == 0)
+                    is_first_item_row = (ri == 0)
+                    is_last_req_in_item = (ri == len(item_group) - 1)
+                    is_last_item_in_case = (ij == len(case_group))
+                    is_last_case_in_metric = (cj0 == len(metric_group))
+                    is_last_row_in_metric = is_last_req_in_item and is_last_item_in_case and is_last_case_in_metric
+
+                    if metric_row_idx == len(metric_group) - 1:
+                        metric_piece = tail_chunks[0]
+                    else:
+                        metric_piece = head_parts[metric_row_idx]
+                    metric_row_idx += 1
+
+                    c1 = r"\Seq" if is_first_metric_row else ""
+                    c2 = escape_latex_table_cell(metric_piece, chars_per_line=18)
+                    c3 = case_cell if is_first_case_row else ""
+                    c4 = case_sec_cell if is_first_case_row else ""
+                    c5 = item_cell if is_first_item_row else ""
+                    c6 = item_sec_cell if is_first_item_row else ""
+                    c7 = escape_latex_table_cell(row.get("requirement") or "", chars_per_line=14)
+                    c8 = escape_latex_table_cell(row.get("srs_chapter") or "", chars_per_line=12)
+
+                    line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
+                    if is_last_row_in_metric:
+                        line += r" \cline{3-8}" if len(tail_chunks) > 1 else r" \hline"
+                    elif not is_last_req_in_item:
+                        line += r" \cline{7-8}"
+                    elif not is_last_item_in_case:
+                        line += r" \cline{5-8}"
+                    else:
+                        line += r" \cline{3-8}"
+
+                    out.append(line)
+
+                ii = ij
+            ci0 = cj0
+
         for extra_idx, extra in enumerate(tail_chunks[1:]):
-            content_tex = escape_latex(extra)
+            content_tex = escape_latex_table_cell(extra, chars_per_line=18)
             out.append(f" & {content_tex} &  &  &  &  &  &  \\\\")
             if extra_idx == len(tail_chunks[1:]) - 1:
                 out.append(r" \hline")
-        i = j
+        mi = mj
+
     return "\n".join(out).strip()
 
 
@@ -441,7 +595,7 @@ def main():
     chapters_dir.mkdir(parents=True, exist_ok=True)
 
     metrics = collect_data(data_dir)
-    (chapters_dir / "chapter4.tex").write_text(build_chapter4(metrics), encoding="utf-8")
+    (chapters_dir / "chapter4_generated.tex").write_text(build_chapter4(metrics), encoding="utf-8")
     forward_rows = build_trace_longtable_rows_forward(metrics)
     reverse_rows = build_trace_longtable_rows_reverse(metrics)
     (chapters_dir / "chapter5_trace_rows.tex").write_text(forward_rows, encoding="utf-8")

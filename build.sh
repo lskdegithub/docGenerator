@@ -5,7 +5,6 @@
 #   ./build.sh              # 编译所有文档
 #   ./build.sh test_plan    # 只编译测试大纲
 #   ./build.sh test_detail  # 只编译测试细则
-#   ./build.sh test_report  # 只编译测试报告
 
 echo "======================================"
 echo "  LaTeX 文档编译脚本"
@@ -19,6 +18,7 @@ fi
 
 # 创建输出目录
 mkdir -p output/log
+mkdir -p output/template
 
 # 源文件目录
 SOURCE_DIR="src/doc2tex-template"
@@ -51,25 +51,6 @@ SUCCESS_COUNT=0
 FAIL_COUNT=0
 
 for doc in "${DOCS[@]}"; do
-    if [ "$doc" = "test_detail" ]; then
-        echo "正在构建 $doc..."
-        bash "scripts/build_test_detail.sh" </dev/null 2>&1 | tee "/tmp/compile_${doc}.log"
-        EXIT_CODE=${PIPESTATUS[0]}
-
-        if [ -f "output/${doc}.pdf" ]; then
-            cp -f "/tmp/compile_${doc}.log" "output/log/${doc}.log" 2>/dev/null || true
-        fi
-
-        if [ $EXIT_CODE -eq 0 ]; then
-            echo "✅ $doc 编译成功"
-            ((SUCCESS_COUNT++))
-        else
-            echo "❌ $doc 编译失败"
-            ((FAIL_COUNT++))
-        fi
-        continue
-    fi
-
     MAIN_FILE="$SOURCE_DIR/${doc}/main.tex"
 
     if [ ! -f "$MAIN_FILE" ]; then
@@ -79,21 +60,19 @@ for doc in "${DOCS[@]}"; do
     fi
 
     echo "正在编译 $doc..."
+    rm -f "output/${doc}.pdf" "output/${doc}_fresh.pdf" "output/template/${doc}.pdf" 2>/dev/null || true
 
     # 进入文档目录编译（解决\input路径问题）
     JOBNAME="${doc}_build"
     DOC_BUILD_DIR="${BUILD_DIR}/${JOBNAME}"
     rm -rf "$DOC_BUILD_DIR" 2>/dev/null || true
     mkdir -p "$DOC_BUILD_DIR"
-    (cd "$SOURCE_DIR/${doc}" && TEXINPUTS="..//:" "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="${DOC_BUILD_DIR}" main.tex </dev/null 2>&1 | tee "/tmp/compile_${doc}.log")
+    (cd "$SOURCE_DIR/${doc}" && TEXINPUTS=".//:..//:" "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="${DOC_BUILD_DIR}" ./main.tex </dev/null 2>&1 | tee "/tmp/compile_${doc}.log")
     EXIT_CODE=${PIPESTATUS[0]}
 
     if [ -f "${DOC_BUILD_DIR}/${JOBNAME}.pdf" ]; then
-        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.pdf" "output/${doc}.pdf" 2>/dev/null || true
-        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.pdf" "output/${doc}_fresh.pdf" 2>/dev/null || true
+        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.pdf" "output/template/${doc}.pdf" 2>/dev/null || true
         cp -f "${DOC_BUILD_DIR}/${JOBNAME}.log" "output/log/${doc}.log" 2>/dev/null || true
-        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.aux" "output/log/${doc}.aux" 2>/dev/null || true
-        cp -f "${DOC_BUILD_DIR}/${JOBNAME}.toc" "output/log/${doc}.toc" 2>/dev/null || true
     fi
 
     if [ $EXIT_CODE -eq 0 ]; then
@@ -114,7 +93,11 @@ echo "✅ 成功: $SUCCESS_COUNT 个"
 echo "❌ 失败: $FAIL_COUNT 个"
 echo ""
 echo "📄 PDF 文件:"
-ls -lh "$OUTPUT_DIR"/*.pdf 2>/dev/null | awk '{print "  " $9 " (" $5 ")"}'
+for doc in "${DOCS[@]}"; do
+    if [ -f "$OUTPUT_DIR/template/${doc}.pdf" ]; then
+        ls -lh "$OUTPUT_DIR/template/${doc}.pdf" 2>/dev/null | awk '{print "  " $9 " (" $5 ")"}'
+    fi
+done
 echo ""
 echo "📋 日志文件: $LOG_DIR/"
 

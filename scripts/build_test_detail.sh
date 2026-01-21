@@ -8,6 +8,11 @@ echo "======================================"
 echo "  构建测试细则文档"
 echo "======================================"
 
+XELATEX="xelatex"
+if [ -x "/usr/local/texlive/2025/bin/x86_64-linux/xelatex" ]; then
+  XELATEX="/usr/local/texlive/2025/bin/x86_64-linux/xelatex"
+fi
+
 TEMPLATE_DIR="src/doc2tex-template/test_detail"
 OUTPUT_DIR="output/test_detail"
 DATA_DIR="data"
@@ -34,13 +39,27 @@ echo "✅ 章节已生成"
 echo ""
 echo "步骤3: 编译LaTeX文档..."
 mkdir -p output/log
-rm -f output/log/main.aux output/log/main.toc output/log/main.out output/log/main.log output/log/main.pdf
-(cd "$OUTPUT_DIR" && xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail_pass1.log 2>&1) || true
-(cd "$OUTPUT_DIR" && xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail.log 2>&1) || true
+rm -f output/test_detail.pdf output/test_detail_fresh.pdf 2>/dev/null || true
+JOBNAME="test_detail"
+rm -f "output/log/main.aux" "output/log/main.toc" "output/log/main.out" "output/log/main.log" "output/log/main.pdf"
+rm -f "output/log/${JOBNAME}.aux" "output/log/${JOBNAME}.toc" "output/log/${JOBNAME}.out" "output/log/${JOBNAME}.log" "output/log/${JOBNAME}.pdf"
+set +e
+(cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail_pass1.log 2>&1)
+PASS1_EXIT=$?
+(cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail.log 2>&1)
+PASS2_EXIT=$?
+set -e
 
-if [ -f "output/log/main.pdf" ]; then
-  cp -f "output/log/main.pdf" "output/test_detail.pdf"
-  echo "✅ 文档编译成功: output/test_detail.pdf"
+if [ $PASS1_EXIT -ne 0 ] || [ $PASS2_EXIT -ne 0 ]; then
+  echo "❌ 文档编译失败，请查看日志: output/log/compile_test_detail.log"
+  exit 1
+fi
+
+if [ -f "output/log/${JOBNAME}.pdf" ]; then
+  mkdir -p output/generated
+  cp -f "output/log/${JOBNAME}.pdf" "output/test_detail.pdf"
+  cp -f "output/log/${JOBNAME}.pdf" "output/generated/test_detail.pdf"
+  echo "✅ 文档编译成功: output/generated/test_detail.pdf"
 else
   echo "❌ 文档编译失败，请查看日志: output/log/compile_test_detail.log"
   exit 1

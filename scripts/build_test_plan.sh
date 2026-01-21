@@ -142,6 +142,7 @@ echo ""
 # 步骤8: 编译文档
 echo "步骤8: 编译LaTeX文档..."
 mkdir -p output/log
+rm -f output/test_plan.pdf output/test_plan_fresh.pdf 2>/dev/null || true
 
 # 进入输出目录编译
 (cd "$OUTPUT_DIR" && xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan_pass1.log 2>&1)
@@ -149,8 +150,9 @@ mkdir -p output/log
 
 # 重命名PDF文件
 if [ -f "output/log/main.pdf" ]; then
-    mv -f "output/log/main.pdf" "output/test_plan.pdf"
-    echo "✅ 文档编译成功: output/test_plan.pdf"
+    mkdir -p output/generated
+    mv -f "output/log/main.pdf" "output/generated/test_plan.pdf"
+    echo "✅ 文档编译成功: output/generated/test_plan.pdf"
 else
     echo "❌ 文档编译失败，请查看日志: output/log/compile_test_plan.log"
     exit 1

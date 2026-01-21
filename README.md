@@ -69,15 +69,20 @@ latex-test/
 
 ### 方式1：从数据生成文档（推荐）
 
-使用 `data/` 目录的测试数据自动生成测试计划文档。
+使用 `data/` 目录的测试数据自动生成文档内容（章节/表格），再编译生成 PDF。
 
 ```bash
 # 构建测试计划（从 data 目录读取数据）
 ./scripts/build_test_plan.sh
 
+# 构建测试细则（从 data 目录读取数据）
+./scripts/build_test_detail.sh
+
 # 输出文件
-# - output/test_plan.pdf              (PDF 文档)
-# - output/test_plan/                 (完整的 LaTeX 源码)
+# - output/generated/test_plan.pdf    (PDF 文档)
+# - output/generated/test_detail.pdf  (PDF 文档)
+# - output/test_plan/                 (完整的 LaTeX 源码：模板 + 数据生成)
+# - output/test_detail/               (完整的 LaTeX 源码：模板 + 数据生成)
 ```
 
 **数据驱动的文档生成**：
@@ -103,10 +108,14 @@ latex-test/
 
 ### 输出文件
 
-编译完成后，PDF 文件位于 `output/` 目录：
-- `output/test_plan.pdf` (221KB)
-- `output/test_detail.pdf` (119KB)
-- `output/test_report.pdf` (109KB)
+模板编译（`./build.sh`）完成后，PDF 文件位于 `output/template/`，日志位于 `output/log/`：
+- `output/template/test_plan.pdf`
+- `output/template/test_detail.pdf`
+- `output/template/test_report.pdf`
+
+数据驱动生成（`./scripts/build_test_*.sh`）完成后，PDF 文件位于 `output/generated/`：
+- `output/generated/test_plan.pdf`
+- `output/generated/test_detail.pdf`
 
 ## 多人协作流程
 
