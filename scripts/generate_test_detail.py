@@ -121,6 +121,12 @@ def parse_plan_yaml(file_path: Path):
 
 def escape_latex(text: str) -> str:
     text = str(text or "")
+    token = "GJBALLOWBREAKTOKEN"
+    def break_alnum(match: re.Match) -> str:
+        s = match.group(0)
+        chunk = 6
+        return token.join([s[i:i + chunk] for i in range(0, len(s), chunk)])
+    text = re.sub(r"[A-Za-z0-9]{8,}", break_alnum, text)
     text = text.replace("\\", "\\textbackslash ")
     text = text.replace("&", "\\&")
     text = text.replace("%", "\\%")
@@ -133,16 +139,20 @@ def escape_latex(text: str) -> str:
     text = text.replace("^", "\\textasciicircum ")
     text = re.sub(r"([/-])", r"\1\\allowbreak ", text)
     text = re.sub(r"(?<=\d)\.(?=\d)", r".\\allowbreak ", text)
-    def break_long(match: re.Match) -> str:
-        s = match.group(0)
-        chunk = 16
-        return r"\allowbreak ".join([s[i:i + chunk] for i in range(0, len(s), chunk)])
-    text = re.sub(r"(?<!\\)[A-Za-z0-9]{20,}", break_long, text)
+    text = re.sub(r"([\u4E00-\u9FFF])([A-Za-z0-9])", r"\1\\allowbreak \2", text)
+    text = re.sub(r"([A-Za-z0-9])([\u4E00-\u9FFF])", r"\1\\allowbreak \2", text)
+    text = text.replace(token, r"\allowbreak ")
     return " ".join(text.split())
 
 
 def escape_latex_no_wordbreak(text: str) -> str:
     text = str(text or "")
+    token = "GJBALLOWBREAKTOKEN"
+    def break_alnum(match: re.Match) -> str:
+        s = match.group(0)
+        chunk = 6
+        return token.join([s[i:i + chunk] for i in range(0, len(s), chunk)])
+    text = re.sub(r"[A-Za-z0-9]{8,}", break_alnum, text)
     text = text.replace("\\", "\\textbackslash ")
     text = text.replace("&", "\\&")
     text = text.replace("%", "\\%")
@@ -156,11 +166,9 @@ def escape_latex_no_wordbreak(text: str) -> str:
     text = re.sub(r"([/-])", r"\1\\allowbreak ", text)
     text = re.sub(r"([,.;:])", r"\1\\allowbreak ", text)
     text = re.sub(r"(?<=\d)\.(?=\d)", r".\\allowbreak ", text)
-    def break_long(match: re.Match) -> str:
-        s = match.group(0)
-        chunk = 16
-        return r"\allowbreak ".join([s[i:i + chunk] for i in range(0, len(s), chunk)])
-    text = re.sub(r"(?<!\\)[A-Za-z0-9]{20,}", break_long, text)
+    text = re.sub(r"([\u4E00-\u9FFF])([A-Za-z0-9])", r"\1\\allowbreak \2", text)
+    text = re.sub(r"([A-Za-z0-9])([\u4E00-\u9FFF])", r"\1\\allowbreak \2", text)
+    text = text.replace(token, r"\allowbreak ")
     return " ".join(text.split())
 
 
@@ -811,139 +819,102 @@ def build_trace_rows(metrics):
 
 
 def generate_trace_table_forward_full(metrics):
-    global _DETAIL_TRACE_LAYOUT
-    trace_layout = _DETAIL_TRACE_LAYOUT or {"col_widths_cm": [1.0] * 8}
-    trace_cols_cm = trace_layout["col_widths_cm"]
     rows = build_trace_rows(metrics)
-    # Sort removed to preserve data order
-    
     body_lines = []
-    
-    mi = 0
     seq = 1
-    while mi < len(rows):
-        mj = mi
-        metric_content = rows[mi].get("metric_content") or ""
-        while mj < len(rows) and (rows[mj].get("metric_content") or "") == metric_content:
-            mj += 1
-        full_metric_group = rows[mi:mj]
-        
-        # Split metric content for multi-page break simulation (Chunking)
-        total_len = len(metric_content)
-        for r in full_metric_group:
-             total_len += len(r.get("requirement") or "") + len(r.get("test_item") or "") + len(r.get("case_name") or "")
+    i = 0
+    while i < len(rows):
+        metric_content = rows[i].get("metric_content") or ""
+        j = i
+        while j < len(rows) and (rows[j].get("metric_content") or "") == metric_content:
+            j += 1
+        group = rows[i:j]
+        contract_parts = split_by_max_chars(metric_content, max_chars=60)
+        contract_parts_escaped = [escape_latex_table_cell_soft(p) for p in contract_parts]
+        contract_part_idx = 0
+        will_need_extra_contract_rows = len(contract_parts_escaped) > len(group)
+        k = 0
+        while k < len(group):
+            req_item_key = (
+                group[k].get("requirement") or "",
+                group[k].get("srs_chapter") or "",
+                group[k].get("test_item") or "",
+                group[k].get("item_section") or "",
+            )
+            m = k
+            while m < len(group) and (
+                (group[m].get("requirement") or "", group[m].get("srs_chapter") or "", group[m].get("test_item") or "", group[m].get("item_section") or "")
+                == req_item_key
+            ):
+                m += 1
+            span = m - k
 
-        chunks = []
-        if total_len >= 600 and len(full_metric_group) > 2:
-             chunk_size = 3
-             for i in range(0, len(full_metric_group), chunk_size):
-                 chunks.append(full_metric_group[i:i+chunk_size])
-        else:
-             chunks.append(full_metric_group)
+            for kk in range(k, m):
+                row = group[kk]
+                is_first_row_in_contract = (kk == 0)
+                is_first_row_in_group = (kk == k)
+                is_last_row_in_group = (kk == m - 1)
+                is_last_row_in_contract = (kk == len(group) - 1)
+                is_last_row_in_contract_effective = is_last_row_in_contract and not will_need_extra_contract_rows
+                contract_piece = contract_parts_escaped[contract_part_idx] if contract_part_idx < len(contract_parts_escaped) else ""
+                contract_part_idx += 1
 
-        for chunk_idx, metric_group in enumerate(chunks):
-            current_metric_content = metric_content
-            if chunk_idx > 0:
-                current_metric_content += "（续）"
+                c1 = f"{seq}" if is_first_row_in_contract else ""
+                c2 = contract_piece
 
-            head_parts = split_front_small_rest_last(current_metric_content, len(metric_group), head_max_chars=60)
-            tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
-            metric_row_idx = 0
-
-            ri = 0
-            while ri < len(metric_group):
-                rj = ri
-                req_key = (metric_group[ri].get("requirement") or "", metric_group[ri].get("srs_chapter") or "")
-                while rj < len(metric_group) and (
-                    (metric_group[rj].get("requirement") or "", metric_group[rj].get("srs_chapter") or "") == req_key
-                ):
-                    rj += 1
-                req_group = metric_group[ri:rj]
-                req_cell = escape_latex_table_cell_soft(req_key[0])
-                srs_cell = escape_latex(req_key[1])
-
-                ii = 0
-                while ii < len(req_group):
-                    ij = ii
-                    item_key = (req_group[ii].get("test_item") or "", req_group[ii].get("item_section") or "")
-                    while ij < len(req_group) and (
-                        (req_group[ij].get("test_item") or "", req_group[ij].get("item_section") or "") == item_key
-                    ):
-                        ij += 1
-                    item_group = req_group[ii:ij]
-                    item_cell = escape_latex_table_cell_soft(item_key[0])
-                    item_sec_cell = escape_latex(item_key[1])
-
-                    for ci, row in enumerate(item_group):
-                        is_first_metric_row = (metric_row_idx == 0)
-                        is_first_req_row = (ii == 0 and ci == 0)
-                        is_first_item_row = (ci == 0)
-                        
-                        is_last_case_in_item = (ci == len(item_group) - 1)
-                        is_last_item_in_req = (ij == len(req_group))
-                        is_last_req_in_metric = (rj == len(metric_group))
-                        is_last_row_in_metric = is_last_case_in_item and is_last_item_in_req and is_last_req_in_metric
-
-                        if metric_row_idx == len(metric_group) - 1:
-                            metric_piece = tail_chunks[0]
-                        else:
-                            metric_piece = head_parts[metric_row_idx]
-                        metric_row_idx += 1
-
-                        c1 = f"\\SetCell[r=1]{{c}} {seq}" if is_first_metric_row else ""
-                        c2 = escape_latex_table_cell_soft(metric_piece)
-                        c3 = req_cell if is_first_req_row else ""
-                        c4 = srs_cell if is_first_req_row else ""
-                        c5 = item_cell if is_first_item_row else ""
-                        c6 = item_sec_cell if is_first_item_row else ""
-                        c7 = escape_latex_table_cell_soft(row.get("case_name") or "")
-                        c8 = escape_latex(row.get("case_section") or "")
-                        
-                        line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
-                        
-                        if is_last_row_in_metric:
-                            if len(tail_chunks) > 1:
-                                 line += r" \cline{3-8}"
-                            else:
-                                 line += r" \hline"
-                        elif not is_last_case_in_item:
-                            line += r" \cline{7-8}"
-                        elif not is_last_item_in_req:
-                            line += r" \cline{5-8}"
-                        else:
-                            line += r" \cline{3-8}"
-
-                        body_lines.append(line)
-
-                    ii = ij
-                ri = rj
-
-            for extra_idx, extra in enumerate(tail_chunks[1:]):
-                content_tex = escape_latex_table_cell_soft(extra)
-                line = f" & {content_tex} &  &  &  &  &  &  \\\\"
-                if extra_idx == len(tail_chunks[1:]) - 1:
-                    line += r" \hline"
+                if is_first_row_in_group:
+                    req_cell = escape_latex_table_cell_soft(req_item_key[0])
+                    srs_cell = escape_latex(req_item_key[1])
+                    item_cell = escape_latex_table_cell_soft(req_item_key[2])
+                    item_sec_cell = escape_latex(req_item_key[3])
+                    c3 = f"\\SetCell[r={span}]{{l,t}} {{{req_cell}}}"
+                    c4 = f"\\SetCell[r={span}]{{c,t}} {{{srs_cell}}}"
+                    c5 = f"\\SetCell[r={span}]{{l,t}} {{{item_cell}}}"
+                    c6 = f"\\SetCell[r={span}]{{c,t}} {{{item_sec_cell}}}"
                 else:
-                    pass
+                    c3 = ""
+                    c4 = ""
+                    c5 = ""
+                    c6 = ""
+
+                c7 = escape_latex_table_cell_soft(row.get("case_name") or "")
+                c8 = escape_latex(row.get("case_section") or "")
+
+                line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
+
+                if is_last_row_in_contract_effective:
+                    line += r" \hline"
+                elif not is_last_row_in_group:
+                    line += r" \cline{7-8}"
+                else:
+                    line += r" \cline{3-8}"
+
                 body_lines.append(line)
-            
-        mi = mj
+
+            k = m
+        while contract_part_idx < len(contract_parts_escaped):
+            contract_piece = contract_parts_escaped[contract_part_idx]
+            contract_part_idx += 1
+            is_last_extra = contract_part_idx >= len(contract_parts_escaped)
+            line = f" & {contract_piece} &  &  &  &  &  &  \\\\"
+            line += (r" \hline" if is_last_extra else r" \cline{2-2}")
+            body_lines.append(line)
+
+        i = j
         seq += 1
 
     body_text = "\n".join(body_lines)
-    
     head_contract = r"合同/\allowbreak 补充协议/\allowbreak xxxxx/\allowbreak xxxxx"
-    latex = f"""{{\\settablespacing
+    latex = f"""\\Needspace{{6cm}}
+{{\\settablespacing
 \\begin{{longtblr}}[theme=gjb,caption={{需求到测试用例的追踪关系表}},label={{tbl:detail-req-to-case}}]{{
   width=\\GjbDetailTraceTableWidth,
   leftsep=\\GjbDetailTraceLeftSep,
   rightsep=\\GjbDetailTraceRightSep,
   colsep=\\GjbDetailTraceColSep,
-  colspec={{Q[c,\\GjbDetailTraceColA] Q[l,\\GjbDetailTraceColB] Q[l,\\GjbDetailTraceColC] Q[c,\\GjbDetailTraceColD] Q[l,\\GjbDetailTraceColE] Q[c,\\GjbDetailTraceColF] Q[l,\\GjbDetailTraceColG] Q[c,\\GjbDetailTraceColH]}},
+  colspec={{|Q[c,t,\\GjbDetailTraceColA]|Q[l,t,\\GjbDetailTraceColB]|Q[l,t,\\GjbDetailTraceColC]|Q[c,t,\\GjbDetailTraceColD]|Q[l,t,\\GjbDetailTraceColE]|Q[c,t,\\GjbDetailTraceColF]|Q[l,t,\\GjbDetailTraceColG]|Q[c,t,\\GjbDetailTraceColH]|}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
-  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
-  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
 \\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} {head_contract} & \\SetCell[c=2]{{c}} 需求规格说明书 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 测试用例 & \\\\
@@ -959,139 +930,101 @@ def generate_trace_table_forward_full(metrics):
 
 
 def generate_trace_table_reverse_full(metrics):
-    global _DETAIL_TRACE_LAYOUT
-    trace_layout = _DETAIL_TRACE_LAYOUT or {"col_widths_cm": [1.0] * 8}
-    trace_cols_cm = trace_layout["col_widths_cm"]
     rows = build_trace_rows(metrics)
-    # Sort removed to preserve data order
-    
     body_lines = []
-    
-    mi = 0
     seq = 1
-    while mi < len(rows):
-        mj = mi
-        metric_content = rows[mi].get("metric_content") or ""
-        while mj < len(rows) and (rows[mj].get("metric_content") or "") == metric_content:
-            mj += 1
-        full_metric_group = rows[mi:mj]
-        
-        # Split metric content for multi-page break simulation (Chunking)
-        total_len = len(metric_content)
-        for r in full_metric_group:
-             total_len += len(r.get("requirement") or "") + len(r.get("test_item") or "") + len(r.get("case_name") or "")
+    i = 0
+    while i < len(rows):
+        metric_content = rows[i].get("metric_content") or ""
+        j = i
+        while j < len(rows) and (rows[j].get("metric_content") or "") == metric_content:
+            j += 1
+        group = rows[i:j]
+        contract_parts = split_by_max_chars(metric_content, max_chars=60)
+        contract_parts_escaped = [escape_latex_table_cell_soft(p) for p in contract_parts]
+        contract_part_idx = 0
+        will_need_extra_contract_rows = len(contract_parts_escaped) > len(group)
+        k = 0
+        while k < len(group):
+            req_item_key = (
+                group[k].get("requirement") or "",
+                group[k].get("srs_chapter") or "",
+                group[k].get("test_item") or "",
+                group[k].get("item_section") or "",
+            )
+            m = k
+            while m < len(group) and (
+                (group[m].get("requirement") or "", group[m].get("srs_chapter") or "", group[m].get("test_item") or "", group[m].get("item_section") or "")
+                == req_item_key
+            ):
+                m += 1
+            span = m - k
 
-        chunks = []
-        if total_len >= 600 and len(full_metric_group) > 2:
-             chunk_size = 3
-             for i in range(0, len(full_metric_group), chunk_size):
-                 chunks.append(full_metric_group[i:i+chunk_size])
-        else:
-             chunks.append(full_metric_group)
+            for kk in range(k, m):
+                row = group[kk]
+                is_first_row_in_contract = (kk == 0)
+                is_first_row_in_group = (kk == k)
+                is_last_row_in_group = (kk == m - 1)
+                is_last_row_in_contract = (kk == len(group) - 1)
+                is_last_row_in_contract_effective = is_last_row_in_contract and not will_need_extra_contract_rows
+                contract_piece = contract_parts_escaped[contract_part_idx] if contract_part_idx < len(contract_parts_escaped) else ""
+                contract_part_idx += 1
 
-        for chunk_idx, metric_group in enumerate(chunks):
-            current_metric_content = metric_content
-            if chunk_idx > 0:
-                current_metric_content += "（续）"
+                c1 = f"{seq}" if is_first_row_in_contract else ""
+                c2 = contract_piece
+                c3 = escape_latex_table_cell_soft(row.get("case_name") or "")
+                c4 = escape_latex(row.get("case_section") or "")
 
-            head_parts = split_front_small_rest_last(current_metric_content, len(metric_group), head_max_chars=60)
-            tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
-            metric_row_idx = 0
-
-            ci0 = 0
-            while ci0 < len(metric_group):
-                cj0 = ci0
-                case_key = (metric_group[ci0].get("case_name") or "", metric_group[ci0].get("case_section") or "")
-                while cj0 < len(metric_group) and (
-                    (metric_group[cj0].get("case_name") or "", metric_group[cj0].get("case_section") or "") == case_key
-                ):
-                    cj0 += 1
-                case_group = metric_group[ci0:cj0]
-                case_cell = escape_latex_table_cell_soft(case_key[0])
-                case_sec_cell = escape_latex(case_key[1])
-
-                ii = 0
-                while ii < len(case_group):
-                    ij = ii
-                    item_key = (case_group[ii].get("test_item") or "", case_group[ii].get("item_section") or "")
-                    while ij < len(case_group) and (
-                        (case_group[ij].get("test_item") or "", case_group[ij].get("item_section") or "") == item_key
-                    ):
-                        ij += 1
-                    item_group = case_group[ii:ij]
-                    item_cell = escape_latex_table_cell_soft(item_key[0])
-                    item_sec_cell = escape_latex(item_key[1])
-
-                    for ri, row in enumerate(item_group):
-                        is_first_metric_row = (metric_row_idx == 0)
-                        is_first_case_row = (ii == 0 and ri == 0)
-                        is_first_item_row = (ri == 0)
-                        
-                        is_last_req_in_item = (ri == len(item_group) - 1)
-                        is_last_item_in_case = (ij == len(case_group))
-                        is_last_case_in_metric = (cj0 == len(metric_group))
-                        is_last_row_in_metric = is_last_req_in_item and is_last_item_in_case and is_last_case_in_metric
-
-                        if metric_row_idx == len(metric_group) - 1:
-                            metric_piece = tail_chunks[0]
-                        else:
-                            metric_piece = head_parts[metric_row_idx]
-                        metric_row_idx += 1
-
-                        c1 = f"\\SetCell[r=1]{{c}} {seq}" if is_first_metric_row else ""
-                        c2 = escape_latex_table_cell_soft(metric_piece)
-                        c3 = case_cell if is_first_case_row else ""
-                        c4 = case_sec_cell if is_first_case_row else ""
-                        c5 = item_cell if is_first_item_row else ""
-                        c6 = item_sec_cell if is_first_item_row else ""
-                        c7 = escape_latex_table_cell_soft(row.get("requirement") or "")
-                        c8 = escape_latex(row.get("srs_chapter") or "")
-
-                        line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
-                        
-                        if is_last_row_in_metric:
-                            if len(tail_chunks) > 1:
-                                 line += r" \cline{3-8}"
-                            else:
-                                 line += r" \hline"
-                        elif not is_last_req_in_item:
-                            line += r" \cline{7-8}"
-                        elif not is_last_item_in_case:
-                            line += r" \cline{5-8}"
-                        else:
-                            line += r" \cline{3-8}"
-
-                        body_lines.append(line)
-
-                    ii = ij
-                ci0 = cj0
-
-            for extra_idx, extra in enumerate(tail_chunks[1:]):
-                content_tex = escape_latex_table_cell_soft(extra)
-                line = f" & {content_tex} &  &  &  &  &  &  \\\\"
-                if extra_idx == len(tail_chunks[1:]) - 1:
-                    line += r" \hline"
+                if is_first_row_in_group:
+                    item_cell = escape_latex_table_cell_soft(req_item_key[2])
+                    item_sec_cell = escape_latex(req_item_key[3])
+                    req_cell = escape_latex_table_cell_soft(req_item_key[0])
+                    srs_cell = escape_latex(req_item_key[1])
+                    c5 = f"\\SetCell[r={span}]{{l,t}} {{{item_cell}}}"
+                    c6 = f"\\SetCell[r={span}]{{c,t}} {{{item_sec_cell}}}"
+                    c7 = f"\\SetCell[r={span}]{{l,t}} {{{req_cell}}}"
+                    c8 = f"\\SetCell[r={span}]{{c,t}} {{{srs_cell}}}"
                 else:
-                    pass
+                    c5 = ""
+                    c6 = ""
+                    c7 = ""
+                    c8 = ""
+
+                line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
+
+                if is_last_row_in_contract_effective:
+                    line += r" \hline"
+                elif not is_last_row_in_group:
+                    line += r" \cline{3-4}"
+                else:
+                    line += r" \cline{3-8}"
+
                 body_lines.append(line)
-            
-        mi = mj
+
+            k = m
+        while contract_part_idx < len(contract_parts_escaped):
+            contract_piece = contract_parts_escaped[contract_part_idx]
+            contract_part_idx += 1
+            is_last_extra = contract_part_idx >= len(contract_parts_escaped)
+            line = f" & {contract_piece} &  &  &  &  &  &  \\\\"
+            line += (r" \hline" if is_last_extra else r" \cline{2-2}")
+            body_lines.append(line)
+
+        i = j
         seq += 1
 
     body_text = "\n".join(body_lines)
-    
     head_contract = r"合同/\allowbreak 补充协议/\allowbreak xxxxx/\allowbreak xxxxx"
-    latex = f"""{{\\settablespacing
+    latex = f"""\\Needspace{{6cm}}
+{{\\settablespacing
 \\begin{{longtblr}}[theme=gjb,caption={{测试用例到需求的追踪关系表}},label={{tbl:detail-case-to-req}}]{{
   width=\\GjbDetailTraceTableWidth,
   leftsep=\\GjbDetailTraceLeftSep,
   rightsep=\\GjbDetailTraceRightSep,
   colsep=\\GjbDetailTraceColSep,
-  colspec={{Q[c,\\GjbDetailTraceColA] Q[l,\\GjbDetailTraceColB] Q[l,\\GjbDetailTraceColC] Q[c,\\GjbDetailTraceColD] Q[l,\\GjbDetailTraceColE] Q[c,\\GjbDetailTraceColF] Q[l,\\GjbDetailTraceColG] Q[c,\\GjbDetailTraceColH]}},
+  colspec={{|Q[c,t,\\GjbDetailTraceColA]|Q[l,t,\\GjbDetailTraceColB]|Q[l,t,\\GjbDetailTraceColC]|Q[c,t,\\GjbDetailTraceColD]|Q[l,t,\\GjbDetailTraceColE]|Q[c,t,\\GjbDetailTraceColF]|Q[l,t,\\GjbDetailTraceColG]|Q[c,t,\\GjbDetailTraceColH]|}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
-  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
-  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
 \\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} {head_contract} & \\SetCell[c=2]{{c}} 测试用例 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 需求规格说明书 & \\\\
