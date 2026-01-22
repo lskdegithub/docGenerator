@@ -266,7 +266,15 @@ def build_case_table(case_data, test_item_label, label_suffix):
     label = f"tbl:detail-tc-{sanitize_label(label_suffix)}"
     caption = case_name or "测试用例"
     table = f"""{{\\settablespacing
-\\begin{{longtblr}}[theme=gjbNoHead,caption={{{caption}}},label={{{label}}}]{{\n  colspec={{|p{{0.8cm}}|p{{1.5cm}}|p{{2.25cm}}|p{{2.25cm}}|p{{2.4cm}}|p{{2.4cm}}|p{{1.45cm}}|p{{1.45cm}}|}},\n  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  column{{1}}={{halign=c}},\n}}
+\\begin{{longtblr}}[theme=gjbNoHead,caption={{{caption}}},label={{{label}}}]{{
+  width=14.5cm,
+  leftsep=0pt,
+  rightsep=0pt,
+  colsep=0pt,
+  colspec={{|Q[c,0.8cm]|Q[1.5cm]|Q[2.25cm]|Q[2.25cm]|Q[2.4cm]|Q[2.4cm]|Q[1.45cm]|Q[1.45cm]|}},
+  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  vline{{1,2,3,4,5,6,7,8,Z}}={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+}}
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例名称}}}} & & \\SetCell[c=3]{{valign=t}}{{{case_name}}} &  &  & \\TableKeyCell{{标识}} & \\SetCell[c=2]{{valign=t}}{{\\TableIdentifier{{{case_ident}}}}} & \\\\
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{追踪关系}}}} & & \\SetCell[c=6]{{valign=t}}{{{test_item_label}}} &  &  &  &  & \\\\
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例综述}}}} & & \\SetCell[c=6]{{valign=t}}{{{summary}}} &  &  &  &  & \\\\
@@ -322,10 +330,10 @@ def build_chapter4(metrics):
 
 {{\\settablespacing
 \\begin{{longtblr}}[theme=gjb,caption={{测试项列表}},label={{tbl:detail-testitems}}]{{
-  colspec={{|p{{0.8cm}}|p{{4.0cm}}|p{{9.7cm}}|}},
+  colspec={{c p{{4.0cm}} X}},
   rowhead=1,
   hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
-  column{{1}}={{halign=c}},
+  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
 序号 & 测试类别 & 测试项名称 \\\\\n{table_rows_text}
 \\end{{longtblr}}
@@ -381,200 +389,282 @@ def build_trace_rows(metrics):
     return rows
 
 
-def build_trace_longtable_rows_forward(metrics):
+def generate_trace_table_forward_full(metrics):
     rows = build_trace_rows(metrics)
-    rows.sort(
-        key=lambda r: (
-            r.get("metric_content", ""),
-            r.get("requirement", ""),
-            r.get("srs_chapter", ""),
-            r.get("test_item", ""),
-            r.get("item_section", ""),
-            r.get("case_name", ""),
-            r.get("case_section", ""),
-        )
-    )
-    out = []
+    # Sort removed to preserve data order
+    
+    body_lines = []
+    
     mi = 0
+    seq = 1
     while mi < len(rows):
         mj = mi
         metric_content = rows[mi].get("metric_content") or ""
         while mj < len(rows) and (rows[mj].get("metric_content") or "") == metric_content:
             mj += 1
-        metric_group = rows[mi:mj]
-        head_parts = split_front_small_rest_last(metric_content, len(metric_group), head_max_chars=60)
-        tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
-        metric_row_idx = 0
+        full_metric_group = rows[mi:mj]
+        
+        # Split metric content for multi-page break simulation (Chunking)
+        total_len = len(metric_content)
+        for r in full_metric_group:
+             total_len += len(r.get("requirement") or "") + len(r.get("test_item") or "") + len(r.get("case_name") or "")
 
-        ri = 0
-        while ri < len(metric_group):
-            rj = ri
-            req_key = (metric_group[ri].get("requirement") or "", metric_group[ri].get("srs_chapter") or "")
-            while rj < len(metric_group) and (
-                (metric_group[rj].get("requirement") or "", metric_group[rj].get("srs_chapter") or "") == req_key
-            ):
-                rj += 1
-            req_group = metric_group[ri:rj]
-            req_cell = escape_latex_table_cell(req_key[0], chars_per_line=14)
-            srs_cell = escape_latex_table_cell(req_key[1], chars_per_line=12)
+        chunks = []
+        if total_len >= 600 and len(full_metric_group) > 2:
+             chunk_size = 3
+             for i in range(0, len(full_metric_group), chunk_size):
+                 chunks.append(full_metric_group[i:i+chunk_size])
+        else:
+             chunks.append(full_metric_group)
 
-            ii = 0
-            while ii < len(req_group):
-                ij = ii
-                item_key = (req_group[ii].get("test_item") or "", req_group[ii].get("item_section") or "")
-                while ij < len(req_group) and (
-                    (req_group[ij].get("test_item") or "", req_group[ij].get("item_section") or "") == item_key
+        for chunk_idx, metric_group in enumerate(chunks):
+            current_metric_content = metric_content
+            if chunk_idx > 0:
+                current_metric_content += "（续）"
+
+            head_parts = split_front_small_rest_last(current_metric_content, len(metric_group), head_max_chars=60)
+            tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
+            metric_row_idx = 0
+
+            ri = 0
+            while ri < len(metric_group):
+                rj = ri
+                req_key = (metric_group[ri].get("requirement") or "", metric_group[ri].get("srs_chapter") or "")
+                while rj < len(metric_group) and (
+                    (metric_group[rj].get("requirement") or "", metric_group[rj].get("srs_chapter") or "") == req_key
                 ):
-                    ij += 1
-                item_group = req_group[ii:ij]
-                item_cell = escape_latex_table_cell(item_key[0], chars_per_line=22)
-                item_sec_cell = escape_latex(item_key[1])
+                    rj += 1
+                req_group = metric_group[ri:rj]
+                req_cell = escape_latex_table_cell(req_key[0], chars_per_line=14)
+                srs_cell = escape_latex_table_cell(req_key[1], chars_per_line=12)
 
-                for ci, row in enumerate(item_group):
-                    is_first_metric_row = metric_row_idx == 0
-                    is_first_req_row = (ii == 0 and ci == 0)
-                    is_first_item_row = (ci == 0)
-                    is_last_case_in_item = (ci == len(item_group) - 1)
-                    is_last_item_in_req = (ij == len(req_group))
-                    is_last_req_in_metric = (rj == len(metric_group))
-                    is_last_row_in_metric = is_last_case_in_item and is_last_item_in_req and is_last_req_in_metric
+                ii = 0
+                while ii < len(req_group):
+                    ij = ii
+                    item_key = (req_group[ii].get("test_item") or "", req_group[ii].get("item_section") or "")
+                    while ij < len(req_group) and (
+                        (req_group[ij].get("test_item") or "", req_group[ij].get("item_section") or "") == item_key
+                    ):
+                        ij += 1
+                    item_group = req_group[ii:ij]
+                    item_cell = escape_latex_table_cell(item_key[0], chars_per_line=22)
+                    item_sec_cell = escape_latex(item_key[1])
 
-                    if metric_row_idx == len(metric_group) - 1:
-                        metric_piece = tail_chunks[0]
-                    else:
-                        metric_piece = head_parts[metric_row_idx]
-                    metric_row_idx += 1
+                    for ci, row in enumerate(item_group):
+                        is_first_metric_row = (metric_row_idx == 0)
+                        is_first_req_row = (ii == 0 and ci == 0)
+                        is_first_item_row = (ci == 0)
+                        
+                        is_last_case_in_item = (ci == len(item_group) - 1)
+                        is_last_item_in_req = (ij == len(req_group))
+                        is_last_req_in_metric = (rj == len(metric_group))
+                        is_last_row_in_metric = is_last_case_in_item and is_last_item_in_req and is_last_req_in_metric
 
-                    c1 = r"\Seq" if is_first_metric_row else ""
-                    c2 = escape_latex_table_cell(metric_piece, chars_per_line=18)
-                    c3 = req_cell if is_first_req_row else ""
-                    c4 = srs_cell if is_first_req_row else ""
-                    c5 = item_cell if is_first_item_row else ""
-                    c6 = item_sec_cell if is_first_item_row else ""
-                    c7 = escape_latex_table_cell(row.get("case_name") or "", chars_per_line=22)
-                    c8 = escape_latex(row.get("case_section") or "")
+                        if metric_row_idx == len(metric_group) - 1:
+                            metric_piece = tail_chunks[0]
+                        else:
+                            metric_piece = head_parts[metric_row_idx]
+                        metric_row_idx += 1
 
-                    line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
-                    if is_last_row_in_metric:
-                        line += r" \cline{3-8}" if len(tail_chunks) > 1 else r" \hline"
-                    elif not is_last_case_in_item:
-                        line += r" \cline{7-8}"
-                    elif not is_last_item_in_req:
-                        line += r" \cline{5-8}"
-                    else:
-                        line += r" \cline{3-8}"
+                        c1 = f"\\SetCell[r=1]{{c}} {seq}" if is_first_metric_row else ""
+                        c2 = escape_latex_table_cell(metric_piece, chars_per_line=18)
+                        c3 = req_cell if is_first_req_row else ""
+                        c4 = srs_cell if is_first_req_row else ""
+                        c5 = item_cell if is_first_item_row else ""
+                        c6 = item_sec_cell if is_first_item_row else ""
+                        c7 = escape_latex_table_cell(row.get("case_name") or "", chars_per_line=22)
+                        c8 = escape_latex(row.get("case_section") or "")
+                        
+                        line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
+                        
+                        if is_last_row_in_metric:
+                            if len(tail_chunks) > 1:
+                                 line += r" \cline{3-8}"
+                            else:
+                                 line += r" \hline"
+                        elif not is_last_case_in_item:
+                            line += r" \cline{7-8}"
+                        elif not is_last_item_in_req:
+                            line += r" \cline{5-8}"
+                        else:
+                            line += r" \cline{3-8}"
 
-                    out.append(line)
+                        body_lines.append(line)
 
-                ii = ij
-            ri = rj
+                    ii = ij
+                ri = rj
 
-        for extra_idx, extra in enumerate(tail_chunks[1:]):
-            content_tex = escape_latex_table_cell(extra, chars_per_line=18)
-            out.append(f" & {content_tex} &  &  &  &  &  &  \\\\")
-            if extra_idx == len(tail_chunks[1:]) - 1:
-                out.append(r" \hline")
+            for extra_idx, extra in enumerate(tail_chunks[1:]):
+                content_tex = escape_latex_table_cell(extra, chars_per_line=18)
+                line = f" & {content_tex} &  &  &  &  &  &  \\\\"
+                if extra_idx == len(tail_chunks[1:]) - 1:
+                    line += r" \hline"
+                else:
+                    pass
+                body_lines.append(line)
+            
         mi = mj
+        seq += 1
 
-    return "\n".join(out).strip()
+    body_text = "\n".join(body_lines)
+    
+    latex = f"""{{\\settablespacing
+\\begin{{longtblr}}[theme=gjb,caption={{需求到测试用例的追踪关系表}},label={{tbl:detail-req-to-case}}]{{
+  colspec={{X[0.8,c] X[2.0,l] X[1.7,l] X[1.5,c] X[3.1,l] X[1.3,c] X[3.1,l] X[1.3,c]}},
+  rowhead=2,
+  row{{1,2}}={{font=\\xiaowuhei}},
+  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+}}
+\\hline
+\\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} 合同/补充协议/xxxxx/xxxxx & \\SetCell[c=2]{{c}} 需求规格说明书 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 测试用例 & \\\\
+\\hline
+ & & 需求名称/标识 & 需规章节号 & 测试项名称/标识 & 本文档章节号 & 测试用例名称/标识 & 测试章节号 \\\\
+\\hline
+{body_text}
+\\end{{longtblr}}
+}}
+\\vspace{{0pt}}
+"""
+    return latex
 
 
-def build_trace_longtable_rows_reverse(metrics):
+def generate_trace_table_reverse_full(metrics):
     rows = build_trace_rows(metrics)
-    rows.sort(
-        key=lambda r: (
-            r.get("metric_content", ""),
-            r.get("case_name", ""),
-            r.get("case_section", ""),
-            r.get("test_item", ""),
-            r.get("item_section", ""),
-            r.get("requirement", ""),
-            r.get("srs_chapter", ""),
-        )
-    )
-    out = []
+    # Sort removed to preserve data order
+    
+    body_lines = []
+    
     mi = 0
+    seq = 1
     while mi < len(rows):
         mj = mi
         metric_content = rows[mi].get("metric_content") or ""
         while mj < len(rows) and (rows[mj].get("metric_content") or "") == metric_content:
             mj += 1
-        metric_group = rows[mi:mj]
-        head_parts = split_front_small_rest_last(metric_content, len(metric_group), head_max_chars=60)
-        tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
-        metric_row_idx = 0
+        full_metric_group = rows[mi:mj]
+        
+        # Split metric content for multi-page break simulation (Chunking)
+        total_len = len(metric_content)
+        for r in full_metric_group:
+             total_len += len(r.get("requirement") or "") + len(r.get("test_item") or "") + len(r.get("case_name") or "")
 
-        ci0 = 0
-        while ci0 < len(metric_group):
-            cj0 = ci0
-            case_key = (metric_group[ci0].get("case_name") or "", metric_group[ci0].get("case_section") or "")
-            while cj0 < len(metric_group) and (
-                (metric_group[cj0].get("case_name") or "", metric_group[cj0].get("case_section") or "") == case_key
-            ):
-                cj0 += 1
-            case_group = metric_group[ci0:cj0]
-            case_cell = escape_latex_table_cell(case_key[0], chars_per_line=22)
-            case_sec_cell = escape_latex(case_key[1])
+        chunks = []
+        if total_len >= 600 and len(full_metric_group) > 2:
+             chunk_size = 3
+             for i in range(0, len(full_metric_group), chunk_size):
+                 chunks.append(full_metric_group[i:i+chunk_size])
+        else:
+             chunks.append(full_metric_group)
 
-            ii = 0
-            while ii < len(case_group):
-                ij = ii
-                item_key = (case_group[ii].get("test_item") or "", case_group[ii].get("item_section") or "")
-                while ij < len(case_group) and (
-                    (case_group[ij].get("test_item") or "", case_group[ij].get("item_section") or "") == item_key
+        for chunk_idx, metric_group in enumerate(chunks):
+            current_metric_content = metric_content
+            if chunk_idx > 0:
+                current_metric_content += "（续）"
+
+            head_parts = split_front_small_rest_last(current_metric_content, len(metric_group), head_max_chars=60)
+            tail_chunks = split_by_max_chars(head_parts[-1], max_chars=200)
+            metric_row_idx = 0
+
+            ci0 = 0
+            while ci0 < len(metric_group):
+                cj0 = ci0
+                case_key = (metric_group[ci0].get("case_name") or "", metric_group[ci0].get("case_section") or "")
+                while cj0 < len(metric_group) and (
+                    (metric_group[cj0].get("case_name") or "", metric_group[cj0].get("case_section") or "") == case_key
                 ):
-                    ij += 1
-                item_group = case_group[ii:ij]
-                item_cell = escape_latex_table_cell(item_key[0], chars_per_line=22)
-                item_sec_cell = escape_latex(item_key[1])
+                    cj0 += 1
+                case_group = metric_group[ci0:cj0]
+                case_cell = escape_latex_table_cell(case_key[0], chars_per_line=22)
+                case_sec_cell = escape_latex(case_key[1])
 
-                for ri, row in enumerate(item_group):
-                    is_first_metric_row = metric_row_idx == 0
-                    is_first_case_row = (ii == 0 and ri == 0)
-                    is_first_item_row = (ri == 0)
-                    is_last_req_in_item = (ri == len(item_group) - 1)
-                    is_last_item_in_case = (ij == len(case_group))
-                    is_last_case_in_metric = (cj0 == len(metric_group))
-                    is_last_row_in_metric = is_last_req_in_item and is_last_item_in_case and is_last_case_in_metric
+                ii = 0
+                while ii < len(case_group):
+                    ij = ii
+                    item_key = (case_group[ii].get("test_item") or "", case_group[ii].get("item_section") or "")
+                    while ij < len(case_group) and (
+                        (case_group[ij].get("test_item") or "", case_group[ij].get("item_section") or "") == item_key
+                    ):
+                        ij += 1
+                    item_group = case_group[ii:ij]
+                    item_cell = escape_latex_table_cell(item_key[0], chars_per_line=22)
+                    item_sec_cell = escape_latex(item_key[1])
 
-                    if metric_row_idx == len(metric_group) - 1:
-                        metric_piece = tail_chunks[0]
-                    else:
-                        metric_piece = head_parts[metric_row_idx]
-                    metric_row_idx += 1
+                    for ri, row in enumerate(item_group):
+                        is_first_metric_row = (metric_row_idx == 0)
+                        is_first_case_row = (ii == 0 and ri == 0)
+                        is_first_item_row = (ri == 0)
+                        
+                        is_last_req_in_item = (ri == len(item_group) - 1)
+                        is_last_item_in_case = (ij == len(case_group))
+                        is_last_case_in_metric = (cj0 == len(metric_group))
+                        is_last_row_in_metric = is_last_req_in_item and is_last_item_in_case and is_last_case_in_metric
 
-                    c1 = r"\Seq" if is_first_metric_row else ""
-                    c2 = escape_latex_table_cell(metric_piece, chars_per_line=18)
-                    c3 = case_cell if is_first_case_row else ""
-                    c4 = case_sec_cell if is_first_case_row else ""
-                    c5 = item_cell if is_first_item_row else ""
-                    c6 = item_sec_cell if is_first_item_row else ""
-                    c7 = escape_latex_table_cell(row.get("requirement") or "", chars_per_line=14)
-                    c8 = escape_latex_table_cell(row.get("srs_chapter") or "", chars_per_line=12)
+                        if metric_row_idx == len(metric_group) - 1:
+                            metric_piece = tail_chunks[0]
+                        else:
+                            metric_piece = head_parts[metric_row_idx]
+                        metric_row_idx += 1
 
-                    line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
-                    if is_last_row_in_metric:
-                        line += r" \cline{3-8}" if len(tail_chunks) > 1 else r" \hline"
-                    elif not is_last_req_in_item:
-                        line += r" \cline{7-8}"
-                    elif not is_last_item_in_case:
-                        line += r" \cline{5-8}"
-                    else:
-                        line += r" \cline{3-8}"
+                        c1 = f"\\SetCell[r=1]{{c}} {seq}" if is_first_metric_row else ""
+                        c2 = escape_latex_table_cell(metric_piece, chars_per_line=18)
+                        c3 = case_cell if is_first_case_row else ""
+                        c4 = case_sec_cell if is_first_case_row else ""
+                        c5 = item_cell if is_first_item_row else ""
+                        c6 = item_sec_cell if is_first_item_row else ""
+                        c7 = escape_latex_table_cell(row.get("requirement") or "", chars_per_line=14)
+                        c8 = escape_latex_table_cell(row.get("srs_chapter") or "", chars_per_line=12)
 
-                    out.append(line)
+                        line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
+                        
+                        if is_last_row_in_metric:
+                            if len(tail_chunks) > 1:
+                                 line += r" \cline{3-8}"
+                            else:
+                                 line += r" \hline"
+                        elif not is_last_req_in_item:
+                            line += r" \cline{7-8}"
+                        elif not is_last_item_in_case:
+                            line += r" \cline{5-8}"
+                        else:
+                            line += r" \cline{3-8}"
 
-                ii = ij
-            ci0 = cj0
+                        body_lines.append(line)
 
-        for extra_idx, extra in enumerate(tail_chunks[1:]):
-            content_tex = escape_latex_table_cell(extra, chars_per_line=18)
-            out.append(f" & {content_tex} &  &  &  &  &  &  \\\\")
-            if extra_idx == len(tail_chunks[1:]) - 1:
-                out.append(r" \hline")
+                    ii = ij
+                ci0 = cj0
+
+            for extra_idx, extra in enumerate(tail_chunks[1:]):
+                content_tex = escape_latex_table_cell(extra, chars_per_line=18)
+                line = f" & {content_tex} &  &  &  &  &  &  \\\\"
+                if extra_idx == len(tail_chunks[1:]) - 1:
+                    line += r" \hline"
+                else:
+                    pass
+                body_lines.append(line)
+            
         mi = mj
+        seq += 1
 
-    return "\n".join(out).strip()
+    body_text = "\n".join(body_lines)
+    
+    latex = f"""{{\\settablespacing
+\\begin{{longtblr}}[theme=gjb,caption={{测试用例到需求的追踪关系表}},label={{tbl:detail-case-to-req}}]{{
+  colspec={{X[0.8,c] X[2.0,l] X[3.1,l] X[1.3,c] X[3.1,l] X[1.3,c] X[1.7,l] X[1.5,c]}},
+  rowhead=2,
+  row{{1,2}}={{font=\\xiaowuhei}},
+  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+}}
+\\hline
+\\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} 合同/补充协议/xxxxx/xxxxx & \\SetCell[c=2]{{c}} 测试用例 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 需求规格说明书 & \\\\
+\\hline
+ & & 测试用例名称/标识 & 测试章节号 & 测试项名称/标识 & 本文档章节号 & 需求名称/标识 & 需规章节号 \\\\
+\\hline
+{body_text}
+\\end{{longtblr}}
+}}
+\\vspace{{0pt}}
+"""
+    return latex
 
 
 def main():
@@ -596,10 +686,8 @@ def main():
 
     metrics = collect_data(data_dir)
     (chapters_dir / "chapter4_generated.tex").write_text(build_chapter4(metrics), encoding="utf-8")
-    forward_rows = build_trace_longtable_rows_forward(metrics)
-    reverse_rows = build_trace_longtable_rows_reverse(metrics)
-    (chapters_dir / "chapter5_trace_rows.tex").write_text(forward_rows, encoding="utf-8")
-    (chapters_dir / "chapter6_trace_rows.tex").write_text(reverse_rows, encoding="utf-8")
+    (chapters_dir / "chapter5_generated.tex").write_text(generate_trace_table_forward_full(metrics), encoding="utf-8")
+    (chapters_dir / "chapter6_generated.tex").write_text(generate_trace_table_reverse_full(metrics), encoding="utf-8")
 
 
 if __name__ == "__main__":
