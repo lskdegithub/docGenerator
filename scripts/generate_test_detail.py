@@ -1,7 +1,100 @@
+from __future__ import annotations
+
 import re
 import argparse
 from pathlib import Path
 import yaml
+from typing import Optional
+
+PT_TO_CM = 2.54 / 72.27
+_DETAIL_CASE_LAYOUT = None
+_DETAIL_TRACE_LAYOUT = None
+
+
+def parse_latex_dim_to_cm(value: str) -> float:
+    raw = str(value or "").strip()
+    m = re.match(r"^\s*([0-9]+(?:\.[0-9]+)?)\s*([a-zA-Z]+)\s*$", raw)
+    if not m:
+        raise ValueError(f"Unsupported dimension: {raw}")
+    num = float(m.group(1))
+    unit = m.group(2).lower()
+    if unit == "cm":
+        return num
+    if unit == "mm":
+        return num / 10.0
+    if unit == "pt":
+        return num * PT_TO_CM
+    if unit == "in":
+        return num * 2.54
+    raise ValueError(f"Unsupported unit: {unit}")
+
+
+def parse_style_macros(style_path: Path) -> dict:
+    text = style_path.read_text(encoding="utf-8")
+    macros = {}
+    for m in re.finditer(r"\\newcommand\{\\([A-Za-z@]+)\}(?:\[[0-9]+\])?\{([^}]*)\}", text):
+        macros[m.group(1)] = m.group(2).strip()
+    for m in re.finditer(r"\\def\\([A-Za-z@]+)\{([^}]*)\}", text):
+        macros[m.group(1)] = m.group(2).strip()
+    return macros
+
+
+def load_detail_case_layout(repo: Path) -> dict:
+    style_path = repo / "src" / "doc2tex-template" / "gjb438c-style.sty"
+    macros = parse_style_macros(style_path)
+    col_keys = [
+        "GjbDetailCaseColA",
+        "GjbDetailCaseColB",
+        "GjbDetailCaseColC",
+        "GjbDetailCaseColD",
+        "GjbDetailCaseColE",
+        "GjbDetailCaseColF",
+        "GjbDetailCaseColG",
+        "GjbDetailCaseColH",
+    ]
+    if not all(k in macros for k in col_keys):
+        raise ValueError("Missing GjbDetailCaseCol* macros in gjb438c-style.sty")
+    col_widths_cm = [parse_latex_dim_to_cm(macros[k]) for k in col_keys]
+    colsep_cm = parse_latex_dim_to_cm(macros.get("GjbDetailCaseColSep", "2.5pt"))
+
+    def span_cm(start_1: int, span: int) -> float:
+        i0 = start_1 - 1
+        return sum(col_widths_cm[i0 : i0 + span]) + colsep_cm * max(0, span - 1)
+
+    return {
+        "col_widths_cm": col_widths_cm,
+        "colsep_cm": colsep_cm,
+        "case_name_value_cm": span_cm(3, 3),
+        "case_ident_value_cm": span_cm(7, 2),
+        "span6_value_cm": span_cm(3, 6),
+        "steps_action_cm": span_cm(2, 3),
+        "steps_expect_cm": span_cm(5, 2),
+        "steps_result_cm": span_cm(7, 2),
+        "designer_cm": span_cm(3, 3),
+        "operator_cm": span_cm(7, 2),
+        "tester_cm": span_cm(3, 3),
+        "test_time_cm": span_cm(7, 2),
+    }
+
+
+def load_detail_trace_layout(repo: Path) -> dict:
+    style_path = repo / "src" / "doc2tex-template" / "gjb438c-style.sty"
+    macros = parse_style_macros(style_path)
+    col_keys = [
+        "GjbDetailTraceColA",
+        "GjbDetailTraceColB",
+        "GjbDetailTraceColC",
+        "GjbDetailTraceColD",
+        "GjbDetailTraceColE",
+        "GjbDetailTraceColF",
+        "GjbDetailTraceColG",
+        "GjbDetailTraceColH",
+    ]
+    if not all(k in macros for k in col_keys):
+        raise ValueError("Missing GjbDetailTraceCol* macros in gjb438c-style.sty")
+    col_widths_cm = [parse_latex_dim_to_cm(macros[k]) for k in col_keys]
+    colsep_cm = parse_latex_dim_to_cm(macros.get("GjbDetailTraceColSep", "2pt"))
+    return {"col_widths_cm": col_widths_cm, "colsep_cm": colsep_cm}
 
 
 def load_yaml(file_path: Path):
@@ -39,6 +132,7 @@ def escape_latex(text: str) -> str:
     text = text.replace("~", "\\textasciitilde ")
     text = text.replace("^", "\\textasciicircum ")
     text = re.sub(r"([/-])", r"\1\\allowbreak ", text)
+    text = re.sub(r"(?<=\d)\.(?=\d)", r".\\allowbreak ", text)
     def break_long(match: re.Match) -> str:
         s = match.group(0)
         chunk = 16
@@ -60,7 +154,18 @@ def escape_latex_no_wordbreak(text: str) -> str:
     text = text.replace("~", "\\textasciitilde ")
     text = text.replace("^", "\\textasciicircum ")
     text = re.sub(r"([/-])", r"\1\\allowbreak ", text)
+    text = re.sub(r"([,.;:])", r"\1\\allowbreak ", text)
+    text = re.sub(r"(?<=\d)\.(?=\d)", r".\\allowbreak ", text)
+    def break_long(match: re.Match) -> str:
+        s = match.group(0)
+        chunk = 16
+        return r"\allowbreak ".join([s[i:i + chunk] for i in range(0, len(s), chunk)])
+    text = re.sub(r"(?<!\\)[A-Za-z0-9]{20,}", break_long, text)
     return " ".join(text.split())
+
+
+def escape_latex_table_cell_soft(text: str) -> str:
+    return escape_latex_no_wordbreak(text)
 
 
 def wrap_alnum_runs_by_chars(text: str, chars_per_line: int) -> str:
@@ -83,6 +188,297 @@ def wrap_alnum_runs_by_chars(text: str, chars_per_line: int) -> str:
 
 def escape_latex_table_cell(text: str, chars_per_line: int) -> str:
     return wrap_alnum_runs_by_chars(escape_latex_no_wordbreak(text), chars_per_line)
+
+
+def format_name_ident_multiline(name: str, ident: str, width_cm: Optional[float] = None) -> str:
+    name = str(name or "").strip()
+    ident = str(ident or "").strip()
+    global _DETAIL_CASE_LAYOUT
+    if width_cm is None:
+        width_cm = (_DETAIL_CASE_LAYOUT or {}).get("span6_value_cm", 11.6)
+    if not ident:
+        return escape_latex_table_cell_soft(name)
+
+    combined = f"{name}（{ident}）"
+    wrapped = escape_latex_table_cell_multiline(combined, width_cm=float(width_cm), dont_split_english=True)
+    if r"\GjbCellBreak" not in wrapped:
+        return wrapped
+
+    name_wrapped = escape_latex_table_cell_multiline(name, width_cm=float(width_cm), dont_split_english=True)
+    escaped_ident = escape_latex(ident)
+    return f"{name_wrapped}\\GjbCellBreak （{escaped_ident}）"
+
+
+def escape_latex_table_cell_multiline(
+    text: str,
+    width_cm: float,
+    dont_split_english: bool = True,
+    cjk_chars_per_cm: float = 3.2,
+    ascii_units: float = 0.55,
+    punct_units: float = 0.6,
+) -> str:
+    text = str(text or "")
+    width_cm = float(width_cm or 0)
+    if width_cm <= 0:
+        return escape_latex_no_wordbreak(text)
+
+    max_units = max(1, int(width_cm * float(cjk_chars_per_cm)))
+
+    def is_cjk(ch: str) -> bool:
+        code = ord(ch)
+        return (
+            0x4E00 <= code <= 0x9FFF
+            or 0x3400 <= code <= 0x4DBF
+            or 0x20000 <= code <= 0x2A6DF
+            or 0x2A700 <= code <= 0x2B73F
+            or 0x2B740 <= code <= 0x2B81F
+            or 0x2B820 <= code <= 0x2CEAF
+            or 0xF900 <= code <= 0xFAFF
+        )
+
+    def token_units(token: str) -> float:
+        if not token:
+            return 0.0
+        if token.isspace():
+            return 0.0
+        total = 0.0
+        for ch in token:
+            if is_cjk(ch):
+                total += 1.0
+            elif ch.isalnum():
+                total += float(ascii_units)
+            else:
+                total += float(punct_units)
+        return total
+
+    break_after = set("，。、；;：:,.!?！？)）")
+
+    def split_preserving_words(paragraph: str):
+        paragraph = " ".join(str(paragraph or "").split())
+        if not paragraph:
+            return []
+        tokens = []
+        ascii_buf = []
+        for ch in paragraph:
+            if ch == " ":
+                if ascii_buf:
+                    tokens.append("".join(ascii_buf))
+                    ascii_buf = []
+                continue
+            if is_cjk(ch):
+                if ascii_buf:
+                    tokens.append("".join(ascii_buf))
+                    ascii_buf = []
+                tokens.append(ch)
+                continue
+            if ch.isascii() and (ch.isalnum() or ch in {"-", "_"}):
+                ascii_buf.append(ch)
+                continue
+            if ascii_buf:
+                tokens.append("".join(ascii_buf))
+                ascii_buf = []
+            tokens.append(ch)
+        if ascii_buf:
+            tokens.append("".join(ascii_buf))
+
+        merged = []
+        for tok in tokens:
+            if tok in break_after and merged:
+                merged[-1] = merged[-1] + tok
+            else:
+                merged.append(tok)
+        return merged
+
+    def wrap_tokens(tokens):
+        lines = []
+        current = []
+        used = 0.0
+        for tok in tokens:
+            if tok == " ":
+                continue
+            units = token_units(tok)
+            if not current:
+                current.append(tok)
+                used = units
+                continue
+            if used + units <= max_units:
+                current.append(tok)
+                used += units
+                continue
+            if dont_split_english and tok.isascii() and tok.replace("-", "").isalpha():
+                lines.append("".join(current))
+                current = [tok]
+                used = units
+                continue
+            lines.append("".join(current))
+            current = [tok]
+            used = units
+        if current:
+            lines.append("".join(current))
+        return lines
+
+    def escape_for_table_keep_words(s: str) -> str:
+        s = escape_latex_no_wordbreak(s)
+        def break_long_id(m: re.Match) -> str:
+            t = m.group(0)
+            if t.isalpha():
+                return t
+            chunk = 16
+            return r"\allowbreak ".join([t[i:i + chunk] for i in range(0, len(t), chunk)])
+        return re.sub(r"(?<!\\)[A-Za-z0-9]{24,}", break_long_id, s)
+
+    paragraphs = [p for p in re.split(r"\n+", text) if p.strip()]
+    if not paragraphs:
+        return ""
+
+    out_lines = []
+    for para in paragraphs:
+        tokens = split_preserving_words(para)
+        for line in wrap_tokens(tokens):
+            out_lines.append(escape_for_table_keep_words(line))
+    return r"\GjbCellBreak ".join(out_lines)
+
+
+def chunk_text_for_table(text: str, max_chars: int) -> list[str]:
+    text = str(text or "").strip()
+    if not text:
+        return [""]
+    max_chars = int(max_chars or 0)
+    if max_chars <= 0:
+        return [text]
+    breaks = set("。！？；;!?，、")
+    chunks = []
+    buf = []
+    last_break_pos = -1
+    for ch in text:
+        buf.append(ch)
+        if ch in breaks:
+            last_break_pos = len(buf)
+        if len(buf) >= max_chars:
+            if last_break_pos > 0 and last_break_pos < len(buf):
+                chunks.append("".join(buf[:last_break_pos]).strip())
+                buf = buf[last_break_pos:]
+            else:
+                chunks.append("".join(buf).strip())
+                buf = []
+            last_break_pos = -1
+    if buf:
+        chunks.append("".join(buf).strip())
+    return [c for c in chunks if c]
+
+
+def estimate_table_lines(text: str, width_cm: float, cjk_chars_per_cm: float = 3.2, ascii_units: float = 0.55, punct_units: float = 0.6) -> int:
+    text = str(text or "")
+    width_cm = float(width_cm or 0)
+    if not text or width_cm <= 0:
+        return 1
+    cjk = len(re.findall(r"[\u4E00-\u9FFF]", text))
+    ascii_alnum = len(re.findall(r"[A-Za-z0-9]", text))
+    space = len(re.findall(r"\s", text))
+    punct = max(0, len(text) - cjk - ascii_alnum - space)
+    units = float(cjk) + float(ascii_units) * float(ascii_alnum) + float(punct_units) * float(punct)
+    per_line = max(1.0, float(width_cm) * float(cjk_chars_per_cm))
+    return max(1, int((units + per_line - 1) // per_line))
+
+
+def _strip_latex_commands_for_estimate(s: str) -> str:
+    s = str(s or "")
+    s = re.sub(r"\\[A-Za-z@]+(\s*\[[^\]]*\])?(\s*\{[^}]*\})?", "", s)
+    s = s.replace("{", "").replace("}", "")
+    s = s.replace("\\", "")
+    s = s.replace("_", "_")
+    return s
+
+
+def estimate_case_table_height_cm(case_data: dict, test_item_label: str, layout: dict) -> float:
+    line_height_cm = 11.0 * PT_TO_CM
+    row_padding_cm = 0.20
+
+    def row_height_by_lines(lines: int) -> float:
+        return float(lines) * line_height_cm + row_padding_cm
+
+    wd_case_name = float(layout.get("case_name_value_cm", 6.56))
+    wd_case_ident = float(layout.get("case_ident_value_cm", 2.76))
+    wd_span6 = float(layout.get("span6_value_cm", 11.6))
+    wd_designer = float(layout.get("designer_cm", 6.56))
+    wd_operator = float(layout.get("operator_cm", 2.76))
+    wd_tester = float(layout.get("tester_cm", 6.56))
+    wd_test_time = float(layout.get("test_time_cm", 2.76))
+    wd_steps_action = float(layout.get("steps_action_cm", 5.7))
+    wd_steps_expect = float(layout.get("steps_expect_cm", 4.56))
+
+    total = 0.0
+
+    lines_case_name = estimate_table_lines(case_data.get("测试用例名称", ""), width_cm=wd_case_name)
+    lines_case_ident = estimate_table_lines(case_data.get("标识", ""), width_cm=wd_case_ident)
+    total += row_height_by_lines(max(lines_case_name, lines_case_ident, 1))
+
+    lines_trace = estimate_table_lines(_strip_latex_commands_for_estimate(test_item_label), width_cm=wd_span6)
+    total += row_height_by_lines(max(lines_trace, 1))
+
+    for k in ["测试用例综述", "用例初始化", "前提与约束", "测试用例类型"]:
+        total += row_height_by_lines(estimate_table_lines(case_data.get(k, ""), width_cm=wd_span6))
+
+    total += row_height_by_lines(1)
+    total += row_height_by_lines(1)
+
+    steps = case_data.get("测试步骤", [])
+    if not isinstance(steps, list):
+        steps = []
+    if not steps:
+        steps = [{"序号": 1, "输入及操作": "", "期望结果": ""}]
+    for step in steps:
+        lines_action = estimate_table_lines(step.get("输入及操作", ""), width_cm=wd_steps_action)
+        lines_expect = estimate_table_lines(step.get("期望结果", ""), width_cm=wd_steps_expect)
+        total += row_height_by_lines(max(lines_action, lines_expect, 1))
+
+    for k in ["测试用例终止条件", "测试结果判定准则", "测试用例执行结果"]:
+        total += row_height_by_lines(estimate_table_lines(case_data.get(k, ""), width_cm=wd_span6))
+
+    lines_designer = estimate_table_lines(case_data.get("设计人员", ""), width_cm=wd_designer)
+    lines_operator = estimate_table_lines(case_data.get("操作人员", ""), width_cm=wd_operator)
+    total += row_height_by_lines(max(lines_designer, lines_operator, 1))
+
+    lines_tester = estimate_table_lines(case_data.get("测试人员", ""), width_cm=wd_tester)
+    lines_test_time = estimate_table_lines(case_data.get("测试时间", ""), width_cm=wd_test_time)
+    total += row_height_by_lines(max(lines_tester, lines_test_time, 1))
+
+    total *= 1.10
+    return total
+
+
+def split_text_to_fit_lines(text: str, width_cm: float, max_lines: int) -> tuple[str, str]:
+    text = str(text or "")
+    if not text:
+        return "", ""
+    width_cm = float(width_cm or 0)
+    if width_cm <= 0 or max_lines <= 0:
+        return "", text
+    per_line = max(1.0, float(width_cm) * 3.2)
+    max_units = float(max_lines) * per_line
+    breaks = set("。！？；;!?，、,.")
+    head_chars = []
+    used = 0.0
+    last_break_at = -1
+    for i, ch in enumerate(text):
+        if re.match(r"[\u4E00-\u9FFF]", ch):
+            u = 1.0
+        elif ch.isalnum():
+            u = 0.55
+        elif ch.isspace():
+            u = 0.0
+        else:
+            u = 0.6
+        if used + u > max_units:
+            cut = last_break_at + 1 if last_break_at >= 0 else i
+            head = text[:cut].strip()
+            tail = text[cut:].strip()
+            return head, tail
+        head_chars.append(ch)
+        used += u
+        if ch in breaks:
+            last_break_at = i
+    return text.strip(), ""
 
 
 def normalize_index(value: str) -> str:
@@ -238,57 +634,84 @@ def build_steps_table(steps):
         steps = []
     if not steps:
         steps = [{"序号": 1, "输入及操作": "", "期望结果": ""}]
+    global _DETAIL_CASE_LAYOUT
+    layout = _DETAIL_CASE_LAYOUT or {"steps_action_cm": 5.7, "steps_expect_cm": 4.56, "steps_result_cm": 2.76}
+    wd_action = f"{float(layout.get('steps_action_cm', 5.7)):.3f}cm"
+    wd_expect = f"{float(layout.get('steps_expect_cm', 4.56)):.3f}cm"
+    wd_result = f"{float(layout.get('steps_result_cm', 2.76)):.3f}cm"
     for idx, step in enumerate(steps, start=1):
         seq = step.get("序号", idx)
-        action = escape_latex_table_cell(step.get("输入及操作", ""), chars_per_line=30)
-        expect = escape_latex_table_cell(step.get("期望结果", ""), chars_per_line=30)
+        action_raw = str(step.get("输入及操作", "") or "")
+        expect_raw = str(step.get("期望结果", "") or "")
+        action = escape_latex_table_cell_soft(action_raw)
+        expect = escape_latex_table_cell_soft(expect_raw)
         rows.append(
-            f"{seq} & \\SetCell[c=3]{{valign=t}}{{{action}}} &  &  & \\SetCell[c=2]{{valign=t}}{{{expect}}} &  & \\SetCell[c=2]{{valign=t}}{{}} &  \\\\"
+            f"{seq} & \\SetCell[c=3]{{wd={wd_action},valign=t}}{{{action}}} &  &  & \\SetCell[c=2]{{wd={wd_expect},valign=t}}{{{expect}}} &  & \\SetCell[c=2]{{wd={wd_result},valign=t}}{{}} &  \\\\"
         )
     return "\n".join(rows)
 
 
 def build_case_table(case_data, test_item_label, label_suffix):
-    case_name = escape_latex(case_data.get("测试用例名称", ""))
+    global _DETAIL_CASE_LAYOUT
+    layout = _DETAIL_CASE_LAYOUT or {
+        "case_name_value_cm": 6.56,
+        "case_ident_value_cm": 2.76,
+        "span6_value_cm": 11.6,
+        "designer_cm": 6.56,
+        "operator_cm": 2.76,
+        "tester_cm": 6.56,
+        "test_time_cm": 2.76,
+    }
+    wd_case_name = f"{float(layout.get('case_name_value_cm', 6.56)):.3f}cm"
+    wd_case_ident = f"{float(layout.get('case_ident_value_cm', 2.76)):.3f}cm"
+    wd_span6 = f"{float(layout.get('span6_value_cm', 11.6)):.3f}cm"
+    wd_designer = f"{float(layout.get('designer_cm', 6.56)):.3f}cm"
+    wd_operator = f"{float(layout.get('operator_cm', 2.76)):.3f}cm"
+    wd_tester = f"{float(layout.get('tester_cm', 6.56)):.3f}cm"
+    wd_test_time = f"{float(layout.get('test_time_cm', 2.76)):.3f}cm"
+    needspace_cm = min(estimate_case_table_height_cm(case_data, test_item_label, layout), 23.0)
+    case_name_caption = escape_latex(case_data.get("测试用例名称", ""))
+    case_name = escape_latex_table_cell_soft(case_data.get("测试用例名称", ""))
     case_ident = escape_latex(case_data.get("标识", ""))
-    summary = escape_latex(case_data.get("测试用例综述", ""))
-    init = escape_latex(case_data.get("用例初始化", ""))
-    prereq = escape_latex(case_data.get("前提与约束", ""))
-    case_type = escape_latex(case_data.get("测试用例类型", ""))
-    term = escape_latex(case_data.get("测试用例终止条件", ""))
-    criteria = escape_latex(case_data.get("测试结果判定准则", ""))
-    result = escape_latex(case_data.get("测试用例执行结果", ""))
-    designer = escape_latex(case_data.get("设计人员", ""))
-    operator = escape_latex(case_data.get("操作人员", ""))
-    tester = escape_latex(case_data.get("测试人员", ""))
-    test_time = escape_latex(case_data.get("测试时间", ""))
+    summary = escape_latex_table_cell_soft(case_data.get("测试用例综述", ""))
+    init = escape_latex_table_cell_soft(case_data.get("用例初始化", ""))
+    prereq = escape_latex_table_cell_soft(case_data.get("前提与约束", ""))
+    case_type = escape_latex_table_cell_soft(case_data.get("测试用例类型", ""))
+    term = escape_latex_table_cell_soft(case_data.get("测试用例终止条件", ""))
+    criteria = escape_latex_table_cell_soft(case_data.get("测试结果判定准则", ""))
+    result = escape_latex_table_cell_soft(case_data.get("测试用例执行结果", ""))
+    designer = escape_latex_table_cell_soft(case_data.get("设计人员", ""))
+    operator = escape_latex_table_cell_soft(case_data.get("操作人员", ""))
+    tester = escape_latex_table_cell_soft(case_data.get("测试人员", ""))
+    test_time = escape_latex_table_cell_soft(case_data.get("测试时间", ""))
     steps_rows = build_steps_table(case_data.get("测试步骤", []))
     label = f"tbl:detail-tc-{sanitize_label(label_suffix)}"
-    caption = case_name or "测试用例"
-    table = f"""{{\\settablespacing
+    caption = case_name_caption or "测试用例"
+    table = f"""\\Needspace{{{needspace_cm:.2f}cm}}
+{{\\settablespacing
 \\begin{{longtblr}}[theme=gjbNoHead,caption={{{caption}}},label={{{label}}}]{{
-  width=14.5cm,
-  leftsep=0pt,
-  rightsep=0pt,
-  colsep=0pt,
-  colspec={{|Q[c,0.8cm]|Q[1.5cm]|Q[2.25cm]|Q[2.25cm]|Q[2.4cm]|Q[2.4cm]|Q[1.45cm]|Q[1.45cm]|}},
+  width=\\GjbDetailCaseTableWidth,
+  leftsep=\\GjbDetailCaseLeftSep,
+  rightsep=\\GjbDetailCaseRightSep,
+  colsep=\\GjbDetailCaseColSep,
+  colspec={{|Q[c,\\GjbDetailCaseColA]|Q[\\GjbDetailCaseColB]|Q[\\GjbDetailCaseColC]|Q[\\GjbDetailCaseColD]|Q[\\GjbDetailCaseColE]|Q[\\GjbDetailCaseColF]|Q[\\GjbDetailCaseColG]|Q[\\GjbDetailCaseColH]|}},
   hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
   vline{{1,2,3,4,5,6,7,8,Z}}={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例名称}}}} & & \\SetCell[c=3]{{valign=t}}{{{case_name}}} &  &  & \\TableKeyCell{{标识}} & \\SetCell[c=2]{{valign=t}}{{\\TableIdentifier{{{case_ident}}}}} & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{追踪关系}}}} & & \\SetCell[c=6]{{valign=t}}{{{test_item_label}}} &  &  &  &  & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例综述}}}} & & \\SetCell[c=6]{{valign=t}}{{{summary}}} &  &  &  &  & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{用例初始化}}}} & & \\SetCell[c=6]{{valign=t}}{{{init}}} &  &  &  &  & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{前提和约束}}}} & & \\SetCell[c=6]{{valign=t}}{{{prereq}}} &  &  &  &  & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例类型}}}} & & \\SetCell[c=6]{{valign=t}}{{{case_type}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例名称}}}} & & \\SetCell[c=3]{{wd={wd_case_name},valign=t}}{{{case_name}}} &  &  & \\TableKeyCell{{标识}} & \\SetCell[c=2]{{wd={wd_case_ident},valign=t}}{{\\TableIdentifier{{{case_ident}}}}} & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{追踪关系}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{test_item_label}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例综述}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{summary}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{用例初始化}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{init}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{前提和约束}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{prereq}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例类型}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{case_type}}} &  &  &  &  & \\\\
 \\SetCell[c=8]{{halign=c,font=\\xiaowuhei}}{{测试步骤}} &  &  &  &  &  &  & \\\\
 \\SetCell{{font=\\xiaowuhei,halign=c,valign=m}}{{序号}} & \\SetCell[c=3]{{font=\\xiaowuhei,halign=c,valign=m}}{{输入及操作}} &  &  & \\SetCell[c=2]{{font=\\xiaowuhei,halign=c,valign=m}}{{期望结果}} &  & \\SetCell[c=2]{{font=\\xiaowuhei,halign=c,valign=m}}{{测试结果}} &  \\\\
 {steps_rows}
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例终止条件}}}} & & \\SetCell[c=6]{{valign=t}}{{{term}}} &  &  &  &  & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试结果评估标准}}}} & & \\SetCell[c=6]{{valign=t}}{{{criteria}}} &  &  &  &  & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例执行结果}}}} & & \\SetCell[c=6]{{valign=t}}{{{result}}} &  &  &  &  & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{设计人员}}}} & & \\SetCell[c=3]{{valign=t}}{{{designer}}} &  &  & \\TableKeyCell{{操作人员}} & \\SetCell[c=2]{{valign=t}}{{{operator}}} & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试人员}}}} & & \\SetCell[c=3]{{valign=t}}{{{tester}}} &  &  & \\TableKeyCell{{测试时间}} & \\SetCell[c=2]{{valign=t}}{{{test_time}}} & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例终止条件}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{term}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试结果评估标准}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{criteria}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例执行结果}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{result}}} &  &  &  &  & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{设计人员}}}} & & \\SetCell[c=3]{{wd={wd_designer},valign=t}}{{{designer}}} &  &  & \\TableKeyCell{{操作人员}} & \\SetCell[c=2]{{wd={wd_operator},valign=t}}{{{operator}}} & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试人员}}}} & & \\SetCell[c=3]{{wd={wd_tester},valign=t}}{{{tester}}} &  &  & \\TableKeyCell{{测试时间}} & \\SetCell[c=2]{{wd={wd_test_time},valign=t}}{{{test_time}}} & \\\\
 \\end{{longtblr}}
 }}
 \\vspace{{-6pt}}"""
@@ -316,9 +739,7 @@ def build_chapter4(metrics):
     detail_intro = f"针对本次节点要求共设置{total_items}个测试项，包括{total_cases}个测试用例。具体内容参见4.1.1到4.1.{metric_count}章节。"
     table_rows = []
     for item in items:
-        name = escape_latex(item["name"])
-        ident = escape_latex(item["ident"])
-        label = f"{name}（{ident}）" if ident else name
+        label = format_name_ident_multiline(item.get("name"), item.get("ident"), width_cm=12.0)
         item_type = escape_latex(item["type"])
         table_rows.append(f"\\Seq & {{\\xiaowu {item_type}}} & {{\\xiaowu {label}}} \\\\")
     table_rows_text = "\n".join(table_rows)
@@ -355,7 +776,7 @@ def build_chapter4(metrics):
                 item_ident = escape_latex(item["ident"])
                 item_title = f"{item_name}（{item_ident}）" if item_ident else item_name
                 content += f"\\subparagraph{{{item_title}}}\n\n"
-                test_item_label = escape_latex(f"{item['name']}（{item['ident']}）" if item["ident"] else item["name"])
+                test_item_label = format_name_ident_multiline(item.get("name"), item.get("ident"))
                 for case in item["cases"]:
                     case_data = case["data"]
                     case_name = escape_latex(case_data.get("测试用例名称", ""))
@@ -390,6 +811,9 @@ def build_trace_rows(metrics):
 
 
 def generate_trace_table_forward_full(metrics):
+    global _DETAIL_TRACE_LAYOUT
+    trace_layout = _DETAIL_TRACE_LAYOUT or {"col_widths_cm": [1.0] * 8}
+    trace_cols_cm = trace_layout["col_widths_cm"]
     rows = build_trace_rows(metrics)
     # Sort removed to preserve data order
     
@@ -435,8 +859,8 @@ def generate_trace_table_forward_full(metrics):
                 ):
                     rj += 1
                 req_group = metric_group[ri:rj]
-                req_cell = escape_latex_table_cell(req_key[0], chars_per_line=14)
-                srs_cell = escape_latex_table_cell(req_key[1], chars_per_line=12)
+                req_cell = escape_latex_table_cell_soft(req_key[0])
+                srs_cell = escape_latex(req_key[1])
 
                 ii = 0
                 while ii < len(req_group):
@@ -447,7 +871,7 @@ def generate_trace_table_forward_full(metrics):
                     ):
                         ij += 1
                     item_group = req_group[ii:ij]
-                    item_cell = escape_latex_table_cell(item_key[0], chars_per_line=22)
+                    item_cell = escape_latex_table_cell_soft(item_key[0])
                     item_sec_cell = escape_latex(item_key[1])
 
                     for ci, row in enumerate(item_group):
@@ -467,12 +891,12 @@ def generate_trace_table_forward_full(metrics):
                         metric_row_idx += 1
 
                         c1 = f"\\SetCell[r=1]{{c}} {seq}" if is_first_metric_row else ""
-                        c2 = escape_latex_table_cell(metric_piece, chars_per_line=18)
+                        c2 = escape_latex_table_cell_soft(metric_piece)
                         c3 = req_cell if is_first_req_row else ""
                         c4 = srs_cell if is_first_req_row else ""
                         c5 = item_cell if is_first_item_row else ""
                         c6 = item_sec_cell if is_first_item_row else ""
-                        c7 = escape_latex_table_cell(row.get("case_name") or "", chars_per_line=22)
+                        c7 = escape_latex_table_cell_soft(row.get("case_name") or "")
                         c8 = escape_latex(row.get("case_section") or "")
                         
                         line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
@@ -495,7 +919,7 @@ def generate_trace_table_forward_full(metrics):
                 ri = rj
 
             for extra_idx, extra in enumerate(tail_chunks[1:]):
-                content_tex = escape_latex_table_cell(extra, chars_per_line=18)
+                content_tex = escape_latex_table_cell_soft(extra)
                 line = f" & {content_tex} &  &  &  &  &  &  \\\\"
                 if extra_idx == len(tail_chunks[1:]) - 1:
                     line += r" \hline"
@@ -508,17 +932,23 @@ def generate_trace_table_forward_full(metrics):
 
     body_text = "\n".join(body_lines)
     
+    head_contract = r"合同/\allowbreak 补充协议/\allowbreak xxxxx/\allowbreak xxxxx"
     latex = f"""{{\\settablespacing
 \\begin{{longtblr}}[theme=gjb,caption={{需求到测试用例的追踪关系表}},label={{tbl:detail-req-to-case}}]{{
-  colspec={{X[0.8,c] X[2.0,l] X[1.7,l] X[1.5,c] X[3.1,l] X[1.3,c] X[3.1,l] X[1.3,c]}},
+  width=\\GjbDetailTraceTableWidth,
+  leftsep=\\GjbDetailTraceLeftSep,
+  rightsep=\\GjbDetailTraceRightSep,
+  colsep=\\GjbDetailTraceColSep,
+  colspec={{Q[c,\\GjbDetailTraceColA] Q[l,\\GjbDetailTraceColB] Q[l,\\GjbDetailTraceColC] Q[c,\\GjbDetailTraceColD] Q[l,\\GjbDetailTraceColE] Q[c,\\GjbDetailTraceColF] Q[l,\\GjbDetailTraceColG] Q[c,\\GjbDetailTraceColH]}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
   vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
 \\hline
-\\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} 合同/补充协议/xxxxx/xxxxx & \\SetCell[c=2]{{c}} 需求规格说明书 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 测试用例 & \\\\
+\\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} {head_contract} & \\SetCell[c=2]{{c}} 需求规格说明书 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 测试用例 & \\\\
 \\hline
- & & 需求名称/标识 & 需规章节号 & 测试项名称/标识 & 本文档章节号 & 测试用例名称/标识 & 测试章节号 \\\\
+ & & 需求名称/\\allowbreak 标识 & 需规章节号 & 测试项名称/\\allowbreak 标识 & 本文档章节号 & 测试用例名称/\\allowbreak 标识 & 测试章节号 \\\\
 \\hline
 {body_text}
 \\end{{longtblr}}
@@ -529,6 +959,9 @@ def generate_trace_table_forward_full(metrics):
 
 
 def generate_trace_table_reverse_full(metrics):
+    global _DETAIL_TRACE_LAYOUT
+    trace_layout = _DETAIL_TRACE_LAYOUT or {"col_widths_cm": [1.0] * 8}
+    trace_cols_cm = trace_layout["col_widths_cm"]
     rows = build_trace_rows(metrics)
     # Sort removed to preserve data order
     
@@ -574,7 +1007,7 @@ def generate_trace_table_reverse_full(metrics):
                 ):
                     cj0 += 1
                 case_group = metric_group[ci0:cj0]
-                case_cell = escape_latex_table_cell(case_key[0], chars_per_line=22)
+                case_cell = escape_latex_table_cell_soft(case_key[0])
                 case_sec_cell = escape_latex(case_key[1])
 
                 ii = 0
@@ -586,7 +1019,7 @@ def generate_trace_table_reverse_full(metrics):
                     ):
                         ij += 1
                     item_group = case_group[ii:ij]
-                    item_cell = escape_latex_table_cell(item_key[0], chars_per_line=22)
+                    item_cell = escape_latex_table_cell_soft(item_key[0])
                     item_sec_cell = escape_latex(item_key[1])
 
                     for ri, row in enumerate(item_group):
@@ -606,13 +1039,13 @@ def generate_trace_table_reverse_full(metrics):
                         metric_row_idx += 1
 
                         c1 = f"\\SetCell[r=1]{{c}} {seq}" if is_first_metric_row else ""
-                        c2 = escape_latex_table_cell(metric_piece, chars_per_line=18)
+                        c2 = escape_latex_table_cell_soft(metric_piece)
                         c3 = case_cell if is_first_case_row else ""
                         c4 = case_sec_cell if is_first_case_row else ""
                         c5 = item_cell if is_first_item_row else ""
                         c6 = item_sec_cell if is_first_item_row else ""
-                        c7 = escape_latex_table_cell(row.get("requirement") or "", chars_per_line=14)
-                        c8 = escape_latex_table_cell(row.get("srs_chapter") or "", chars_per_line=12)
+                        c7 = escape_latex_table_cell_soft(row.get("requirement") or "")
+                        c8 = escape_latex(row.get("srs_chapter") or "")
 
                         line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
                         
@@ -634,7 +1067,7 @@ def generate_trace_table_reverse_full(metrics):
                 ci0 = cj0
 
             for extra_idx, extra in enumerate(tail_chunks[1:]):
-                content_tex = escape_latex_table_cell(extra, chars_per_line=18)
+                content_tex = escape_latex_table_cell_soft(extra)
                 line = f" & {content_tex} &  &  &  &  &  &  \\\\"
                 if extra_idx == len(tail_chunks[1:]) - 1:
                     line += r" \hline"
@@ -647,17 +1080,23 @@ def generate_trace_table_reverse_full(metrics):
 
     body_text = "\n".join(body_lines)
     
+    head_contract = r"合同/\allowbreak 补充协议/\allowbreak xxxxx/\allowbreak xxxxx"
     latex = f"""{{\\settablespacing
 \\begin{{longtblr}}[theme=gjb,caption={{测试用例到需求的追踪关系表}},label={{tbl:detail-case-to-req}}]{{
-  colspec={{X[0.8,c] X[2.0,l] X[3.1,l] X[1.3,c] X[3.1,l] X[1.3,c] X[1.7,l] X[1.5,c]}},
+  width=\\GjbDetailTraceTableWidth,
+  leftsep=\\GjbDetailTraceLeftSep,
+  rightsep=\\GjbDetailTraceRightSep,
+  colsep=\\GjbDetailTraceColSep,
+  colspec={{Q[c,\\GjbDetailTraceColA] Q[l,\\GjbDetailTraceColB] Q[l,\\GjbDetailTraceColC] Q[c,\\GjbDetailTraceColD] Q[l,\\GjbDetailTraceColE] Q[c,\\GjbDetailTraceColF] Q[l,\\GjbDetailTraceColG] Q[c,\\GjbDetailTraceColH]}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
   vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
 \\hline
-\\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} 合同/补充协议/xxxxx/xxxxx & \\SetCell[c=2]{{c}} 测试用例 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 需求规格说明书 & \\\\
+\\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} {head_contract} & \\SetCell[c=2]{{c}} 测试用例 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 需求规格说明书 & \\\\
 \\hline
- & & 测试用例名称/标识 & 测试章节号 & 测试项名称/标识 & 本文档章节号 & 需求名称/标识 & 需规章节号 \\\\
+ & & 测试用例名称/\\allowbreak 标识 & 测试章节号 & 测试项名称/\\allowbreak 标识 & 本文档章节号 & 需求名称/\\allowbreak 标识 & 需规章节号 \\\\
 \\hline
 {body_text}
 \\end{{longtblr}}
@@ -678,6 +1117,10 @@ def main():
     args = parser.parse_args()
 
     repo = Path(__file__).resolve().parents[1]
+    global _DETAIL_CASE_LAYOUT
+    _DETAIL_CASE_LAYOUT = load_detail_case_layout(repo)
+    global _DETAIL_TRACE_LAYOUT
+    _DETAIL_TRACE_LAYOUT = load_detail_trace_layout(repo)
     data_dir = (repo / args.data).resolve()
     out_dir = (repo / args.out).resolve()
 
