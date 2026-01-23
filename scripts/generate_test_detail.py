@@ -818,7 +818,74 @@ def build_trace_rows(metrics):
     return rows
 
 
-def generate_trace_table_forward_full(metrics):
+def split_text_by_capacities(text: str, capacities: list[int]) -> list[str]:
+    text = str(text or "")
+    if not capacities:
+        return [text]
+    if not text:
+        return [""] * len(capacities)
+    parts: list[str] = []
+    s = 0
+    for cap in capacities[:-1]:
+        cap = max(0, int(cap))
+        if s >= len(text):
+            parts.append("")
+            continue
+        if cap <= 0:
+            parts.append("")
+            continue
+        end = min(len(text), s + cap)
+        window = text[s : min(len(text), end + 80)]
+        m = re.search(r".*([。！？；;!?])\s*", window)
+        if m and s + m.end() > s:
+            end = s + m.end()
+        parts.append(text[s:end])
+        s = end
+    parts.append(text[s:])
+    while len(parts) < len(capacities):
+        parts.append("")
+    return parts[: len(capacities)]
+
+
+def load_trace_segments(path: str | None) -> dict[str, dict[str, list[int]]]:
+    if not path:
+        return {}
+    p = Path(path)
+    if not p.exists():
+        return {}
+    import json
+
+    data = json.loads(p.read_text(encoding="utf-8"))
+    segs = data.get("segments") or {}
+    if not isinstance(segs, dict):
+        return {}
+    out: dict[str, dict[str, list[int]]] = {}
+    for tbl, tbl_map in segs.items():
+        if isinstance(tbl, int):
+            tbl = str(tbl)
+        if not isinstance(tbl, str) or not isinstance(tbl_map, dict):
+            continue
+        cleaned_tbl: dict[str, list[int]] = {}
+        for k, v in tbl_map.items():
+            if isinstance(k, int):
+                k = str(k)
+            if not isinstance(k, str) or not isinstance(v, list):
+                continue
+            cleaned = [int(x) for x in v if int(x) > 0]
+            if cleaned:
+                cleaned_tbl[k] = cleaned
+        if cleaned_tbl:
+            out[tbl] = cleaned_tbl
+    return out
+
+
+def generate_trace_table_forward_full(
+    metrics,
+    trace_pass: str = "final",
+    probe_piece_chars: int = 60,
+    segments_by_seq: dict[str, list[int]] | None = None,
+    enable_trace_mark: bool = False,
+):
     rows = build_trace_rows(metrics)
     body_lines = []
     seq = 1
@@ -829,40 +896,85 @@ def generate_trace_table_forward_full(metrics):
         while j < len(rows) and (rows[j].get("metric_content") or "") == metric_content:
             j += 1
         group = rows[i:j]
-        contract_parts = split_by_max_chars(metric_content, max_chars=60)
-        contract_parts_escaped = [escape_latex_table_cell_soft(p) for p in contract_parts]
-        contract_part_idx = 0
-        will_need_extra_contract_rows = len(contract_parts_escaped) > len(group)
+        segs = (segments_by_seq or {}).get(str(seq), [])
+        if trace_pass == "final" and not segs:
+            segs = [len(group)]
+
+        contract_total_rows = sum(segs) if trace_pass == "final" else 0
+        if trace_pass != "final":
+            contract_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
+            contract_total_rows = max(len(group), len(contract_parts))
+        else:
+            contract_parts = []
+
+        contract_row_idx = 0
+        seg_idx = 0
+        seg_row_start = 0
+        seg_row_len = segs[0] if segs else contract_total_rows
+        seg_texts: list[str] = []
+        if trace_pass == "final":
+            capacities = [max(1, int(x)) * max(1, int(probe_piece_chars)) for x in segs]
+            seg_texts_raw = split_text_by_capacities(metric_content, capacities)
+            seg_texts = [escape_latex_table_cell_soft(t) for t in seg_texts_raw]
         k = 0
-        while k < len(group):
-            req_item_key = (
-                group[k].get("requirement") or "",
-                group[k].get("srs_chapter") or "",
-                group[k].get("test_item") or "",
-                group[k].get("item_section") or "",
-            )
-            m = k
-            while m < len(group) and (
-                (group[m].get("requirement") or "", group[m].get("srs_chapter") or "", group[m].get("test_item") or "", group[m].get("item_section") or "")
-                == req_item_key
-            ):
-                m += 1
-            span = m - k
+        for global_row in range(contract_total_rows):
+            is_real = global_row < len(group)
+            row = group[global_row] if is_real else {}
+            if is_real:
+                req_item_key = (
+                    row.get("requirement") or "",
+                    row.get("srs_chapter") or "",
+                    row.get("test_item") or "",
+                    row.get("item_section") or "",
+                )
+            else:
+                req_item_key = ("", "", "", "")
 
-            for kk in range(k, m):
-                row = group[kk]
-                is_first_row_in_contract = (kk == 0)
-                is_first_row_in_group = (kk == k)
-                is_last_row_in_group = (kk == m - 1)
-                is_last_row_in_contract = (kk == len(group) - 1)
-                is_last_row_in_contract_effective = is_last_row_in_contract and not will_need_extra_contract_rows
-                contract_piece = contract_parts_escaped[contract_part_idx] if contract_part_idx < len(contract_parts_escaped) else ""
-                contract_part_idx += 1
+            is_segment_start = (trace_pass == "final" and global_row == seg_row_start) or (trace_pass != "final")
+            if trace_pass == "final":
+                while global_row >= seg_row_start + seg_row_len and seg_idx + 1 < len(segs):
+                    seg_row_start += seg_row_len
+                    seg_idx += 1
+                    seg_row_len = segs[seg_idx]
+                is_segment_start = global_row == seg_row_start
 
-                c1 = f"{seq}" if is_first_row_in_contract else ""
-                c2 = contract_piece
+            mark = ""
+            if enable_trace_mark:
+                mark = f"\\GjbTraceMark{{F}}{{{seq}}}{{{global_row + 1}}}"
 
-                if is_first_row_in_group:
+            if trace_pass == "final":
+                if is_segment_start:
+                    if seg_idx == 0:
+                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{{seq}}}"
+                    else:
+                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{}}"
+                    seg_text = seg_texts[seg_idx] if seg_idx < len(seg_texts) else ""
+                    c2 = f"\\SetCell[r={seg_row_len}]{{l,t}} {{{seg_text}}}"
+                else:
+                    c1 = mark
+                    c2 = ""
+            else:
+                contract_piece = contract_parts[global_row] if global_row < len(contract_parts) else ""
+                c1 = f"{mark}{seq}" if global_row == 0 else mark
+                c2 = escape_latex_table_cell_soft(contract_piece)
+
+            if is_real:
+                is_first_in_req_group = global_row == 0 or (
+                    global_row < len(group)
+                    and (
+                        (group[global_row - 1].get("requirement") or "", group[global_row - 1].get("srs_chapter") or "", group[global_row - 1].get("test_item") or "", group[global_row - 1].get("item_section") or "")
+                        != req_item_key
+                    )
+                )
+                if is_first_in_req_group and any(req_item_key):
+                    span = 1
+                    t = global_row + 1
+                    while t < len(group) and (
+                        (group[t].get("requirement") or "", group[t].get("srs_chapter") or "", group[t].get("test_item") or "", group[t].get("item_section") or "")
+                        == req_item_key
+                    ):
+                        span += 1
+                        t += 1
                     req_cell = escape_latex_table_cell_soft(req_item_key[0])
                     srs_cell = escape_latex(req_item_key[1])
                     item_cell = escape_latex_table_cell_soft(req_item_key[2])
@@ -876,32 +988,41 @@ def generate_trace_table_forward_full(metrics):
                     c4 = ""
                     c5 = ""
                     c6 = ""
-
                 c7 = escape_latex_table_cell_soft(row.get("case_name") or "")
                 c8 = escape_latex(row.get("case_section") or "")
+            else:
+                c3 = ""
+                c4 = ""
+                c5 = ""
+                c6 = ""
+                c7 = ""
+                c8 = ""
 
-                line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
+            line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
 
-                if is_last_row_in_contract_effective:
-                    line += r" \hline"
-                elif not is_last_row_in_group:
+            is_last_row_overall = global_row == contract_total_rows - 1
+            next_same_req_group = (
+                is_real
+                and global_row + 1 < len(group)
+                and (
+                    (group[global_row + 1].get("requirement") or "", group[global_row + 1].get("srs_chapter") or "", group[global_row + 1].get("test_item") or "", group[global_row + 1].get("item_section") or "")
+                    == req_item_key
+                )
+            )
+            is_last_row_in_req_group = is_real and not next_same_req_group
+
+            if is_last_row_overall:
+                line += r" \hline"
+            elif is_real:
+                if not is_last_row_in_req_group:
                     line += r" \cline{7-8}"
                 else:
                     line += r" \cline{3-8}"
 
-                body_lines.append(line)
-
-            k = m
-        while contract_part_idx < len(contract_parts_escaped):
-            contract_piece = contract_parts_escaped[contract_part_idx]
-            contract_part_idx += 1
-            is_last_extra = contract_part_idx >= len(contract_parts_escaped)
-            line = f" & {contract_piece} &  &  &  &  &  &  \\\\"
-            line += (r" \hline" if is_last_extra else r" \cline{2-2}")
             body_lines.append(line)
-
         i = j
         seq += 1
+
 
     body_text = "\n".join(body_lines)
     head_contract = r"合同/\allowbreak 补充协议/\allowbreak xxxxx/\allowbreak xxxxx"
@@ -929,7 +1050,13 @@ def generate_trace_table_forward_full(metrics):
     return latex
 
 
-def generate_trace_table_reverse_full(metrics):
+def generate_trace_table_reverse_full(
+    metrics,
+    trace_pass: str = "final",
+    probe_piece_chars: int = 60,
+    segments_by_seq: dict[str, list[int]] | None = None,
+    enable_trace_mark: bool = False,
+):
     rows = build_trace_rows(metrics)
     body_lines = []
     seq = 1
@@ -940,42 +1067,88 @@ def generate_trace_table_reverse_full(metrics):
         while j < len(rows) and (rows[j].get("metric_content") or "") == metric_content:
             j += 1
         group = rows[i:j]
-        contract_parts = split_by_max_chars(metric_content, max_chars=60)
-        contract_parts_escaped = [escape_latex_table_cell_soft(p) for p in contract_parts]
-        contract_part_idx = 0
-        will_need_extra_contract_rows = len(contract_parts_escaped) > len(group)
-        k = 0
-        while k < len(group):
-            req_item_key = (
-                group[k].get("requirement") or "",
-                group[k].get("srs_chapter") or "",
-                group[k].get("test_item") or "",
-                group[k].get("item_section") or "",
-            )
-            m = k
-            while m < len(group) and (
-                (group[m].get("requirement") or "", group[m].get("srs_chapter") or "", group[m].get("test_item") or "", group[m].get("item_section") or "")
-                == req_item_key
-            ):
-                m += 1
-            span = m - k
+        segs = (segments_by_seq or {}).get(str(seq), [])
+        if trace_pass == "final" and not segs:
+            segs = [len(group)]
 
-            for kk in range(k, m):
-                row = group[kk]
-                is_first_row_in_contract = (kk == 0)
-                is_first_row_in_group = (kk == k)
-                is_last_row_in_group = (kk == m - 1)
-                is_last_row_in_contract = (kk == len(group) - 1)
-                is_last_row_in_contract_effective = is_last_row_in_contract and not will_need_extra_contract_rows
-                contract_piece = contract_parts_escaped[contract_part_idx] if contract_part_idx < len(contract_parts_escaped) else ""
-                contract_part_idx += 1
+        contract_total_rows = sum(segs) if trace_pass == "final" else 0
+        if trace_pass != "final":
+            contract_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
+            contract_total_rows = max(len(group), len(contract_parts))
+        else:
+            contract_parts = []
 
-                c1 = f"{seq}" if is_first_row_in_contract else ""
-                c2 = contract_piece
-                c3 = escape_latex_table_cell_soft(row.get("case_name") or "")
-                c4 = escape_latex(row.get("case_section") or "")
+        seg_idx = 0
+        seg_row_start = 0
+        seg_row_len = segs[0] if segs else contract_total_rows
+        seg_texts: list[str] = []
+        if trace_pass == "final":
+            capacities = [max(1, int(x)) * max(1, int(probe_piece_chars)) for x in segs]
+            seg_texts_raw = split_text_by_capacities(metric_content, capacities)
+            seg_texts = [escape_latex_table_cell_soft(t) for t in seg_texts_raw]
 
-                if is_first_row_in_group:
+        for global_row in range(contract_total_rows):
+            is_real = global_row < len(group)
+            row = group[global_row] if is_real else {}
+            if is_real:
+                req_item_key = (
+                    row.get("requirement") or "",
+                    row.get("srs_chapter") or "",
+                    row.get("test_item") or "",
+                    row.get("item_section") or "",
+                )
+            else:
+                req_item_key = ("", "", "", "")
+
+            if trace_pass == "final":
+                while global_row >= seg_row_start + seg_row_len and seg_idx + 1 < len(segs):
+                    seg_row_start += seg_row_len
+                    seg_idx += 1
+                    seg_row_len = segs[seg_idx]
+                is_segment_start = global_row == seg_row_start
+            else:
+                is_segment_start = global_row == 0
+
+            mark = ""
+            if enable_trace_mark:
+                mark = f"\\GjbTraceMark{{R}}{{{seq}}}{{{global_row + 1}}}"
+
+            if trace_pass == "final":
+                if is_segment_start:
+                    if seg_idx == 0:
+                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{{seq}}}"
+                    else:
+                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{}}"
+                    seg_text = seg_texts[seg_idx] if seg_idx < len(seg_texts) else ""
+                    c2 = f"\\SetCell[r={seg_row_len}]{{l,t}} {{{seg_text}}}"
+                else:
+                    c1 = mark
+                    c2 = ""
+            else:
+                contract_piece = contract_parts[global_row] if global_row < len(contract_parts) else ""
+                c1 = f"{mark}{seq}" if global_row == 0 else mark
+                c2 = escape_latex_table_cell_soft(contract_piece)
+
+            c3 = escape_latex_table_cell_soft(row.get("case_name") or "") if is_real else ""
+            c4 = escape_latex(row.get("case_section") or "") if is_real else ""
+
+            if is_real:
+                is_first_in_req_group = global_row == 0 or (
+                    global_row < len(group)
+                    and (
+                        (group[global_row - 1].get("requirement") or "", group[global_row - 1].get("srs_chapter") or "", group[global_row - 1].get("test_item") or "", group[global_row - 1].get("item_section") or "")
+                        != req_item_key
+                    )
+                )
+                if is_first_in_req_group and any(req_item_key):
+                    span = 1
+                    t = global_row + 1
+                    while t < len(group) and (
+                        (group[t].get("requirement") or "", group[t].get("srs_chapter") or "", group[t].get("test_item") or "", group[t].get("item_section") or "")
+                        == req_item_key
+                    ):
+                        span += 1
+                        t += 1
                     item_cell = escape_latex_table_cell_soft(req_item_key[2])
                     item_sec_cell = escape_latex(req_item_key[3])
                     req_cell = escape_latex_table_cell_soft(req_item_key[0])
@@ -989,25 +1162,32 @@ def generate_trace_table_reverse_full(metrics):
                     c6 = ""
                     c7 = ""
                     c8 = ""
+            else:
+                c5 = ""
+                c6 = ""
+                c7 = ""
+                c8 = ""
 
-                line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
+            line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
+            is_last_row_overall = global_row == contract_total_rows - 1
+            next_same_req_group = (
+                is_real
+                and global_row + 1 < len(group)
+                and (
+                    (group[global_row + 1].get("requirement") or "", group[global_row + 1].get("srs_chapter") or "", group[global_row + 1].get("test_item") or "", group[global_row + 1].get("item_section") or "")
+                    == req_item_key
+                )
+            )
+            is_last_row_in_req_group = is_real and not next_same_req_group
 
-                if is_last_row_in_contract_effective:
-                    line += r" \hline"
-                elif not is_last_row_in_group:
+            if is_last_row_overall:
+                line += r" \hline"
+            elif is_real:
+                if not is_last_row_in_req_group:
                     line += r" \cline{3-4}"
                 else:
                     line += r" \cline{3-8}"
 
-                body_lines.append(line)
-
-            k = m
-        while contract_part_idx < len(contract_parts_escaped):
-            contract_piece = contract_parts_escaped[contract_part_idx]
-            contract_part_idx += 1
-            is_last_extra = contract_part_idx >= len(contract_parts_escaped)
-            line = f" & {contract_piece} &  &  &  &  &  &  \\\\"
-            line += (r" \hline" if is_last_extra else r" \cline{2-2}")
             body_lines.append(line)
 
         i = j
@@ -1047,6 +1227,10 @@ def main():
         default="output/test_detail",
         help="输出目录（相对仓库根目录），应包含 main.tex 与 chapters/",
     )
+    parser.add_argument("--trace-pass", choices=["probe", "final"], default="final")
+    parser.add_argument("--trace-probe-piece-chars", type=int, default=60)
+    parser.add_argument("--trace-page-map", default="")
+    parser.add_argument("--trace-enable-mark", action="store_true")
     args = parser.parse_args()
 
     repo = Path(__file__).resolve().parents[1]
@@ -1060,10 +1244,31 @@ def main():
     chapters_dir = out_dir / "chapters"
     chapters_dir.mkdir(parents=True, exist_ok=True)
 
+    segments_all = load_trace_segments(args.trace_page_map)
+    segments_forward = segments_all.get("F", {})
+    segments_reverse = segments_all.get("R", {})
     metrics = collect_data(data_dir)
     (chapters_dir / "chapter4_generated.tex").write_text(build_chapter4(metrics), encoding="utf-8")
-    (chapters_dir / "chapter5_generated.tex").write_text(generate_trace_table_forward_full(metrics), encoding="utf-8")
-    (chapters_dir / "chapter6_generated.tex").write_text(generate_trace_table_reverse_full(metrics), encoding="utf-8")
+    (chapters_dir / "chapter5_generated.tex").write_text(
+        generate_trace_table_forward_full(
+            metrics,
+            trace_pass=args.trace_pass,
+            probe_piece_chars=args.trace_probe_piece_chars,
+            segments_by_seq=segments_forward,
+            enable_trace_mark=bool(args.trace_enable_mark),
+        ),
+        encoding="utf-8",
+    )
+    (chapters_dir / "chapter6_generated.tex").write_text(
+        generate_trace_table_reverse_full(
+            metrics,
+            trace_pass=args.trace_pass,
+            probe_piece_chars=args.trace_probe_piece_chars,
+            segments_by_seq=segments_reverse,
+            enable_trace_mark=bool(args.trace_enable_mark),
+        ),
+        encoding="utf-8",
+    )
 
 
 if __name__ == "__main__":

@@ -33,15 +33,38 @@ echo "✅ 模板文件已复制"
 
 echo ""
 echo "步骤2: 生成章节内容与追踪表行..."
-python3 "$SCRIPT_DIR/generate_test_detail.py" --out "$OUTPUT_DIR" --data "$DATA_DIR"
-echo "✅ 章节已生成"
+TRACE_MAP="$OUTPUT_DIR/.trace_page_map.json"
+python3 "$SCRIPT_DIR/generate_test_detail.py" --out "$OUTPUT_DIR" --data "$DATA_DIR" --trace-pass probe --trace-probe-piece-chars 60 --trace-enable-mark
+echo "✅ 章节已生成（探测版）"
 
 echo ""
-echo "步骤3: 编译LaTeX文档..."
+echo "步骤3: 编译LaTeX文档（探测版）..."
 mkdir -p output/log
 rm -f output/test_detail.pdf output/test_detail_fresh.pdf 2>/dev/null || true
 JOBNAME="test_detail"
 rm -f "output/log/main.aux" "output/log/main.toc" "output/log/main.out" "output/log/main.log" "output/log/main.pdf"
+rm -f "output/log/${JOBNAME}.aux" "output/log/${JOBNAME}.toc" "output/log/${JOBNAME}.out" "output/log/${JOBNAME}.log" "output/log/${JOBNAME}.pdf"
+set +e
+(cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail_probe_pass1.log 2>&1)
+PASS1_EXIT=$?
+(cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail_probe.log 2>&1)
+PASS2_EXIT=$?
+set -e
+
+if [ $PASS1_EXIT -ne 0 ] || [ $PASS2_EXIT -ne 0 ]; then
+  echo "❌ 文档编译失败，请查看日志: output/log/compile_test_detail_probe.log"
+  exit 1
+fi
+
+python3 "$SCRIPT_DIR/parse_trace_pages.py" --log "output/log/compile_test_detail_probe.log" --out "$TRACE_MAP"
+
+echo ""
+echo "步骤4: 生成章节内容与追踪表行（按分页拆分）..."
+python3 "$SCRIPT_DIR/generate_test_detail.py" --out "$OUTPUT_DIR" --data "$DATA_DIR" --trace-pass final --trace-probe-piece-chars 60 --trace-page-map "$TRACE_MAP"
+echo "✅ 章节已生成（最终版）"
+
+echo ""
+echo "步骤5: 编译LaTeX文档（最终版）..."
 rm -f "output/log/${JOBNAME}.aux" "output/log/${JOBNAME}.toc" "output/log/${JOBNAME}.out" "output/log/${JOBNAME}.log" "output/log/${JOBNAME}.pdf"
 set +e
 (cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail_pass1.log 2>&1)
