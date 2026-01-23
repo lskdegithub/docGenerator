@@ -896,26 +896,20 @@ def generate_trace_table_forward_full(
         while j < len(rows) and (rows[j].get("metric_content") or "") == metric_content:
             j += 1
         group = rows[i:j]
+        contract_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
+        contract_total_rows = max(len(group), len(contract_parts))
+
         segs = (segments_by_seq or {}).get(str(seq), [])
-        if trace_pass == "final" and not segs:
-            segs = [len(group)]
-
-        contract_total_rows = sum(segs) if trace_pass == "final" else 0
-        if trace_pass != "final":
-            contract_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
-            contract_total_rows = max(len(group), len(contract_parts))
+        if trace_pass == "final":
+            if not segs:
+                segs = [contract_total_rows]
+            if sum(segs) != contract_total_rows:
+                segs = [contract_total_rows]
         else:
-            contract_parts = []
-
-        contract_row_idx = 0
+            segs = []
         seg_idx = 0
         seg_row_start = 0
         seg_row_len = segs[0] if segs else contract_total_rows
-        seg_texts: list[str] = []
-        if trace_pass == "final":
-            capacities = [max(1, int(x)) * max(1, int(probe_piece_chars)) for x in segs]
-            seg_texts_raw = split_text_by_capacities(metric_content, capacities)
-            seg_texts = [escape_latex_table_cell_soft(t) for t in seg_texts_raw]
         k = 0
         for global_row in range(contract_total_rows):
             is_real = global_row < len(group)
@@ -948,7 +942,13 @@ def generate_trace_table_forward_full(
                         c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{{seq}}}"
                     else:
                         c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{}}"
-                    seg_text = seg_texts[seg_idx] if seg_idx < len(seg_texts) else ""
+                    seg_start = seg_row_start
+                    seg_end = seg_row_start + seg_row_len
+                    seg_pieces = []
+                    for p in range(seg_start, seg_end):
+                        seg_pieces.append(escape_latex_table_cell_soft(contract_parts[p] if p < len(contract_parts) else ""))
+                    seg_pieces = [p for p in seg_pieces if p.strip()]
+                    seg_text = r"\GjbCellBreak ".join(seg_pieces).strip()
                     c2 = f"\\SetCell[r={seg_row_len}]{{l,t}} {{{seg_text}}}"
                 else:
                     c1 = mark
@@ -1067,25 +1067,21 @@ def generate_trace_table_reverse_full(
         while j < len(rows) and (rows[j].get("metric_content") or "") == metric_content:
             j += 1
         group = rows[i:j]
-        segs = (segments_by_seq or {}).get(str(seq), [])
-        if trace_pass == "final" and not segs:
-            segs = [len(group)]
+        contract_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
+        contract_total_rows = max(len(group), len(contract_parts))
 
-        contract_total_rows = sum(segs) if trace_pass == "final" else 0
-        if trace_pass != "final":
-            contract_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
-            contract_total_rows = max(len(group), len(contract_parts))
+        segs = (segments_by_seq or {}).get(str(seq), [])
+        if trace_pass == "final":
+            if not segs:
+                segs = [contract_total_rows]
+            if sum(segs) != contract_total_rows:
+                segs = [contract_total_rows]
         else:
-            contract_parts = []
+            segs = []
 
         seg_idx = 0
         seg_row_start = 0
         seg_row_len = segs[0] if segs else contract_total_rows
-        seg_texts: list[str] = []
-        if trace_pass == "final":
-            capacities = [max(1, int(x)) * max(1, int(probe_piece_chars)) for x in segs]
-            seg_texts_raw = split_text_by_capacities(metric_content, capacities)
-            seg_texts = [escape_latex_table_cell_soft(t) for t in seg_texts_raw]
 
         for global_row in range(contract_total_rows):
             is_real = global_row < len(group)
@@ -1119,7 +1115,13 @@ def generate_trace_table_reverse_full(
                         c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{{seq}}}"
                     else:
                         c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{}}"
-                    seg_text = seg_texts[seg_idx] if seg_idx < len(seg_texts) else ""
+                    seg_start = seg_row_start
+                    seg_end = seg_row_start + seg_row_len
+                    seg_pieces = []
+                    for p in range(seg_start, seg_end):
+                        seg_pieces.append(escape_latex_table_cell_soft(contract_parts[p] if p < len(contract_parts) else ""))
+                    seg_pieces = [p for p in seg_pieces if p.strip()]
+                    seg_text = r"\GjbCellBreak ".join(seg_pieces).strip()
                     c2 = f"\\SetCell[r={seg_row_len}]{{l,t}} {{{seg_text}}}"
                 else:
                     c1 = mark

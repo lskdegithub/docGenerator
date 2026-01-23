@@ -10,29 +10,17 @@ TRACE_RE = re.compile(r"GJBTRACE\s+tbl=([A-Za-z]+)\s+seq=(\d+)\s+row=(\d+)\s+pag
 
 
 def parse_segments(log_text: str) -> dict[str, dict[str, list[int]]]:
-    by_key: dict[tuple[str, str], dict[int, list[int]]] = {}
+    by_key: dict[tuple[str, str], dict[int, int]] = {}
     for m in TRACE_RE.finditer(log_text):
         tbl = m.group(1)
         seq = m.group(2)
         row = int(m.group(3))
         page = int(m.group(4))
-        by_key.setdefault((tbl, seq), {}).setdefault(row, []).append(page)
+        by_key.setdefault((tbl, seq), {})[row] = page
 
     segments: dict[str, dict[str, list[int]]] = {}
     for (tbl, seq), row_pages in by_key.items():
-        rows_sorted = sorted(row_pages.keys())
-        items: list[tuple[int, int]] = []
-        for r in rows_sorted:
-            pages = row_pages.get(r) or []
-            counts: dict[int, int] = {}
-            for p in pages:
-                counts[p] = counts.get(p, 0) + 1
-            if not counts:
-                continue
-            best_count = max(counts.values())
-            best_pages = [p for p, c in counts.items() if c == best_count]
-            page = min(best_pages)
-            items.append((r, page))
+        items = sorted(row_pages.items(), key=lambda t: t[0])
 
         current_page = None
         current_len = 0

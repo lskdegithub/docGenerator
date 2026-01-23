@@ -60,23 +60,39 @@ python3 "$SCRIPT_DIR/parse_trace_pages.py" --log "output/log/compile_test_detail
 
 echo ""
 echo "步骤4: 生成章节内容与追踪表行（按分页拆分）..."
-python3 "$SCRIPT_DIR/generate_test_detail.py" --out "$OUTPUT_DIR" --data "$DATA_DIR" --trace-pass final --trace-probe-piece-chars 60 --trace-page-map "$TRACE_MAP"
-echo "✅ 章节已生成（最终版）"
+echo "✅ 将进行最多 3 轮迭代，确保拆分点与最终分页一致"
+ITER=1
+while [ $ITER -le 3 ]; do
+  python3 "$SCRIPT_DIR/generate_test_detail.py" --out "$OUTPUT_DIR" --data "$DATA_DIR" --trace-pass final --trace-probe-piece-chars 60 --trace-page-map "$TRACE_MAP" --trace-enable-mark
+  echo "✅ 章节已生成（最终版，第 ${ITER} 轮）"
 
-echo ""
-echo "步骤5: 编译LaTeX文档（最终版）..."
-rm -f "output/log/${JOBNAME}.aux" "output/log/${JOBNAME}.toc" "output/log/${JOBNAME}.out" "output/log/${JOBNAME}.log" "output/log/${JOBNAME}.pdf"
-set +e
-(cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail_pass1.log 2>&1)
-PASS1_EXIT=$?
-(cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail.log 2>&1)
-PASS2_EXIT=$?
-set -e
+  echo ""
+  echo "步骤5: 编译LaTeX文档（最终版，第 ${ITER} 轮）..."
+  rm -f "output/log/${JOBNAME}.aux" "output/log/${JOBNAME}.toc" "output/log/${JOBNAME}.out" "output/log/${JOBNAME}.log" "output/log/${JOBNAME}.pdf"
+  set +e
+  (cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail_pass1.log 2>&1)
+  PASS1_EXIT=$?
+  (cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_detail.log 2>&1)
+  PASS2_EXIT=$?
+  set -e
 
-if [ $PASS1_EXIT -ne 0 ] || [ $PASS2_EXIT -ne 0 ]; then
-  echo "❌ 文档编译失败，请查看日志: output/log/compile_test_detail.log"
-  exit 1
-fi
+  if [ $PASS1_EXIT -ne 0 ] || [ $PASS2_EXIT -ne 0 ]; then
+    echo "❌ 文档编译失败，请查看日志: output/log/compile_test_detail.log"
+    exit 1
+  fi
+
+  TMP_MAP="$OUTPUT_DIR/.trace_page_map_final.json"
+  python3 "$SCRIPT_DIR/parse_trace_pages.py" --log "output/log/compile_test_detail.log" --out "$TMP_MAP"
+
+  python3 -c "import json,sys; a=json.load(open(sys.argv[1],'r',encoding='utf-8')); b=json.load(open(sys.argv[2],'r',encoding='utf-8')); sys.exit(0 if a==b else 1)" "$TRACE_MAP" "$TMP_MAP"
+  SAME=$?
+  if [ $SAME -eq 0 ]; then
+    break
+  fi
+
+  cp -f "$TMP_MAP" "$TRACE_MAP"
+  ITER=$((ITER + 1))
+done
 
 if [ -f "output/log/${JOBNAME}.pdf" ]; then
   mkdir -p output/generated
