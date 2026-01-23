@@ -12,6 +12,53 @@
 - ✅ **数据驱动生成**：自动从数据生成表格和章节内容
 - ✅ **跨页表格支持**：使用 tabularray 的 longtblr 支持大表格跨页显示
 
+## 技术栈
+
+### LaTeX（排版与标准样式）
+- **编译引擎**：XeLaTeX（推荐 TeX Live 2025+）
+- **中文与字体**：`ctex` + `fontspec`
+- **表格系统**：`tabularray`（`tblr/longtblr`），用于长表跨页与主题化样式
+- **版式控制**：`geometry`（页边距）、`titlesec`（标题）、`setspace`（行距）、`needspace`（防止表格被拆到页底）
+- **统一样式入口**：[gjb438c-style.sty](file:///d:/workspace/claude/app/latex-test/src/doc2tex-template/gjb438c-style.sty)
+
+### Python（数据驱动生成）
+- **解释器**：Python 3（建议 3.8+；兼容旧版时避免使用 `list[str]` 语法）
+- **依赖**：PyYAML（解析 `*.yaml`）、标准库（`re/json/pathlib` 等）
+- **职责**：从 `data/` 读取指标/模块/测试项/用例数据，生成章节片段与追踪表 tex
+
+### Shell（构建编排）
+- **脚本语言**：bash
+- **职责**：复制模板到 `output/`、调用 Python 生成、运行 XeLaTeX、多轮编译/日志解析/分页收敛
+- **Windows 建议**：在 WSL 中执行 `*.sh`（减少路径与依赖差异）
+
+## 工作原理（两条主流程）
+
+### 1) 编译模板（不读 data）
+- 输入：`src/doc2tex-template/<doc>/`
+- 脚本：`./build.sh [test_plan|test_detail|test_report]`
+- 输出：`output/template/<doc>.pdf`
+
+### 2) 数据驱动生成（推荐）
+- 输入：模板 `src/doc2tex-template/<doc>/` + 数据 `data/`
+- 脚本：`./scripts/build_test_plan.sh`、`./scripts/build_test_detail.sh`
+- 输出：
+  - `output/generated/<doc>.pdf`（最终 PDF）
+  - `output/<doc>/`（合成后的可编译 LaTeX 源码目录，用于排查/二次加工）
+
+## 环境准备
+
+### 必备软件
+- **TeX Live**：建议 2025+，并确保 `xelatex` 可用
+- **Python3**：用于运行 `scripts/*.py`
+- **bash**：Linux/macOS/WSL 均可
+
+### 字体依赖（默认样式）
+样式文件默认使用：
+- 中文：`Noto Serif CJK SC`、`Noto Sans CJK SC`
+- 西文：`DejaVu Serif`
+
+如果目标环境未安装这些字体，请先安装或调整 [gjb438c-style.sty](file:///d:/workspace/claude/app/latex-test/src/doc2tex-template/gjb438c-style.sty) 的字体配置。
+
 ## 项目结构
 
 ```
@@ -49,13 +96,17 @@ latex-test/
 │
 ├── scripts/                  # 构建脚本
 │   ├── build_test_plan.sh    # 测试计划构建脚本
+│   ├── build_test_detail.sh  # 测试细则构建脚本
+│   ├── parse_trace_pages.py  # 解析编译日志中的分页段信息（追踪表切分用）
 │   ├── generate_section_1_2.py  # 1.2章节表格自动生成
-│   └── generate_section_4_2.py  # 4.2章节生成脚本
+│   ├── generate_section_4_2.py  # 4.2章节生成脚本
+│   ├── generate_section_7.py    # 第7章追踪表生成（测试大纲）
+│   ├── generate_test_detail.py  # 测试细则章节/追踪表生成
+│   └── audit_tables.py          # LaTeX 表格一致性审计（可选）
 │
 ├── output/                   # 编译输出目录
-│   ├── test_plan.pdf         # 生成的 PDF 文档
-│   ├── test_detail.pdf
-│   ├── test_report.pdf
+│   ├── test_plan.pdf         # 数据驱动构建脚本生成的 PDF（便捷拷贝）
+│   ├── test_detail.pdf        # 数据驱动构建脚本生成的 PDF（便捷拷贝）
 │   ├── test_plan/            # 完整的测试计划源码（从模板+数据生成）
 │   └── log/                 # 编译日志
 │
@@ -233,10 +284,29 @@ python3 scripts/audit_tables.py
 
 - ⚠️ 所有文档必须严格遵守 GJB 438C-2021 格式标准
 - ⚠️ 修改格式只需编辑 `gjb438c-style.sty`，所有文档自动生效
-- ⚠️ 不要修改 `src/doc2tex-template/` 下的模板文件
-- ✅ 数据驱动的文档会生成到 `output/test_plan/` 目录
+- ⚠️ 不要直接手工修改 `output/` 下的生成结果（会被脚本覆盖），应修改 `src/doc2tex-template/` 或 `data/` 或 `scripts/`
+- ✅ 数据驱动生成的 LaTeX 源码会写入 `output/test_plan/`、`output/test_detail/`
 - ✅ 编译产物自动输出到 `output/` 目录
 - ✅ 使用 `scripts/build_test_plan.sh` 生成数据驱动的文档
+
+## 追踪表跨页切分（box 切分）
+
+当追踪表使用 `\SetCell[r=...]` 合并多行时，如果单元格跨页，分页会变得不可控。项目对部分追踪表采用“按页切分 box”的实现：
+- **probe**：生成逐行探测版表格，并在每行注入 `\GjbTraceMark{tbl}{seq}{row}`（编译日志记录页码）
+- **解析日志**：用 [parse_trace_pages.py](file:///d:/workspace/claude/app/latex-test/scripts/parse_trace_pages.py) 生成 `(tbl, seq) -> segs=[len1,len2,...]` 的 JSON
+- **final**：按 `segs` 把一个大合并单元格拆成多个 `\SetCell[r=seg_len]` 段，从而做到“跨页处切断 box，但视觉仍像合并”
+
+对应实现入口：
+- 测试细则第5/6章：[generate_test_detail.py](file:///d:/workspace/claude/app/latex-test/scripts/generate_test_detail.py)
+- 测试大纲第7章：[generate_section_7.py](file:///d:/workspace/claude/app/latex-test/scripts/generate_section_7.py)
+
+## 常见问题（FAQ）
+
+### Python 报错：`TypeError: 'type' object is not subscriptable`
+通常是因为运行环境 Python 版本较老，无法解析 `list[str]` 这种类型注解。项目脚本已改为 `typing.List/Dict/Optional` 写法；若你本地仍出现类似问题，请确认使用的是 `python3` 并升级到 Python 3。
+
+### 字体找不到/中文乱码
+请安装 README「字体依赖」中列出的字体，或修改 [gjb438c-style.sty](file:///d:/workspace/claude/app/latex-test/src/doc2tex-template/gjb438c-style.sty) 的字体配置为你系统已安装的字体。
 
 ## 目录结构优势
 

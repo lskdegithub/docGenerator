@@ -8,6 +8,11 @@ echo "======================================"
 echo "  构建测试计划文档"
 echo "======================================"
 
+XELATEX="xelatex"
+if [ -x "/usr/local/texlive/2025/bin/x86_64-linux/xelatex" ]; then
+  XELATEX="/usr/local/texlive/2025/bin/x86_64-linux/xelatex"
+fi
+
 # 目录配置
 TEMPLATE_DIR="src/doc2tex-template/test_plan"
 OUTPUT_DIR="output/test_plan"
@@ -128,7 +133,8 @@ PY
 # 步骤6: 生成第7章可追踪性表格行
 echo ""
 echo "步骤6: 生成第7章可追踪性表格行..."
-python3 "$SCRIPT_DIR/generate_section_7.py"
+TRACE_MAP="$OUTPUT_DIR/.trace_page_map.json"
+python3 "$SCRIPT_DIR/generate_section_7.py" --trace-pass probe --trace-probe-piece-chars 60 --trace-enable-mark
 
 # 步骤7: 将生成的第7章表格行插入到chapter7.tex中
 echo ""
@@ -139,19 +145,70 @@ echo "步骤7: 插入第7章表格行到模板... (已改为使用 \input，跳�
 
 echo ""
 
-# 步骤8: 编译文档
-echo "步骤8: 编译LaTeX文档..."
+# 步骤8: 编译文档（探测版）
+echo "步骤8: 编译LaTeX文档（探测版）..."
 mkdir -p output/log
 rm -f output/test_plan.pdf output/test_plan_fresh.pdf 2>/dev/null || true
 
 # 进入输出目录编译
-(cd "$OUTPUT_DIR" && xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan_pass1.log 2>&1)
-(cd "$OUTPUT_DIR" && xelatex -interaction=nonstopmode -halt-on-error -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan.log 2>&1)
+JOBNAME="test_plan"
+rm -f "output/log/${JOBNAME}.aux" "output/log/${JOBNAME}.toc" "output/log/${JOBNAME}.out" "output/log/${JOBNAME}.log" "output/log/${JOBNAME}.pdf"
+set +e
+(cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan_probe_pass1.log 2>&1)
+PASS1_EXIT=$?
+(cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan_probe.log 2>&1)
+PASS2_EXIT=$?
+set -e
+
+if [ $PASS1_EXIT -ne 0 ] || [ $PASS2_EXIT -ne 0 ]; then
+    echo "❌ 文档编译失败，请查看日志: output/log/compile_test_plan_probe.log"
+    exit 1
+fi
+
+python3 "$SCRIPT_DIR/parse_trace_pages.py" --log "output/log/compile_test_plan_probe.log" --out "$TRACE_MAP"
+
+echo ""
+echo "步骤9: 生成第7章可追踪性表格行（按分页拆分）..."
+echo "✅ 将进行最多 3 轮迭代，确保拆分点与最终分页一致"
+ITER=1
+while [ $ITER -le 3 ]; do
+    python3 "$SCRIPT_DIR/generate_section_7.py" --trace-pass final --trace-probe-piece-chars 60 --trace-page-map "$TRACE_MAP" --trace-enable-mark
+
+    echo ""
+    echo "步骤10: 编译LaTeX文档（最终版，第 ${ITER} 轮）..."
+    rm -f "output/log/${JOBNAME}.aux" "output/log/${JOBNAME}.toc" "output/log/${JOBNAME}.out" "output/log/${JOBNAME}.log" "output/log/${JOBNAME}.pdf"
+    set +e
+    (cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan_pass1.log 2>&1)
+    PASS1_EXIT=$?
+    (cd "$OUTPUT_DIR" && "$XELATEX" -interaction=nonstopmode -halt-on-error -jobname="${JOBNAME}" -output-directory="../../output/log" main.tex > ../../output/log/compile_test_plan.log 2>&1)
+    PASS2_EXIT=$?
+    set -e
+
+    if [ $PASS1_EXIT -ne 0 ] || [ $PASS2_EXIT -ne 0 ]; then
+        echo "❌ 文档编译失败，请查看日志: output/log/compile_test_plan.log"
+        exit 1
+    fi
+
+    TMP_MAP="$OUTPUT_DIR/.trace_page_map_final.json"
+    python3 "$SCRIPT_DIR/parse_trace_pages.py" --log "output/log/compile_test_plan.log" --out "$TMP_MAP"
+
+    set +e
+    python3 -c "import json,sys; a=json.load(open(sys.argv[1],'r',encoding='utf-8')); b=json.load(open(sys.argv[2],'r',encoding='utf-8')); sys.exit(0 if a==b else 1)" "$TRACE_MAP" "$TMP_MAP"
+    SAME=$?
+    set -e
+    if [ $SAME -eq 0 ]; then
+        break
+    fi
+
+    cp -f "$TMP_MAP" "$TRACE_MAP"
+    ITER=$((ITER + 1))
+done
 
 # 重命名PDF文件
-if [ -f "output/log/main.pdf" ]; then
+if [ -f "output/log/${JOBNAME}.pdf" ]; then
     mkdir -p output/generated
-    mv -f "output/log/main.pdf" "output/generated/test_plan.pdf"
+    cp -f "output/log/${JOBNAME}.pdf" "output/test_plan.pdf"
+    cp -f "output/log/${JOBNAME}.pdf" "output/generated/test_plan.pdf"
     echo "✅ 文档编译成功: output/generated/test_plan.pdf"
 else
     echo "❌ 文档编译失败，请查看日志: output/log/compile_test_plan.log"

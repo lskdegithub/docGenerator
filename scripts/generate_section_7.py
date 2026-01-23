@@ -3,26 +3,64 @@
 """
 生成测试计划文档 第7章（需求的可追踪性）的追踪表
 使用 tabularray (longtblr) 生成完整的表格代码
-修复问题：
-1. 移除 SetCell 和 Chunking 逻辑，允许表格自然分页，彻底解决页码被覆盖问题
-2. 移除全局 hlines，使用 \cline{3-6} 仅在右侧画线，左侧 Metric/序号列无横线，实现“连续表”视觉效果
-3. 采用 valign=t (顶部对齐)，确保长文本显示自然
-4. 参照 Chapter 1 Table 1 的逻辑，对 Test Items 进行分组，而不是强制切分 Metric 文本。
 """
 
-import math
+import argparse
+import json
+import re
 from pathlib import Path
+from typing import Dict, List, Optional
 import utils
 
 
-def split_text_by_length(text, length=50):
-    """
-    Split text into chunks of specified length.
-    Returns a list of strings.
-    """
+def split_by_max_chars(text: str, max_chars: int) -> List[str]:
+    text = str(text or "")
     if not text:
-        return []
-    return [text[i:i+length] for i in range(0, len(text), length)]
+        return [""]
+    max_chars = int(max_chars or 0)
+    if max_chars <= 0:
+        return [text]
+    parts: List[str] = []
+    s = 0
+    while s < len(text):
+        end = min(len(text), s + max_chars)
+        window = text[s : min(len(text), end + 80)]
+        m = re.search(r".*([。！？；;!?])\s*", window)
+        if m and s + m.end() > s:
+            end = s + m.end()
+        parts.append(text[s:end])
+        s = end
+    return parts
+
+
+def load_trace_segments(path: Optional[str]) -> Dict[str, Dict[str, List[int]]]:
+    if not path:
+        return {}
+    p = Path(path)
+    if not p.exists():
+        return {}
+    data = json.loads(p.read_text(encoding="utf-8"))
+    segs = data.get("segments") or {}
+    if not isinstance(segs, dict):
+        return {}
+    out: Dict[str, Dict[str, List[int]]] = {}
+    for tbl, tbl_map in segs.items():
+        if isinstance(tbl, int):
+            tbl = str(tbl)
+        if not isinstance(tbl, str) or not isinstance(tbl_map, dict):
+            continue
+        cleaned_tbl: Dict[str, List[int]] = {}
+        for k, v in tbl_map.items():
+            if isinstance(k, int):
+                k = str(k)
+            if not isinstance(k, str) or not isinstance(v, list):
+                continue
+            cleaned = [int(x) for x in v if int(x) > 0]
+            if cleaned:
+                cleaned_tbl[k] = cleaned
+        if cleaned_tbl:
+            out[tbl] = cleaned_tbl
+    return out
 
 
 def collect_plan_items(data_dir: Path):
@@ -67,11 +105,14 @@ def collect_plan_items(data_dir: Path):
     return rows
 
 
-def generate_table_rows(items, table_type="forward"):
-    """
-    Generate table rows using "Item Chunking" strategy similar to Chapter 1.2 Table 1.
-    table_type: "forward" or "reverse"
-    """
+def generate_table_rows(
+    items,
+    trace_pass: str,
+    probe_piece_chars: int,
+    segments_by_seq: Optional[Dict[str, List[int]]],
+    enable_trace_mark: bool,
+    tbl_tag: str,
+):
     rows_tex = []
     
     i = 0
@@ -85,184 +126,91 @@ def generate_table_rows(items, table_type="forward"):
         
         group = items[i:j]
         metric_content = group[0].get("metric_content") or group[0].get("metric_cell") or ""
-        
-        # New "Slot-based" Strategy:
-        # 1. Calculate required slots for Text.
-        # 2. Extend Item list to match Text slots (Visual Merge).
-        # 3. Chunk the extended lists for pagination.
-        # 4. Control borders to create "Same Box" illusion.
-        
-        # Calibration: How many chars fit in one Item's height?
-        # Metric col width 3cm ~= 12 chars/line.
-        # Avg Item height ~= 3-4 lines.
-        # So 1 Item Slot ~= 40 chars.
-        CHARS_PER_SLOT = 40
-        BLOCK_SIZE = 4 # Max rows per physical block (safe for page break)
-        
-        total_text_len = len(metric_content)
-        n_items = len(group)
-        n_text_slots = math.ceil(total_text_len / CHARS_PER_SLOT)
-        
-        # The grid must be at least as long as items, and long enough for text
-        total_slots = max(n_items, n_text_slots)
-        
-        # Prepare Text Parts
-        # We split text evenly across all slots to maintain consistent spacing
-        text_parts = []
-        if total_slots > 0:
-            # Distribute text evenly? Or fill linearly?
-            # Filling linearly is safer for reading order.
-            # But evenly is better for alignment?
-            # Let's use linear filling based on the calculated capacity, 
-            # but allow the last slot to take the rest.
-            # Actually, split_text_by_length is fine, but we need exactly total_slots parts.
-            
-            # Better: Linear split
-            avg_chunk_len = math.ceil(total_text_len / total_slots)
-            # Ensure avg_chunk_len is at least 1
-            if avg_chunk_len < 1: avg_chunk_len = 1
-            
-            for k in range(total_slots):
-                start = k * avg_chunk_len
-                end = min((k + 1) * avg_chunk_len, total_text_len)
-                if start < total_text_len:
-                    text_parts.append(metric_content[start:end])
-                else:
-                    text_parts.append("")
+
+        metric_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
+        metric_total_rows = max(len(group), len(metric_parts))
+
+        segs = (segments_by_seq or {}).get(str(seq), [])
+        if trace_pass == "final":
+            if not segs:
+                segs = [metric_total_rows]
+            if sum(segs) != metric_total_rows:
+                segs = [metric_total_rows]
         else:
-            text_parts = [""]
+            segs = []
+        seg_idx = 0
+        seg_row_start = 0
+        seg_row_len = segs[0] if segs else metric_total_rows
 
-        # Prepare Extended Items
-        extended_items = []
-        for k in range(total_slots):
-            if k < n_items:
-                extended_items.append(group[k])
-            else:
-                # Clone the last item
-                extended_items.append(group[-1])
-        
-        # Chunking
-        # We process `total_slots` in blocks of `BLOCK_SIZE`
-        
-        current_slot = 0
-        while current_slot < total_slots:
-            # Determine block size
-            this_block_size = min(BLOCK_SIZE, total_slots - current_slot)
-            
-            # Collect data for this block
-            block_text_parts = text_parts[current_slot : current_slot + this_block_size]
-            block_items = extended_items[current_slot : current_slot + this_block_size]
-            
-            # Join text parts for this block (Metric Cell Content)
-            # We join them because in this block they are one merged cell
-            block_metric_text = "".join(block_text_parts)
-            block_metric_text_esc = utils.escape_latex(block_metric_text)
-            
-            # Generate Rows
-            for k in range(this_block_size):
-                global_idx = current_slot + k
-                item = block_items[k]
-                
-                # Check if this item is a continuation of the previous one (Visual Merge)
-                # Logic: If global_idx > 0 and item == extended_items[global_idx - 1]
-                # But we need to compare content or ID.
-                # Since we cloned the object, identity comparison might work, 
-                # but safer to compare unique ID if available, or just index logic.
-                
-                is_continuation = False
-                if global_idx > 0:
-                    prev_item = extended_items[global_idx - 1]
-                    # We can assume if it's the SAME object reference, it's a continuation.
-                    # In our loop above: `extended_items.append(group[-1])` uses same ref.
-                    # For `group[k]`, they are distinct objects.
-                    if item is prev_item:
-                        is_continuation = True
-                
-                # Check if next item is same (for border logic)
-                is_next_same = False
-                if global_idx < total_slots - 1:
-                    next_item = extended_items[global_idx + 1]
-                    if next_item is item:
-                        is_next_same = True
-                
-                # Content Generation
-                if is_continuation:
-                    # Empty content for continued item
-                    req = ""
-                    srs = ""
-                    test_item = ""
-                    sec = ""
-                else:
-                    # New Item
-                    req = utils.escape_latex(item["requirement"])
-                    srs = utils.escape_latex(item["srs_chapter"])
-                    n_tex = utils.escape_latex(item["test_item_name"])
-                    i_tex = utils.escape_latex(item["test_item_ident"])
-                    test_item = f"{n_tex}（{i_tex}）"
-                    sec = utils.escape_latex(item["section"])
-                
-                # Row Commands
-                row_cmd = r"\\"
-                
-                # Col 1: Seq (Only first row of first block)
-                if k == 0 and current_slot == 0:
-                    c1 = f"\\SetCell[r={this_block_size}]{{c,t}} {{{seq}}}"
-                elif k == 0:
-                     # First row of subsequent blocks: Empty placeholder for merged cell?
-                     # No, we can't merge Seq across blocks (pages).
-                     # So subsequent blocks have empty Seq cell.
-                     # But we want visual continuity.
-                     # We will Merge vertically within block, content empty.
-                     c1 = f"\\SetCell[r={this_block_size}]{{c,t}} {{}}"
-                else:
-                    c1 = ""
-                
-                # Col 2: Metric (Merged per block)
-                if k == 0:
-                    c2 = f"\\SetCell[r={this_block_size}]{{l,t}} {{{block_metric_text_esc}}}"
-                else:
-                    c2 = ""
-                
-                # Line Assembly
-                line = f"{c1} & {c2} & {req} & {srs} & {test_item} & {sec} {row_cmd}"
-                
-                # Horizontal Lines Logic
-                # 1. Metric Col (2) & Seq Col (1):
-                #    - Only draw bottom line if this is the VERY LAST row of the Metric Group.
-                #    - i.e. global_idx == total_slots - 1.
-                # 2. Item Cols (3-6):
-                #    - Draw bottom line if `not is_next_same`.
-                #    - i.e. End of an Item's scope.
-                #    - Also draw if End of Table (implied by End of Metric Group).
-                
-                is_last_row_of_metric = (global_idx == total_slots - 1)
-                
-                if is_last_row_of_metric:
-                    # End of everything -> Full Line
-                    line += r" \hline"
-                else:
-                    # Not end of Metric Group.
-                    # Metric/Seq cols get NO line (to look continuous).
-                    # Check Item cols:
-                    if not is_next_same:
-                        # Item changed (or real item ended) -> Draw partial line
-                        line += r" \cline{3-6}"
+        for global_row in range(metric_total_rows):
+            is_real = global_row < len(group)
+            item = group[global_row] if is_real else {}
+
+            mark = ""
+            if enable_trace_mark:
+                mark = f"\\GjbTraceMark{{{tbl_tag}}}{{{seq}}}{{{global_row + 1}}}"
+
+            if trace_pass == "final":
+                while global_row >= seg_row_start + seg_row_len and seg_idx + 1 < len(segs):
+                    seg_row_start += seg_row_len
+                    seg_idx += 1
+                    seg_row_len = segs[seg_idx]
+
+                is_segment_start = global_row == seg_row_start
+                if is_segment_start:
+                    if seg_idx == 0:
+                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{{seq}}}"
                     else:
-                        # Item continues to next row -> NO line
-                        pass
-                
-                rows_tex.append(line)
+                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{}}"
 
-            current_slot += this_block_size
-        
+                    seg_start = seg_row_start
+                    seg_end = seg_row_start + seg_row_len
+                    seg_pieces = []
+                    for p in range(seg_start, seg_end):
+                        seg_pieces.append(utils.escape_latex(metric_parts[p] if p < len(metric_parts) else ""))
+                    seg_pieces = [p for p in seg_pieces if p.strip()]
+                    seg_text = r"\GjbCellBreak ".join(seg_pieces).strip()
+                    c2 = f"\\SetCell[r={seg_row_len}]{{l,t}} {{{seg_text}}}"
+                else:
+                    c1 = mark
+                    c2 = ""
+            else:
+                piece = metric_parts[global_row] if global_row < len(metric_parts) else ""
+                c1 = f"{mark}{seq}" if global_row == 0 else mark
+                c2 = utils.escape_latex(piece)
+
+            if is_real:
+                req = utils.escape_latex(item.get("requirement") or "")
+                srs = utils.escape_latex(item.get("srs_chapter") or "")
+                n_tex = utils.escape_latex(item.get("test_item_name") or "")
+                i_tex = utils.escape_latex(item.get("test_item_ident") or "")
+                test_item = f"{n_tex}（{i_tex}）"
+                sec = utils.escape_latex(item.get("section") or "")
+            else:
+                req = ""
+                srs = ""
+                test_item = ""
+                sec = ""
+
+            row_cmd = r"\\"
+            line = f"{c1} & {c2} & {req} & {srs} & {test_item} & {sec} {row_cmd}"
+
+            is_last_row_of_metric = global_row == metric_total_rows - 1
+            if is_last_row_of_metric:
+                line += r" \hline"
+            elif is_real:
+                line += r" \cline{3-6}"
+
+            rows_tex.append(line)
+
         i = j
         seq += 1
         
     return "\n".join(rows_tex)
 
 
-def generate_forward_table(items):
-    body = generate_table_rows(items, "forward")
+def generate_forward_table(items, trace_pass: str, probe_piece_chars: int, segments_by_seq: Optional[Dict[str, List[int]]], enable_trace_mark: bool):
+    body = generate_table_rows(items, trace_pass, probe_piece_chars, segments_by_seq, enable_trace_mark, "PF")
     latex = f"""
 {{\\settablespacing
 \\begin{{longtblr}}[
@@ -286,8 +234,8 @@ def generate_forward_table(items):
     return latex
 
 
-def generate_reverse_table(items):
-    body = generate_table_rows(items, "reverse")
+def generate_reverse_table(items, trace_pass: str, probe_piece_chars: int, segments_by_seq: Optional[Dict[str, List[int]]], enable_trace_mark: bool):
+    body = generate_table_rows(items, trace_pass, probe_piece_chars, segments_by_seq, enable_trace_mark, "PR")
     latex = f"""
 {{\\settablespacing
 \\begin{{longtblr}}[
@@ -312,14 +260,36 @@ def generate_reverse_table(items):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="生成测试计划第七章追踪表")
+    parser.add_argument("--data", default=None, help="数据目录（默认使用仓库 data/）")
+    parser.add_argument("--out", default=None, help="输出目录（默认 output/test_plan/chapters/）")
+    parser.add_argument("--trace-pass", default="final", choices=["probe", "final"], help="追踪表生成阶段")
+    parser.add_argument("--trace-probe-piece-chars", default=60, type=int, help="探测阶段切分长度")
+    parser.add_argument("--trace-page-map", default=None, help="分页段信息 JSON（parse_trace_pages.py 输出）")
+    parser.add_argument("--trace-enable-mark", action="store_true", help="输出分页探测标记到编译日志")
+    args = parser.parse_args()
+
     repo_root = utils.get_project_root()
-    data_dir = repo_root / "data"
-    out_dir = repo_root / "output" / "test_plan" / "chapters"
+    data_dir = Path(args.data).resolve() if args.data else (repo_root / "data")
+    out_dir = Path(args.out).resolve() if args.out else (repo_root / "output" / "test_plan" / "chapters")
 
     items = collect_plan_items(data_dir)
     
-    forward_table = generate_forward_table(items)
-    reverse_table = generate_reverse_table(items)
+    segs = load_trace_segments(args.trace_page_map)
+    forward_table = generate_forward_table(
+        items,
+        args.trace_pass,
+        args.trace_probe_piece_chars,
+        segs.get("PF", {}),
+        bool(args.trace_enable_mark),
+    )
+    reverse_table = generate_reverse_table(
+        items,
+        args.trace_pass,
+        args.trace_probe_piece_chars,
+        segs.get("PR", {}),
+        bool(args.trace_enable_mark),
+    )
     
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "chapter7_forward_table.tex").write_text(forward_table, encoding="utf-8")
