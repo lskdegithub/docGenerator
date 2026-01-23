@@ -84,8 +84,10 @@ while [ $ITER -le 3 ]; do
   TMP_MAP="$OUTPUT_DIR/.trace_page_map_final.json"
   python3 "$SCRIPT_DIR/parse_trace_pages.py" --log "output/log/compile_test_detail.log" --out "$TMP_MAP"
 
+  set +e
   python3 -c "import json,sys; a=json.load(open(sys.argv[1],'r',encoding='utf-8')); b=json.load(open(sys.argv[2],'r',encoding='utf-8')); sys.exit(0 if a==b else 1)" "$TRACE_MAP" "$TMP_MAP"
   SAME=$?
+  set -e
   if [ $SAME -eq 0 ]; then
     break
   fi
