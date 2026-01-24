@@ -33,6 +33,12 @@ def split_by_max_chars(text: str, max_chars: int) -> List[str]:
     return parts
 
 
+def escape_with_breaks(text: str, max_chars: int) -> str:
+    parts = split_by_max_chars(text, max_chars=max_chars)
+    escaped = [utils.escape_latex(p) for p in parts if str(p).strip()]
+    return r"\GjbCellBreak ".join(escaped).strip()
+
+
 def load_trace_segments(path: Optional[str]) -> Dict[str, Dict[str, List[int]]]:
     if not path:
         return {}
@@ -112,6 +118,7 @@ def generate_table_rows(
     segments_by_seq: Optional[Dict[str, List[int]]],
     enable_trace_mark: bool,
     tbl_tag: str,
+    table_kind: str,
 ):
     rows_tex = []
     
@@ -180,12 +187,22 @@ def generate_table_rows(
                 c2 = utils.escape_latex(piece)
 
             if is_real:
-                req = utils.escape_latex(item.get("requirement") or "")
-                srs = utils.escape_latex(item.get("srs_chapter") or "")
-                n_tex = utils.escape_latex(item.get("test_item_name") or "")
-                i_tex = utils.escape_latex(item.get("test_item_ident") or "")
-                test_item = f"{n_tex}（{i_tex}）"
-                sec = utils.escape_latex(item.get("section") or "")
+                raw_req = str(item.get("requirement") or "")
+                raw_srs = str(item.get("srs_chapter") or "")
+                raw_name = str(item.get("test_item_name") or "")
+                raw_ident = str(item.get("test_item_ident") or "")
+                raw_sec = str(item.get("section") or "")
+
+                if table_kind == "reverse":
+                    req = escape_with_breaks(raw_req, max_chars=26)
+                    srs = escape_with_breaks(raw_srs, max_chars=18)
+                    test_item = escape_with_breaks(f"{raw_name}（{raw_ident}）", max_chars=48)
+                    sec = escape_with_breaks(raw_sec, max_chars=18)
+                else:
+                    req = escape_with_breaks(raw_req, max_chars=34)
+                    srs = escape_with_breaks(raw_srs, max_chars=18)
+                    test_item = escape_with_breaks(f"{raw_name}（{raw_ident}）", max_chars=52)
+                    sec = escape_with_breaks(raw_sec, max_chars=18)
             else:
                 req = ""
                 srs = ""
@@ -193,7 +210,11 @@ def generate_table_rows(
                 sec = ""
 
             row_cmd = r"\\"
-            line = f"{c1} & {c2} & {req} & {srs} & {test_item} & {sec} {row_cmd}"
+            if table_kind == "reverse":
+                c3, c4, c5, c6 = test_item, sec, req, srs
+            else:
+                c3, c4, c5, c6 = req, srs, test_item, sec
+            line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} {row_cmd}"
 
             is_last_row_of_metric = global_row == metric_total_rows - 1
             if is_last_row_of_metric:
@@ -210,7 +231,7 @@ def generate_table_rows(
 
 
 def generate_forward_table(items, trace_pass: str, probe_piece_chars: int, segments_by_seq: Optional[Dict[str, List[int]]], enable_trace_mark: bool):
-    body = generate_table_rows(items, trace_pass, probe_piece_chars, segments_by_seq, enable_trace_mark, "PF")
+    body = generate_table_rows(items, trace_pass, probe_piece_chars, segments_by_seq, enable_trace_mark, "PF", "forward")
     latex = f"""
 {{\\settablespacing
 \\begin{{longtblr}}[
@@ -235,7 +256,7 @@ def generate_forward_table(items, trace_pass: str, probe_piece_chars: int, segme
 
 
 def generate_reverse_table(items, trace_pass: str, probe_piece_chars: int, segments_by_seq: Optional[Dict[str, List[int]]], enable_trace_mark: bool):
-    body = generate_table_rows(items, trace_pass, probe_piece_chars, segments_by_seq, enable_trace_mark, "PR")
+    body = generate_table_rows(items, trace_pass, probe_piece_chars, segments_by_seq, enable_trace_mark, "PR", "reverse")
     latex = f"""
 {{\\settablespacing
 \\begin{{longtblr}}[
