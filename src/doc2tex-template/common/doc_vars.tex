@@ -7,18 +7,16 @@
 \providecommand{\GjbDocName}{云擎万象数驭全场景系统项目}
 \providecommand{\GjbSoftwareVersion}{v0.1.1}
 
-% 文档标识
+% 文档类型（默认值，在各文档的doc_vars.tex中覆盖）
+\providecommand{\GjbDocIdType}{STP}
+\providecommand{\GjbDocKind}{测试大纲}
+
+% 文档标识（必须在上面定义之后）
 \providecommand{\GjbDocId}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
 \providecommand{\GjbSystemIdent}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
 \providecommand{\GjbSystemDocAbbr}{\GjbProjectIdent}
 \providecommand{\GjbProjectName}{\GjbDocName}
-
-% =================================================================
-% 文档内容占位符（请在各文档的 doc_vars.tex 中覆盖）
-% =================================================================
-\providecommand{\GjbDocIdType}{STP}
-\providecommand{\GjbDocKind}{测试大纲}
-\providecommand{\GjbDocTitle}{\GjbDocName\GjbDocKind}
+\providecommand{\GjbDocTitle}{\GjbDocName\ \GjbDocKind}
 \providecommand{\GjbDocApplicableText}{本文档适用于\GjbProjectName{}软件测试}
 
 % 文档概述文本

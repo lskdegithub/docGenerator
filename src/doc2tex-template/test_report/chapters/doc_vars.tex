@@ -4,7 +4,10 @@
 \renewcommand{\GjbDocIdType}{STR}
 \renewcommand{\GjbDocKind}{测试报告}
 
-\renewcommand{\GjbDocTitle}{\GjbDocName\GjbDocKind}
+% 重新定义依赖上面两个命令的变量
+\renewcommand{\GjbDocId}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
+\renewcommand{\GjbSystemIdent}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
+\renewcommand{\GjbDocTitle}{\GjbDocName\ \GjbDocKind}
 \renewcommand{\GjbDocApplicableText}{\GjbProjectName{}软件测试过程}
 
 \renewcommand{\GjbDocOverviewText}{本文档用于\GjbDocTitle，记录并总结本次测试的实施情况、环境、执行结果及问题分析，为评审与交付提供依据。}
