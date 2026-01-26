@@ -2,36 +2,38 @@
 
 \subsection{标识}
 
-（1）文档标识号：xxxxxxxxxx\_STD\_ V1.0.0.0；
+\input{chapters/doc_vars.tex}
 
-（2）系统标识xxxxxxxxxx，在测试文档中简称为xxxx；
+（1）文档标识号：\GjbDocId；
 
-（3）项目名称：xxxx以下简称xxxx；
+（2）系统标识\GjbSystemIdent，在测试文档中简称为\GjbSystemDocAbbr；
 
-（4）文档名称：“xxxx”项目2025年9月节点软件测试细则；
+（3）项目名称：\GjbProjectName；
 
-（5）软件版本号：rxxxx版，软件版本标识采用三位编码规则，项目文档版本标识采用四位编码规则；
+（4）文档名称：\GjbDocTitle；
 
-（6）本文档适用于xxxx2025年9月节点软件测试过程。
+（5）软件版本号：\GjbSoftwareVersion，软件版本标识采用三位编码规则，项目文档版本标识采用四位编码规则；
+
+（6）本文档适用于：\GjbDocApplicableText。
 
 \subsection{系统概述}
 
-系统用途部分内容敏感，不在此处列出。详见xxxx合同（xxxxx）。
+\GjbSystemPurposeText{}详见\GjbSystemContractText。
 
-xxxx规定的本阶段主要要求和技术指标为：
+\GjbSystemReqText{}
 
-xxxxxxxxxxxxxx。
+\GjbSystemReqListText。
 
-项目节点测试的测试项与xxxx的覆盖性对应关系如表 \ref{tbl:detail-coverage}所示。
+\GjbSystemCoverageIntroText如图\ref{\GjbCoverageTableLabel}所示。
 
 {\settablespacing
-\begin{longtblr}[theme=gjb,caption={xxxx与测试项覆盖性对照表},label={tbl:detail-coverage}]{
-  colspec={|p{0.8cm}|p{7.0cm}|p{6.7cm}|},
+\begin{longtblr}[theme=gjb,caption={\GjbCoverageTableCaption},label={\GjbCoverageTableLabel}]{
+  colspec={|p{\GjbCoverageColAWidth}|p{\GjbCoverageColBWidth}|p{\GjbCoverageColCWidth}|},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
-序号 & xxxx & 测试项 \\
+序号 & \GjbCoverageTableColBTitle & 测试项 \\
 \Seq &  &  \\
 \Seq &  &  \\
 \Seq &  &  \\
@@ -41,14 +43,14 @@ xxxxxxxxxxxxxx。
 }
 \vspace{-6pt}
 
-xxxx软件的需方是“xxxx群管理办公室，开发方xxxx。
+\GjbSystemCustomerDevText
 
-标识当前和计划运行的现场，测试地点为“xxxx”，测试环境包括1台国产ARM架构服务器，其搭载国产处理器（飞腾）和国产操作系统（银河麒麟服务器版）以及2台国产X86台式机，其中服务器部署xxxxxxxx版，两台台式机为客户端。
+\GjbSystemEnvironmentText
 
 \subsection{文档概述}
 
-本文档用于用于“xxxx”项目2025年9月节点测试细则，规定了本次测试的环境以及具体需要执行的测试用例，指导测试人员进行具体的测试活动。
+\GjbDocOverviewText
 
-本文档模板涵盖了GJB438C-2021《军用软件开发文档通用要求》对软件测试细则文档的要素和内容的要求。
+\GjbDocStdCoverageText
 
-描述本文档密级为xxxx，必须按照xxxx文件的要求使用和分发。即使在保密性得到保证的情况下，对本文档的使用也必须经研制方主管人员的认可。
+\GjbDocSecurityText

@@ -1,0 +1,63 @@
+% =================================================================
+% 文档变量定义 - 所有文档共用
+% =================================================================
+
+% 项目基本信息
+\providecommand{\GjbProjectIdent}{CloudPioneerDataMaster}
+\providecommand{\GjbDocName}{云擎万象数驭全场景系统项目}
+\providecommand{\GjbSoftwareVersion}{v0.1.1}
+
+% 文档标识
+\providecommand{\GjbDocId}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
+\providecommand{\GjbSystemIdent}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
+\providecommand{\GjbSystemDocAbbr}{\GjbProjectIdent}
+\providecommand{\GjbProjectName}{\GjbDocName}
+
+% =================================================================
+% 文档内容占位符（请在各文档的 doc_vars.tex 中覆盖）
+% =================================================================
+\providecommand{\GjbDocIdType}{STP}
+\providecommand{\GjbDocKind}{测试大纲}
+\providecommand{\GjbDocTitle}{\GjbDocName\GjbDocKind}
+\providecommand{\GjbDocApplicableText}{本文档适用于\GjbProjectName{}软件测试}
+
+% 文档概述文本
+\providecommand{\GjbDocOverviewText}{本文档用于\GjbDocTitle。}
+\providecommand{\GjbDocStdCoverageText}{本文档模板涵盖了GJB438C-2021《军用软件开发文档通用要求》对软件\GjbDocKind{}文档的要素和内容的要求。}
+\providecommand{\GjbDocSecurityText}{描述本文档密级为xx密，必须按照机密文件的要求使用和分发。即使在保密性得到保证的情况下，对本文档的使用也必须经研制方主管人员的认可。}
+
+% 系统信息占位符（请在各文档的 doc_vars.tex 中覆盖实际内容）
+\providecommand{\GjbSystemPurposeText}{系统用途部分内容敏感，不在此处列出。}
+\providecommand{\GjbSystemContractText}{详见\GjbProjectName{}合同（xxxxxx）。}
+\providecommand{\GjbSystemReqText}{\GjbProjectName{}规定的本阶段主要要求和技术指标为：}
+\providecommand{\GjbSystemReqListText}{主要要求和技术指标详见需求规格说明。}
+\providecommand{\GjbSystemCoverageIntroText}{项目节点测试的测试项与需求的覆盖性对应关系如表\ref{\GjbCoverageTableLabel}所示。}
+\providecommand{\GjbSystemCustomerDevText}{\GjbProjectName{}软件的需方是项目管理办公室，开发方按合同规定。}
+\providecommand{\GjbSystemEnvironmentText}{测试现场符合测试环境要求，具备必要的测试条件和安全保障措施。}
+
+% 表格标签和标题
+\providecommand{\GjbCoverageTableCaption}{主要要求和技术指标与测试项覆盖性对照表}
+\providecommand{\GjbCoverageTableLabel}{tbl:coverage}
+\providecommand{\GjbCoverageTableColBTitle}{主要要求和技术指标}
+\ifdefined\GjbCoverageColAWidth\else\def\GjbCoverageColAWidth{0.8cm}\fi
+\ifdefined\GjbCoverageColBWidth\else\def\GjbCoverageColBWidth{8cm}\fi
+\ifdefined\GjbCoverageColCWidth\else\def\GjbCoverageColCWidth{5.7cm}\fi
+
+% 引用文档表格
+\providecommand{\GjbRefDocsIntroText}{本文档引用的文档一览表如表\ref{\GjbRefDocsTableLabel}所示。}
+\providecommand{\GjbRefDocsTableCaption}{引用文档一览表}
+\providecommand{\GjbRefDocsTableLabel}{tbl:ref-docs}
+\ifdefined\GjbRefDocsColAWidth\else\def\GjbRefDocsColAWidth{0.8cm}\fi
+\ifdefined\GjbRefDocsColBWidth\else\def\GjbRefDocsColBWidth{2.5cm}\fi
+\ifdefined\GjbRefDocsColCWidth\else\def\GjbRefDocsColCWidth{5.5cm}\fi
+\ifdefined\GjbRefDocsColDWidth\else\def\GjbRefDocsColDWidth{2.5cm}\fi
+\ifdefined\GjbRefDocsColEWidth\else\def\GjbRefDocsColEWidth{1.5cm}\fi
+\ifdefined\GjbRefDocsColFWidth\else\def\GjbRefDocsColFWidth{2cm}\fi
+
+% 测试项表格
+\providecommand{\GjbTestItemsTableCaption}{测试项列表}
+\providecommand{\GjbTestItemsTableLabel}{tbl:testitems}
+
+% 测试用例表格
+\providecommand{\GjbSampleTestCaseTableCaption}{（测试用例名称）}
+\providecommand{\GjbSampleTestCaseTableLabel}{tbl:tc-sample}

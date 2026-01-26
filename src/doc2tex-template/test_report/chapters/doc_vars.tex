@@ -1,0 +1,24 @@
+\input{common/doc_vars.tex}
+
+% 测试报告专用设置
+\renewcommand{\GjbDocIdType}{STR}
+\renewcommand{\GjbDocKind}{测试报告}
+
+\renewcommand{\GjbDocTitle}{\GjbDocName\GjbDocKind}
+\renewcommand{\GjbDocApplicableText}{\GjbProjectName{}软件测试过程}
+
+\renewcommand{\GjbDocOverviewText}{本文档用于\GjbDocTitle，记录并总结本次测试的实施情况、环境、执行结果及问题分析，为评审与交付提供依据。}
+\renewcommand{\GjbDocStdCoverageText}{本文档模板涵盖了GJB438C-2021《军用软件开发文档通用要求》对软件测试报告文档的要素和内容的要求。}
+\renewcommand{\GjbDocSecurityText}{描述本文档密级为xx密，必须按照机密文件的要求使用和分发。即使在保密性得到保证的情况下，对本文档的使用也必须经研制方主管人员的认可。}
+
+% 表格标签（避免与文档类型冲突）
+\renewcommand{\GjbCoverageTableLabel}{tbl:report-coverage}
+\renewcommand{\GjbCoverageTableCaption}{需求与测试项覆盖性对照表}
+\renewcommand{\GjbCoverageTableColBTitle}{需求名称/标识}
+\def\GjbCoverageColAWidth{0.8cm}
+\def\GjbCoverageColBWidth{6.8cm}
+\def\GjbCoverageColCWidth{6.9cm}
+
+\renewcommand{\GjbRefDocsTableLabel}{tbl:report-refs}
+\renewcommand{\GjbTestItemsTableLabel}{tbl:report-testitems}
+\renewcommand{\GjbSampleTestCaseTableLabel}{tbl:report-tc-sample}
