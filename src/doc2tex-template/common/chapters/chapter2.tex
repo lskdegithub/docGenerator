@@ -1,0 +1,27 @@
+% =================================================================
+% 第2章：引用文档（共享模板）
+% 说明：使用 \GjbRefDocsTableLabel 变量区分不同文档的表格标签
+%       生成脚本会填充实际的表格内容
+% =================================================================
+
+\section*{2. 引用文档}
+
+本文档引用的文档一览表如表\ref{\GjbRefDocsTableLabel}所示。
+
+{\settablespacing
+\begin{longtblr}[theme=gjb,caption={引用文档一览表},label={\GjbRefDocsTableLabel}]{
+  colspec={|p{0.8cm}|p{2.5cm}|p{5.5cm}|p{2.5cm}|p{1.5cm}|p{2cm}|},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+}
+序号 & 编号 & 标题 & 编写单位 & 日期 & 备注 \\
+\Seq & GJB 438C-2021 & 军用软件开发文档通用要求 & 装备发展部 & 2021 & / \\
+\Seq & / & xxxx & xxxxx管理办公室 & 2025 & / \\
+\Seq & xxxx–SRS & xxxx系统软件需求规格说明 & xxxxx & 2025 & / \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+% =================== 第3章分隔 ===================
+\noindent

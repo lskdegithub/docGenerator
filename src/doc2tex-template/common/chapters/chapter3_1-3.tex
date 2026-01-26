@@ -1,0 +1,84 @@
+% =================================================================
+% 第3.1-3.3节：软件测试环境（共享模板）
+% 说明：
+%   - 3.1 测试现场
+%   - 3.2 测试环境概述（包含3.2.1-3.2.3基础子节）
+%   - 3.2.1 软件项
+%   - 3.2.2 硬件和固件项
+%   - 3.2.3 其他材料
+%
+% 注意：后续子节（3.2.4-3.2.10）由各文档自行定义
+% =================================================================
+
+\subsection*{3.1 测试现场}
+\subsection*{3.2 测试环境概述}
+
+{\normalsize
+测试环境总体架构如下：
+
+（1）硬件环境：包括服务器、客户端、网络设备等；
+
+（2）软件环境：包括操作系统、数据库系统、中间件等；
+
+（3）网络环境：局域网，带宽xxxMbps；
+
+（4）测试工具：xxxx。
+}
+
+\subsubsection*{3.2.1 软件项}
+
+{\normalsize
+测试环境中的软件项如表\ref{\GjbEnvSoftwareTableLabel}所示。
+
+{\settablespacing
+\begin{longtblr}[theme=gjb,caption={测试环境被测软件},label={\GjbEnvSoftwareTableLabel}]{
+  colspec={|p{0.8cm}|p{3.5cm}|p{2.2cm}|p{2.8cm}|p{2.5cm}|p{2.7cm}|},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+}
+序号 & 软件名称 & 版本号 & 用途 & 来源 & 存储介质 \\
+\Seq & xxxxx & xxxx & 被测软件 & 本单位 & 硬盘 \\
+\Seq & 火狐浏览器 & 123.0 & 操作页面 & 开源 & 硬盘 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+测试环境中的支撑软件包括操作系统、数据库系统等，为被测软件提供必要的运行环境。
+}
+
+\subsubsection*{3.2.2 硬件和固件项}
+
+{\normalsize
+测试环境中的硬件和固件项如表\ref{\GjbEnvHardwareTableLabel}所示。
+
+{\settablespacing
+\begin{longtblr}[theme=gjb,caption={测试环境硬件项},label={\GjbEnvHardwareTableLabel}]{
+  colspec={|p{0.8cm}|p{1.5cm}|p{1.8cm}|p{2.0cm}|p{0.8cm}|p{2.65cm}|p{1.0cm}|p{2.4cm}|p{1.0cm}|},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+}
+序号 & 硬件名称 & 型号 & 编号/序列号 & 数量 & 配置 & 用途 & 软件部署环境 & 来源 \\
+\Seq & 服务器 & 长城 & / & 1 & CPU：FT-2000+ *2 内存：256G & 测试机 & 操作系统：Kylin V10，docker & 本单位 \\
+\Seq & 台式机 & 联想Think station & / & 2 & CPU：Intel Corei7-12700 内存：32G & 测试机 & 操作系统：Ubuntu 22.04，docker & 本单位 \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+硬件配置满足测试要求，所有设备均已安装调试完毕，运行正常。固件版本符合系统要求。
+}
+
+\subsubsection*{3.2.3 其他材料}
+
+{\normalsize
+测试所需的其他材料包括：
+
+（1）测试数据：xxxx；
+
+（2）测试用例：xxxx；
+
+（3）用户手册：xxxx；
+
+（4）技术文档：xxxx。
+}

@@ -4,74 +4,19 @@
 \subsection*{3.1 测试现场}
 
 {\normalsize
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
-
 测试现场位于xxxxxx，符合测试环境要求，具备必要的测试条件和安全保障措施。
 }
 
-\subsection*{3.2 测试环境概述}
+% ============================================================
+% 3.1.1-3.1.3 共享内容（与test_detail一致）
+% ============================================================
+\input{chapters/doc_vars.tex}
+\input{common/chapters/chapter3_shared_content.tex}
 
-{\normalsize
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
-
-测试环境总体架构如下：
-
-（1）硬件环境：包括服务器、客户端、网络设备等；
-
-（2）软件环境：包括操作系统、数据库系统、中间件等；
-
-（3）网络环境：xxx局域网，带宽xxxMbps；
-
-（4）测试工具：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
-}
-
-\subsubsection*{3.2.1 软件项}
-
-{\normalsize
-测试环境中的软件项如表\ref{tbl:plan-env-software}所示。
-
-{\settablespacing
-\begin{longtblr}[theme=gjb,caption={测试环境被测软件},label={tbl:plan-env-software}]{
-  colspec={|p{0.8cm}|p{3.5cm}|p{3cm}|p{3cm}|p{2.5cm}|p{2cm}|},
-  rowhead=1,
-  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
-  column{1}={halign=c},
-}
-序号 & 软件名称 & 版本号 & 用途 & 供应商 & 备注 \\
-{\xiaowu 1} & {\xiaowu xxxxxxxx系统} & {\xiaowu V0.7.1} & {\xiaowu 被测软件} & {\xiaowu xxxxx} & {\xiaowu } \\
-{\xiaowu 2} & {\xiaowu 银河麒麟服务器版} & {\xiaowu V10} & {\xiaowu 操作系统} & {\xiaowu 麒麟软件} & {\xiaowu 国产} \\
-{\xiaowu 3} & {\xiaowu 数据库系统} & {\xiaowu V5.0} & {\xiaowu 数据存储} & {\xiaowu xxxxx} & {\xiaowu } \\
-\end{longtblr}
-}
-\vspace{-6pt}
-
-测试环境中的支撑软件包括操作系统、数据库系统等，为被测软件提供必要的运行环境。
-}
-
-\subsubsection*{3.2.2 硬件和固件项}
-
-{\normalsize
-测试环境中的硬件和固件项如表\ref{tbl:plan-env-hardware}所示。
-
-{\settablespacing
-\begin{longtblr}[theme=gjb,caption={测试环境硬件项},label={tbl:plan-env-hardware}]{
-  colspec={|p{0.8cm}|p{3.5cm}|p{3.5cm}|p{1.5cm}|p{3.5cm}|p{2cm}|},
-  rowhead=1,
-  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
-  column{1}={halign=c},
-}
-序号 & 设备名称 & 型号/规格 & 数量 & 性能参数 & 备注 \\
-{\xiaowu 1} & {\xiaowu 服务器} & {\xiaowu 飞腾FT-2000+} & {\xiaowu 1台} & {\xiaowu 64核，128GB内存} & {\xiaowu 国产} \\
-{\xiaowu 2} & {\xiaowu 台式机} & {\xiaowu 联想开天N8系列} & {\xiaowu 2台} & {\xiaowu Intel i7，16GB内存} & {\xiaowu 客户端} \\
-{\xiaowu 3} & {\xiaowu 网络设备} & {\xiaowu xxxxx} & {\xiaowu 1台} & {\xiaowu 千兆以太网} & {\xiaowu } \\
-\end{longtblr}
-}
-\vspace{-6pt}
-
-硬件配置满足测试要求，所有设备均已安装调试完毕，运行正常。固件版本符合系统要求。
-}
-
-\subsubsection*{3.2.3 其他材料}
+% ============================================================
+% 3.1.4 其他材料
+% ============================================================
+\subsubsection*{3.1.4 其他材料}
 
 {\normalsize
 测试所需的其他材料包括：
@@ -85,7 +30,10 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 （4）技术文档：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
 }
 
-\subsubsection*{3.2.4 所有者的特性、需方权利和许可证}
+% ============================================================
+% 3.1.5 所有者的特性、需方权利和许可证
+% ============================================================
+\subsubsection*{3.1.5 所有者的特性、需方权利和许可证}
 
 {\normalsize
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
@@ -97,7 +45,10 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 （3）许可证要求：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx。
 }
 
-\subsubsection*{3.2.5 安装、测试和控制}
+% ============================================================
+% 3.1.6 安装、测试和控制
+% ============================================================
+\subsubsection*{3.1.6 安装、测试和控制}
 
 {\normalsize
 在执行测试前，要求完成以下准备工作：
@@ -130,13 +81,19 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx�
 
 }
 
-\subsubsection*{3.2.6 测试环境的差异性分析和有效性说明}
+% ============================================================
+% 3.1.7 测试环境的差异性分析和有效性说明
+% ============================================================
+\subsubsection*{3.1.7 测试环境的差异性分析和有效性说明}
 
 {\normalsize
 xxxxxxxxxx测试环境满足合同指标要求中对计算机资源的要求，对测试结果不产生影响。
 }
 
-\subsubsection*{3.2.7 参与组织}
+% ============================================================
+% 3.1.8 参与组织
+% ============================================================
+\subsubsection*{3.1.8 参与组织}
 
 {\normalsize
 本次测试的参与组织如表\ref{tbl:plan-org}所示。
@@ -159,7 +116,10 @@ xxxxxxxxxx测试环境满足合同指标要求中对计算机资源的要求，�
 
 }
 
-\subsubsection*{3.2.8 人员与分工}
+% ============================================================
+% 3.1.9 人员与分工
+% ============================================================
+\subsubsection*{3.1.9 人员与分工}
 
 {\normalsize
 本次测试人员与分工安排如表\ref{tbl:plan-staff}所示。
@@ -184,13 +144,19 @@ xxxxxxxxxx测试环境满足合同指标要求中对计算机资源的要求，�
 
 }
 
-\subsubsection*{3.2.9 人员培训}
+% ============================================================
+% 3.1.10 人员培训
+% ============================================================
+\subsubsection*{3.1.10 人员培训}
 
 {\normalsize
 本次测试相关人员均有相关测试经验，故无需进行人员培训。
 }
 
-\subsubsection*{3.2.10 要执行的测试}
+% ============================================================
+% 3.1.11 要执行的测试
+% ============================================================
+\subsubsection*{3.1.11 要执行的测试}
 
 {\normalsize
 要执行的测试详见4.2节。

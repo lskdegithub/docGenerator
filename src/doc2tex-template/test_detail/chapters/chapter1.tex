@@ -4,28 +4,13 @@
 
 \input{chapters/doc_vars.tex}
 
-（1）文档标识号：\GjbDocId；
-
-（2）系统标识\GjbSystemIdent，在测试文档中简称为\GjbSystemDocAbbr；
-
-（3）项目名称：\GjbProjectName；
-
-（4）文档名称：\GjbDocTitle；
-
-（5）软件版本号：\GjbSoftwareVersion，软件版本标识采用三位编码规则，项目文档版本标识采用四位编码规则；
-
-（6）本文档适用于：\GjbDocApplicableText。
+\input{common/chapters/chapter1_ident_body.tex}
 
 \subsection{系统概述}
 
-\GjbSystemPurposeText{}详见\GjbSystemContractText。
+\input{common/chapters/chapter1_2_body.tex}
 
-\GjbSystemReqText{}
-
-\GjbSystemReqListText。
-
-\GjbSystemCoverageIntroText如图\ref{\GjbCoverageTableLabel}所示。
-
+\vspace{-6pt}
 {\settablespacing
 \begin{longtblr}[theme=gjb,caption={\GjbCoverageTableCaption},label={\GjbCoverageTableLabel}]{
   colspec={|p{\GjbCoverageColAWidth}|p{\GjbCoverageColBWidth}|p{\GjbCoverageColCWidth}|},
@@ -49,8 +34,4 @@
 
 \subsection{文档概述}
 
-\GjbDocOverviewText
-
-\GjbDocStdCoverageText
-
-\GjbDocSecurityText
+\input{common/chapters/chapter1_3_body.tex}

@@ -1,27 +1,36 @@
 \input{common/doc_vars.tex}
 
+% =================================================================
 % 测试大纲专用设置
+% =================================================================
+
+% 文档类型
 \renewcommand{\GjbDocIdType}{STP}
 \renewcommand{\GjbDocKind}{测试大纲}
 
-% 重新定义依赖上面两个命令的变量
+% 重新定义依赖文档类型的变量
 \renewcommand{\GjbDocId}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
 \renewcommand{\GjbSystemIdent}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
 \renewcommand{\GjbDocTitle}{\GjbDocName\ \GjbDocKind}
 \renewcommand{\GjbDocApplicableText}{\GjbProjectName{}软件测试}
 
+% 文档概述模板话术
 \renewcommand{\GjbDocOverviewText}{本文档用于\GjbDocTitle，规定了本次测试的类型、内容、环境、方法、条件及各项测试活动的进度安排，指导测试人员进行测试活动，为编写软件测试细则以及测试报告提供依据及为后续测试工作打下基础。}
 \renewcommand{\GjbDocStdCoverageText}{本文档模板涵盖了GJB438C-2021《军用软件开发文档通用要求》对软件测试大纲文档的要素和内容的要求。}
 \renewcommand{\GjbDocSecurityText}{描述本文档密级为xx密，必须按照机密文件的要求使用和分发。即使在保密性得到保证的情况下，对本文档的使用也必须经研制方主管人员的认可。}
 
-\renewcommand{\GjbSystemCustomerDevText}{\GjbProjectName{}软件的需方是"M"项目管理办公室，开发方按合同规定。}
-
-% 表格标签（避免与文档类型冲突）
+% 表格标签
 \renewcommand{\GjbCoverageTableLabel}{tbl:plan-coverage}
 \renewcommand{\GjbCoverageTableCaption}{主要要求和技术指标与测试项覆盖性对照表}
 \renewcommand{\GjbCoverageTableColBTitle}{主要要求和技术指标}
 \def\GjbCoverageColAWidth{0.8cm}
 \def\GjbCoverageColBWidth{8cm}
 \def\GjbCoverageColCWidth{5.7cm}
-
 \renewcommand{\GjbRefDocsTableLabel}{tbl:plan-refs}
+\renewcommand{\GjbEnvSoftwareTableLabel}{tbl:plan-env-software}
+\renewcommand{\GjbEnvHardwareTableLabel}{tbl:plan-env-hardware}
+
+% 第3章共享内容变量
+\def\GjbTestEnvTitleLevelOne#1{\stepcounter{GjbTestEnvSubSection}\subsubsection*{3.1.\arabic{GjbTestEnvSubSection}#1}}
+\def\GjbEnvFigureLabel{fig:plan-env}
+\def\GjbEnvTableType{longtblr}

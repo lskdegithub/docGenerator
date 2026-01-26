@@ -1,17 +1,17 @@
 % =================================================================
-% 文档变量定义 - 所有文档共用
+% 文档变量定义 - 基础变量（所有文档共用）
 % =================================================================
 
-% 项目基本信息
+% 基础变量定义
 \providecommand{\GjbProjectIdent}{CloudPioneerDataMaster}
 \providecommand{\GjbDocName}{云擎万象数驭全场景系统项目}
 \providecommand{\GjbSoftwareVersion}{v0.1.1}
 
-% 文档类型（默认值，在各文档的doc_vars.tex中覆盖）
+% 文档类型默认值（在各文档的doc_vars.tex中覆盖）
 \providecommand{\GjbDocIdType}{STP}
 \providecommand{\GjbDocKind}{测试大纲}
 
-% 文档标识（必须在上面定义之后）
+% 文档标识（由基础变量组合而成）
 \providecommand{\GjbDocId}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
 \providecommand{\GjbSystemIdent}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
 \providecommand{\GjbSystemDocAbbr}{\GjbProjectIdent}
@@ -19,12 +19,12 @@
 \providecommand{\GjbDocTitle}{\GjbDocName\ \GjbDocKind}
 \providecommand{\GjbDocApplicableText}{本文档适用于\GjbProjectName{}软件测试}
 
-% 文档概述文本
+% 文档概述文本模板（各文档可覆盖）
 \providecommand{\GjbDocOverviewText}{本文档用于\GjbDocTitle。}
 \providecommand{\GjbDocStdCoverageText}{本文档模板涵盖了GJB438C-2021《军用软件开发文档通用要求》对软件\GjbDocKind{}文档的要素和内容的要求。}
 \providecommand{\GjbDocSecurityText}{描述本文档密级为xx密，必须按照机密文件的要求使用和分发。即使在保密性得到保证的情况下，对本文档的使用也必须经研制方主管人员的认可。}
 
-% 系统信息占位符（请在各文档的 doc_vars.tex 中覆盖实际内容）
+% 系统信息占位符（各文档可覆盖实际内容）
 \providecommand{\GjbSystemPurposeText}{系统用途部分内容敏感，不在此处列出。}
 \providecommand{\GjbSystemContractText}{详见\GjbProjectName{}合同（xxxxxx）。}
 \providecommand{\GjbSystemReqText}{\GjbProjectName{}规定的本阶段主要要求和技术指标为：}
@@ -59,3 +59,10 @@
 % 测试用例表格
 \providecommand{\GjbSampleTestCaseTableCaption}{（测试用例名称）}
 \providecommand{\GjbSampleTestCaseTableLabel}{tbl:tc-sample}
+
+% 测试环境表格
+\providecommand{\GjbEnvSoftwareTableLabel}{tbl:env-software}
+\providecommand{\GjbEnvHardwareTableLabel}{tbl:env-hardware}
+
+% 第3章共享内容变量（计数器，只定义一次）
+\ifcsname c@GjbTestEnvSubSection\endcsname\else\newcounter{GjbTestEnvSubSection}\setcounter{GjbTestEnvSubSection}{0}\fi

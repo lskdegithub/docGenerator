@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-生成测试计划文档 1.2 章节（系统概述）的覆盖性对照表
+生成测试文档 1.2 章节（系统概述）的覆盖性对照表
+支持 test_plan 和 test_detail 两种文档类型
 从 data 目录读取测试指标和测试项信息
 """
 
 import os
 import re
 import yaml
+import argparse
 from pathlib import Path
 
 
@@ -179,8 +181,13 @@ def generate_table2_longtblr(metrics):
     return "\n".join(rows)
 
 
-def generate_section_1_2(data_dir):
-    """生成完整的1.2章节LaTeX代码"""
+def generate_section_1_2(data_dir, doc_type="test_plan"):
+    """生成完整的1.2章节LaTeX代码
+
+    Args:
+        data_dir: 数据目录路径
+        doc_type: 文档类型，"test_plan" 或 "test_detail"
+    """
     metrics = collect_coverage_data(data_dir)
 
     # 如果没有数据，返回空字符串
@@ -190,14 +197,29 @@ def generate_section_1_2(data_dir):
 
     table2_rows = generate_table2_longtblr(metrics)
 
+    # 根据文档类型设置不同的参数
+    if doc_type == "test_detail":
+        subsection_cmd = "\\subsection{系统概述}"
+        table_label = "tbl:detail-coverage"
+    else:  # test_plan
+        subsection_cmd = "\\subsection*{1.2 系统概述}"
+        table_label = "tbl:plan-coverage"
+
     table1 = f"""{{\\settablespacing
-\\begin{{longtblr}}[theme=gjb,caption={{主要要求和技术指标与测试项覆盖性对照表}},label={{tbl:plan-coverage}}]{{\n  colspec={{|p{{0.8cm}}|p{{8cm}}|p{{5.7cm}}|}},\n  rowhead=1,\n  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},\n  column{{1}}={{halign=c}},\n}}
-序号 & 主要要求和技术指标 & 测试项 \\\\\n{table2_rows}\n\\end{{longtblr}}
+\\begin{{longtblr}}[theme=gjb,caption={{主要要求和技术指标与测试项覆盖性对照表}},label={{{table_label}}}]{{
+  colspec={{|p{{0.8cm}}|p{{8cm}}|p{{5.7cm}}|}},
+  rowhead=1,
+  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  column{{1}}={{halign=c}},
+}}
+序号 & 主要要求和技术指标 & 测试项 \\\\
+{table2_rows}
+\\end{{longtblr}}
 }}
 \\vspace{{-6pt}}"""
 
     # 构建1.2章节内容
-    latex = f"""\\subsection*{{1.2 系统概述}}
+    latex = f"""{subsection_cmd}
 
 系统用途部分内容敏感，不在此处列出。详见xxxxxx系统合同（xxxxxx）。
 
@@ -216,14 +238,23 @@ xxxxxxxxxx系统软件的需方是"M"项目管理办公室，开发方是xxxxx�
 
 def main():
     """主函数"""
-    data_dir = "data"
-    output_file = "output/test_plan/chapters/chapter1_2_generated.tex"
+    parser = argparse.ArgumentParser(description="生成测试文档1.2章节（系统概述）的覆盖性对照表")
+    parser.add_argument("--data", default="data", help="数据目录路径")
+    parser.add_argument("--out", default="output/test_plan/chapters/chapter1_2_generated.tex",
+                        help="输出文件路径")
+    parser.add_argument("--doc-type", default="test_plan", choices=["test_plan", "test_detail"],
+                        help="文档类型：test_plan 或 test_detail")
+    args = parser.parse_args()
+
+    data_dir = args.data
+    output_file = args.out
+    doc_type = args.doc_type
 
     # 确保输出目录存在
     Path(output_file).parent.mkdir(parents=True, exist_ok=True)
 
     # 生成1.2章节内容
-    latex_content = generate_section_1_2(data_dir)
+    latex_content = generate_section_1_2(data_dir, doc_type)
 
     if not latex_content:
         print("❌ 未能生成内容")
@@ -234,6 +265,7 @@ def main():
         f.write(latex_content)
 
     print(f"✅ 1.2章节LaTeX代码已生成到: {output_file}")
+    print(f"✓ 文档类型: {doc_type}")
     print(f"✓ 接下来运行构建脚本将内容插入到chapter1.tex中")
 
 

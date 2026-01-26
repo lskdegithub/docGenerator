@@ -32,6 +32,7 @@ mkdir -p "$OUTPUT_DIR"
 cp -r "$TEMPLATE_DIR"/* "$OUTPUT_DIR/"
 
 cp "src/doc2tex-template/gjb438c-style.sty" "$OUTPUT_DIR/gjb438c-style.sty"
+cp -r "src/doc2tex-template/common" "$OUTPUT_DIR/common"
 
 echo "✅ 模板文件已复制"
 
