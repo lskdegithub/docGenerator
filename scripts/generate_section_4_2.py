@@ -7,9 +7,31 @@
 
 import os
 import re
+import sys
 import yaml
 from pathlib import Path
 from collections import OrderedDict
+
+# 添加 scripts 目录到路径以导入 utils
+sys.path.insert(0, str(Path(__file__).parent))
+import utils
+
+
+# 测试类型后缀到名称的映射
+SUFFIX_TO_TYPE = {
+    '_GN': '功能测试',
+    '_JK': '接口测试',
+    '_KKX': '可靠性测试',
+    '_XN': '性能测试',
+}
+
+# 测试类型说明描述
+TYPE_DESCRIPTION = {
+    '功能测试': '验证软件功能是否满足需求规格说明',
+    '接口测试': '测试各模块之间的接口参数传递正确性',
+    '可靠性测试': '测试系统在异常情况下的恢复能力',
+    '性能测试': '测试系统在负载条件下的性能表现',
+}
 
 
 def load_yaml(file_path):
@@ -290,23 +312,125 @@ def generate_section_4_2(data_dir):
     return "\n".join(latex_output)
 
 
+def get_test_type_from_suffix(identifier):
+    """根据标识后缀获取测试类型"""
+    for suffix, type_name in SUFFIX_TO_TYPE.items():
+        if identifier.endswith(suffix):
+            return type_name
+    return '功能测试'  # 默认
+
+
+def collect_test_items_for_table(data_dir):
+    """收集所有测试项用于4.2表格"""
+    test_items = []
+    data_path = Path(data_dir)
+
+    for metric_dir in sorted(data_path.glob('*-test-metric')):
+        if not metric_dir.is_dir():
+            continue
+
+        for module_dir in sorted(metric_dir.glob('*-module')):
+            if not module_dir.is_dir():
+                continue
+
+            for item_dir in sorted(module_dir.glob('*-item*')):
+                plan_file = item_dir / 'plan.yaml'
+                if plan_file.exists():
+                    plan_data = utils.parse_plan_yaml(plan_file)
+                    if plan_data:
+                        identifier = plan_data.get('标识', '')
+                        test_type = get_test_type_from_suffix(identifier)
+                        test_items.append({
+                            'name': plan_data.get('测试项名称', ''),
+                            'id': identifier,
+                            'type': test_type,
+                        })
+    return test_items
+
+
+def generate_4_2_table_rows(test_items):
+    """生成4.2表格行数据"""
+    rows = []
+    for i, item in enumerate(test_items, 1):
+        name = utils.escape_latex(item['name'])
+        item_id = utils.escape_latex(item['id'])
+        test_type = item['type']
+
+        # 格式：测试项名称（标识）
+        display_name = f"{name}（{item_id}）"
+
+        rows.append(f"  {{\\xiaowu {i}}} & {{\\xiaowu {test_type}}} & {{\\xiaowu {display_name}}} \\\\")
+    return "\n".join(rows)
+
+
+def replace_4_2_table_rows(template_file, test_items):
+    """在模板文件中替换4.2表格行数据"""
+    with open(template_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # 生成新的行数据
+    if test_items:
+        new_rows = generate_4_2_table_rows(test_items)
+    else:
+        new_rows = "% 无测试项数据"
+
+    # 查找标记并替换
+    start_marker = '% MAGIC-42-ROWS-START'
+    end_marker = '% MAGIC-42-ROWS-END'
+
+    start_idx = content.find(start_marker)
+    end_idx = content.find(end_marker)
+
+    if start_idx == -1 or end_idx == -1:
+        print(f"警告：未找到4.2表格行数据标记")
+        return False
+
+    # 替换标记之间的内容
+    new_content = (
+        content[:start_idx + len(start_marker)] +
+        '\n' + new_rows + '\n' +
+        content[end_idx:]
+    )
+
+    with open(template_file, 'w', encoding='utf-8') as f:
+        f.write(new_content)
+
+    print(f"✅ 已更新4.2表格行数据，共 {len(test_items)} 个测试项")
+    return True
+
+
 def main():
     """主函数"""
-    data_dir = "data"
-    output_file = "output/test_plan/chapters/chapter4_2_generated.tex"
+    import argparse
+
+    parser = argparse.ArgumentParser(description='生成4.2章节内容')
+    parser.add_argument('--data-dir', default='data', help='数据目录路径')
+    parser.add_argument('--out', default='output/test_plan/chapters/chapter4_2_generated.tex',
+                        help='输出文件路径')
+    parser.add_argument('--template-dir', default='output/test_plan/chapters',
+                        help='模板章节目录（用于更新表格）')
+    parser.add_argument('--update-table', action='store_true',
+                        help='是否更新4.2表格行数据')
+
+    args = parser.parse_args()
 
     # 确保输出目录存在
-    Path(output_file).parent.mkdir(parents=True, exist_ok=True)
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
 
-    # 生成4.2章节内容
-    latex_content = generate_section_4_2(data_dir)
+    # 生成4.2章节详细内容
+    latex_content = generate_section_4_2(args.data_dir)
 
     # 写入文件
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(args.out, 'w', encoding='utf-8') as f:
         f.write(latex_content)
 
-    print(f"✅ 4.2章节LaTeX代码已生成到: {output_file}")
-    print(f"✓ 接下来运行构建脚本将内容插入到chapter4.tex中")
+    print(f"✅ 4.2章节详细内容已生成到: {args.out}")
+
+    # 如果指定了 --update-table，则更新4.2表格行数据
+    if args.update_table:
+        test_items = collect_test_items_for_table(args.data_dir)
+        template_file = Path(args.template_dir) / 'chapter4.tex'
+        replace_4_2_table_rows(template_file, test_items)
 
 
 if __name__ == "__main__":

@@ -89,7 +89,7 @@ python3 "$SCRIPT_DIR/generate_section_4_1_5.py" --template-dir "$OUTPUT_DIR/chap
 # 步骤4: 生成4.2章节内容
 echo ""
 echo "步骤4: 生成4.2章节内容（计划执行的测试）..."
-python3 "$SCRIPT_DIR/generate_section_4_2.py"
+python3 "$SCRIPT_DIR/generate_section_4_2.py" --update-table --template-dir "$OUTPUT_DIR/chapters"
 
 # 步骤5: 将生成的4.2章节内容插入到chapter4.tex中
 echo ""
