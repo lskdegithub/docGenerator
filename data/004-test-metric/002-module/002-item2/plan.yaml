@@ -1,5 +1,5 @@
 测试项名称: 指标1模块2的测试项2
-标识： bigfilestorage1
+标识： bigfilestorage1_JK
 测试要求： 测试项的测试要求
 测试策略与方法：
   -测试策略： 测试策略描述
@@ -10,5 +10,5 @@
 优先级：高
 测试终止条件：测试项的终止条件
 需求追踪关系：SRS-14
-type: functional
+type: interface
 需规章节: 3.3.3.3.3
