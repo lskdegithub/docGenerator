@@ -199,10 +199,10 @@ def generate_section_1_2(data_dir, doc_type="test_plan"):
 
     # 根据文档类型设置不同的参数
     if doc_type == "test_detail":
-        subsection_cmd = "\\subsection{系统概述}"
+        subsection_cmd = "\\GjbSubsection{1.2 系统概述}"
         table_label = "tbl:detail-coverage"
     else:  # test_plan
-        subsection_cmd = "\\subsection*{1.2 系统概述}"
+        subsection_cmd = "\\GjbSubsection{1.2 系统概述}"
         table_label = "tbl:plan-coverage"
 
     table1 = f"""{{\\settablespacing

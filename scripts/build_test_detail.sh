@@ -57,9 +57,9 @@ try:
         if 'chapter1_2_generated.tex' in template:
             print('检测到新模板格式(包含input)，跳过物理插入。')
         else:
-            # 替换从 \\subsection{系统概述} 到 \\subsection{文档概述} 之前的整段内容
-            start_token = '\\subsection{系统概述}'
-            end_token = '\\subsection{文档概述}'
+            # 替换从 \\GjbSubsection{1.2 系统概述} 到 \\GjbSubsection{1.3 文档概述} 之前的整段内容
+            start_token = '\\GjbSubsection{1.2 系统概述}'
+            end_token = '\\GjbSubsection{1.3 文档概述}'
             start_idx = template.find(start_token)
             if start_idx != -1:
                 end_idx = template.find(end_token, start_idx)
