@@ -1,3 +1,5 @@
+\input{chapters/doc_vars.tex}
+
 \section*{4. 测试说明}
 
 \subsection*{4.1 一般信息}
@@ -34,17 +36,23 @@
 
 计划开展的测试按照优先级排序从高到低依次开展工作。计划的测试顺序如表\ref{tbl:plan-order}所示。
 
+% MAGIC-INSERT-ROWS: 脚本将在此处插入表格行数据
 {\settablespacing
 \begin{longtblr}[theme=gjb,caption={计划的测试顺序},label={tbl:plan-order}]{
   colspec={|p{0.8cm}|p{6.7cm}|p{1cm}|p{3cm}|p{3cm}|},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
+  column{3}={halign=c},
+  column{4}={halign=c},
+  column{5}={halign=c},
 }
 序号 & 测试项名称 & 优先级 & 计划开始测试时间 & 计划完成测试时间 \\
-{\xiaowu 1} & {\xiaowu xxxxxxxx功能测试} & {\xiaowu 高} & {\xiaowu 2025.9.30} & {\xiaowu 2025.9.20} \\
-{\xiaowu 2} & {\xiaowu xxxxxxxx接口测试} & {\xiaowu 高} & {\xiaowu 2025.9.30} & {\xiaowu 2025.9.20} \\
-{\xiaowu 3} & {\xiaowu xxxxxxxx可靠性测试} & {\xiaowu 高} & {\xiaowu 2025.9.30} & {\xiaowu 2025.9.20} \\
+% MAGIC-ROWS-START
+{\xiaowu 1} & {\xiaowu xxxxxxxx功能测试} & {\xiaowu 高} & \GjbTestStartDate & \GjbTestEndDate \\
+{\xiaowu 2} & {\xiaowu xxxxxxxx接口测试} & {\xiaowu 高} & \GjbTestStartDate & \GjbTestEndDate \\
+{\xiaowu 3} & {\xiaowu xxxxxxxx可靠性测试} & {\xiaowu 高} & \GjbTestStartDate & \GjbTestEndDate \\
+% MAGIC-ROWS-END
 \end{longtblr}
 }
 \vspace{-6pt}

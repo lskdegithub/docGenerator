@@ -81,6 +81,11 @@ except Exception as e:
     print(f'发生错误: {e}')
 PY
 
+# 步骤3.5: 生成4.1.5章节表格行数据（测试顺序表）
+echo ""
+echo "步骤3.5: 生成4.1.5章节表格行数据（测试顺序表）..."
+python3 "$SCRIPT_DIR/generate_section_4_1_5.py" --template-dir "$OUTPUT_DIR/chapters"
+
 # 步骤4: 生成4.2章节内容
 echo ""
 echo "步骤4: 生成4.2章节内容（计划执行的测试）..."
