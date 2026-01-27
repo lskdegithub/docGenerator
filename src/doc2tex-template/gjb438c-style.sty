@@ -188,6 +188,69 @@
 % 辅助命令
 % =================================================================
 
+% 统一的GJB章节标题命令（test_plan和test_detail通用）
+% 用法: \GjbSection{3. 软件测试环境} 或 \GjbSection{软件测试环境}
+% 悬挂缩进：换行时与标题内容对齐，而非与编号对齐
+\newcommand{\GjbSection}[1]{%
+  \par\noindent\vspace{6pt}%
+  \begingroup
+  \wuhao\bfseries
+  \setbox0=\hbox{1. }\hangindent=\wd0\hangafter=1
+  #1\par
+  \endgroup
+  \vspace{6pt}%
+}
+
+\newcommand{\GjbSubsection}[1]{%
+  \par\noindent\vspace{6pt}%
+  \begingroup
+  \wuhao\bfseries
+  \setbox0=\hbox{1.1. }\hangindent=\wd0\hangafter=1
+  #1\par
+  \endgroup
+  \vspace{6pt}%
+}
+
+\newcommand{\GjbSubsubsection}[1]{%
+  \par\noindent\vspace{6pt}%
+  \begingroup
+  \wuhao\bfseries
+  \setbox0=\hbox{1.1.1. }\hangindent=\wd0\hangafter=1
+  #1\par
+  \endgroup
+  \vspace{6pt}%
+}
+
+\newcommand{\GjbParagraph}[1]{%
+  \par\noindent\vspace{6pt}%
+  \begingroup
+  \wuhao\bfseries
+  \setbox0=\hbox{1.1.1.1. }\hangindent=\wd0\hangafter=1
+  #1\par
+  \endgroup
+  \vspace{6pt}%
+}
+
+\newcommand{\GjbSubparagraph}[1]{%
+  \par\noindent\vspace{6pt}%
+  \begingroup
+  \wuhao\bfseries
+  \setbox0=\hbox{1.1.1.1.1. }\hangindent=\wd0\hangafter=1
+  #1\par
+  \endgroup
+  \vspace{6pt}%
+}
+
+\newcommand{\GjbSubsubparagraph}[1]{%
+  \par\noindent\vspace{6pt}%
+  \begingroup
+  \wuhao\bfseries
+  \setbox0=\hbox{1.1.1.1.1.1. }\hangindent=\wd0\hangafter=1
+  #1\par
+  \endgroup
+  \vspace{6pt}%
+}
+
 % 表格标准格式（防止分页）
 % 用法: \StandardTable{标题}{列格式}{内容}
 \newcommand{\StandardTable}[3]{%

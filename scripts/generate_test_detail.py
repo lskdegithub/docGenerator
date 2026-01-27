@@ -751,7 +751,7 @@ def build_chapter4(metrics):
         item_type = escape_latex(item["type"])
         table_rows.append(f"\\Seq & {{\\xiaowu {item_type}}} & {{\\xiaowu {label}}} \\\\")
     table_rows_text = "\n".join(table_rows)
-    content = f"""\\subsection{{计划执行的测试}}
+    content = f"""\\GjbSubsection{{4.1 计划执行的测试}}
 
 {intro}
 
@@ -773,24 +773,28 @@ def build_chapter4(metrics):
 """
     for metric in metrics:
         metric_title = escape_latex(metric["title"])
-        content += f"\n\n\\subsubsection{{{metric_title}}}\n\n"
+        metric_num = metric["order"]
+        content += f"\n\n\\GjbSubsubsection{{4.1.{metric_num} {metric_title}}}\n\n"
         for module in metric["modules"]:
             module_name = escape_latex(module["name"])
             module_id = escape_latex(module["ident"])
             module_title = f"{module_name}（{module_id}）" if module_id else module_name
-            content += f"\\paragraph{{{module_title}}}\n\n"
+            module_num = module["order"]
+            content += f"\\GjbParagraph{{4.1.{metric_num}.{module_num} {module_title}}}\n\n"
             for item in module["items"]:
                 item_name = escape_latex(item["name"])
                 item_ident = escape_latex(item["ident"])
                 item_title = f"{item_name}（{item_ident}）" if item_ident else item_name
-                content += f"\\subparagraph{{{item_title}}}\n\n"
+                item_num = item["order"]
+                content += f"\\GjbSubparagraph{{4.1.{metric_num}.{module_num}.{item_num} {item_title}}}\n\n"
                 test_item_label = format_name_ident_multiline(item.get("name"), item.get("ident"))
                 for case in item["cases"]:
                     case_data = case["data"]
                     case_name = escape_latex(case_data.get("测试用例名称", ""))
                     case_ident = escape_latex(case_data.get("标识", ""))
                     case_title = f"{case_name}（{case_ident}）" if case_ident else case_name
-                    content += f"\\subsubparagraph{{{case_title}}}\n\n"
+                    case_num = case["order"]
+                    content += f"\\GjbSubsubparagraph{{4.1.{metric_num}.{module_num}.{item_num}.{case_num} {case_title}}}\n\n"
                     label_suffix = f"m{metric['order']}-mo{module['order']}-i{item['order']}-c{case['order']}"
                     content += build_case_table(case_data, test_item_label, label_suffix)
                     content += "\n\n"
