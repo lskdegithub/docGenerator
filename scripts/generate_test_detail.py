@@ -405,15 +405,16 @@ def estimate_case_table_height_cm(case_data: dict, test_item_label: str, layout:
     def row_height_by_lines(lines: int) -> float:
         return float(lines) * line_height_cm + row_padding_cm
 
-    wd_case_name = float(layout.get("case_name_value_cm", 6.56))
-    wd_case_ident = float(layout.get("case_ident_value_cm", 2.76))
-    wd_span6 = float(layout.get("span6_value_cm", 11.6))
-    wd_designer = float(layout.get("designer_cm", 6.56))
-    wd_operator = float(layout.get("operator_cm", 2.76))
-    wd_tester = float(layout.get("tester_cm", 6.56))
-    wd_test_time = float(layout.get("test_time_cm", 2.76))
+    wd_case_name = float(layout.get("case_name_value_cm", 6.0))
+    wd_case_ident = float(layout.get("case_ident_value_cm", 4.35))
+    wd_span6 = float(layout.get("span6_value_cm", 9.5))
+    wd_designer = float(layout.get("designer_cm", 5.5))
+    wd_operator = float(layout.get("operator_cm", 3.5))
+    wd_tester = float(layout.get("tester_cm", 5.5))
+    wd_test_time = float(layout.get("test_time_cm", 3.5))
     wd_steps_action = float(layout.get("steps_action_cm", 5.7))
-    wd_steps_expect = float(layout.get("steps_expect_cm", 4.56))
+    wd_steps_expect = float(layout.get("steps_expect_cm", 5.0))
+    wd_steps_result = float(layout.get("steps_result_cm", 4.56))
 
     total = 0.0
 
@@ -643,7 +644,7 @@ def build_steps_table(steps):
     if not steps:
         steps = [{"序号": 1, "输入及操作": "", "期望结果": ""}]
     global _DETAIL_CASE_LAYOUT
-    layout = _DETAIL_CASE_LAYOUT or {"steps_action_cm": 5.7, "steps_expect_cm": 4.56, "steps_result_cm": 2.76}
+    layout = _DETAIL_CASE_LAYOUT or {"steps_action_cm": 5.7, "steps_expect_cm": 5.0, "steps_result_cm": 4.56}
     wd_action = f"{float(layout.get('steps_action_cm', 5.7)):.3f}cm"
     wd_expect = f"{float(layout.get('steps_expect_cm', 4.56)):.3f}cm"
     wd_result = f"{float(layout.get('steps_result_cm', 2.76)):.3f}cm"
@@ -662,13 +663,15 @@ def build_steps_table(steps):
 def build_case_table(case_data, test_item_label, label_suffix):
     global _DETAIL_CASE_LAYOUT
     layout = _DETAIL_CASE_LAYOUT or {
-        "case_name_value_cm": 6.56,
-        "case_ident_value_cm": 2.76,
-        "span6_value_cm": 11.6,
-        "designer_cm": 6.56,
-        "operator_cm": 2.76,
-        "tester_cm": 6.56,
-        "test_time_cm": 2.76,
+        "case_name_value_cm": 6.0,
+        "case_ident_value_cm": 4.35,  # 列7+8总宽(2.4+1.95)
+        "span6_value_cm": 9.5,         # 列1-6总宽调整
+        "designer_cm": 5.5,
+        "operator_cm": 3.5,            # 增加到4个汉字宽度
+        "tester_cm": 5.5,
+        "test_time_cm": 3.5,           # 增加到4个汉字宽度
+        "steps_expect_cm": 5.0,        # 期望结果列宽
+        "steps_result_cm": 4.56,       # 测试结果列宽
     }
     wd_case_name = f"{float(layout.get('case_name_value_cm', 6.56)):.3f}cm"
     wd_case_ident = f"{float(layout.get('case_ident_value_cm', 2.76)):.3f}cm"

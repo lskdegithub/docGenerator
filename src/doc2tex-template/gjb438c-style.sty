@@ -57,15 +57,16 @@
 \newcommand{\GjbDetailCaseRightSep}{0pt}
 \newcommand{\GjbDetailCaseColSep}{1pt}
 % 测试用例表格列宽定义（8列）
-% 列1:序号 | 列2:用例ID | 列3:用例名称 | 列4:测试类型 | 列5:优先级 | 列6:状态/标识标签 | 列7-8:标识内容(跨列)
+% 列1:序号 | 列2:用例ID | 列3:用例名称 | 列4:测试类型 | 列5:优先级 | 列6:标签 | 列7-8:标识内容
+% 期望结果跨列5+6(5.0cm) | 测试结果跨列7+8(3.88cm) | 总宽14.5cm
 \newcommand{\GjbDetailCaseColA}{0.76cm}  % 列1-序号
-\newcommand{\GjbDetailCaseColB}{1.42cm}  % 列2-用例ID
-\newcommand{\GjbDetailCaseColC}{2.03cm}  % 列3-用例名称
-\newcommand{\GjbDetailCaseColD}{2.03cm}  % 列4-测试类型
-\newcommand{\GjbDetailCaseColE}{2.17cm}  % 列5-优先级
-\newcommand{\GjbDetailCaseColF}{0.76cm}  % 列6-状态/标识标签
-\newcommand{\GjbDetailCaseColG}{2.5cm}   % 列7-标识内容(跨列显示)
-\newcommand{\GjbDetailCaseColH}{1.38cm}  % 列8-标识内容(跨列显示)
+\newcommand{\GjbDetailCaseColB}{1.15cm}  % 列2-用例ID
+\newcommand{\GjbDetailCaseColC}{1.4cm}   % 列3-用例名称
+\newcommand{\GjbDetailCaseColD}{2.31cm}  % 列4-测试类型
+\newcommand{\GjbDetailCaseColE}{3.5cm}   % 列5-优先级(用于期望结果跨列)
+\newcommand{\GjbDetailCaseColF}{1.5cm}   % 列6-标签(容纳4个汉字)
+\newcommand{\GjbDetailCaseColG}{2.5cm}   % 列7-标识内容
+\newcommand{\GjbDetailCaseColH}{1.38cm}  % 列8-标识内容
 \newcommand{\GjbDetailCaseColSpec}{|Q[c,\GjbDetailCaseColA]|Q[\GjbDetailCaseColB]|Q[\GjbDetailCaseColC]|Q[\GjbDetailCaseColD]|Q[\GjbDetailCaseColE]|Q[\GjbDetailCaseColF]|Q[\GjbDetailCaseColG]|Q[\GjbDetailCaseColH]|}
 % 测试用例追踪表列宽定义（8列）
 % 列1:序号 | 列2:用例名称 | 列3:标识 | 列4:编号 | 列5:追踪关系 | 列6:设计人员 | 列7:操作人员 | 列8:测试时间
@@ -78,9 +79,9 @@
 \newcommand{\GjbDetailTraceColC}{1.50cm}  % 列3-标识
 \newcommand{\GjbDetailTraceColD}{1.30cm}  % 列4-编号
 \newcommand{\GjbDetailTraceColE}{2.93cm}  % 列5-追踪关系
-\newcommand{\GjbDetailTraceColF}{1.15cm}  % 列6-设计人员
-\newcommand{\GjbDetailTraceColG}{2.93cm}  % 列7-操作人员
-\newcommand{\GjbDetailTraceColH}{1.15cm}  % 列8-测试时间
+\newcommand{\GjbDetailTraceColF}{2.0cm}   % 列6-设计人员/操作人员/测试时间标签
+\newcommand{\GjbDetailTraceColG}{2.73cm}  % 列7-操作人员值
+\newcommand{\GjbDetailTraceColH}{2.0cm}   % 列8-测试时间值
 \newcommand{\GjbTraceMark}[3]{\typeout{GJBTRACE tbl=#1 seq=#2 row=#3 page=\number\value{page}}\relax}
 
 % =================================================================
