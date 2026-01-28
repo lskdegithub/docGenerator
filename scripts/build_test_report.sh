@@ -102,7 +102,13 @@ new_content = re.sub(pattern, r'\1', content, flags=re.DOTALL)
 # 步骤2: 移除\Needspace{...}命令
 new_content = re.sub(r'\\Needspace\{[^}]+\}\s*\n', '', new_content)
 
-# 步骤3: 在每个表格结束后添加\clearpage
+# 步骤3: 标题格式处理
+# 注意：test_detail已经使用了智能换行方案（format_title_name_ident函数），
+# 包括\parbox换行和保持一行的短标题，因此这里不需要额外处理。
+# 直接使用test_detail的标题格式即可。
+new_content = new_content  # 无需修改
+
+# 步骤4: 在每个表格结束后添加\clearpage
 # 匹配完整的表格结构: {\settablespacing ... \begin{longtblr} ... \end{longtblr} } \vspace{-6pt}
 # 在 \vspace{-6pt} 后面添加 \clearpage
 new_content = re.sub(
@@ -115,7 +121,7 @@ new_content = re.sub(
 with open(dst_path, 'w', encoding='utf-8') as f:
     f.write(new_content)
 
-print('✅ 第4章内容已复制：每个表格结束后换页')
+print('✅ 第4章内容已复制：表格结束后换页，测试项标题格式优化')
 PY
 
 echo ""

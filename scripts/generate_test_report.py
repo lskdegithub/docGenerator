@@ -111,6 +111,65 @@ def map_test_type(type_str):
     return type_map.get(type_str.lower(), type_str or "功能测试")
 
 
+def format_title_name_ident(name: str, ident: str, section_number: str, page_width_cm: float = 15.5) -> str:
+    """
+    格式化章节标题中的 名称（标识），智能判断是否需要换行
+
+    参数:
+        name: 测试项名称或测试用例名称
+        ident: 标识
+        section_number: 章节号，如 "4.1.1.1"
+        page_width_cm: 页面可用宽度（厘米），默认15.5cm
+
+    返回:
+        LaTeX 格式的字符串，如果需要换行则在名称和标识之间插入换行
+    """
+    name = str(name or "").strip()
+    ident = str(ident or "").strip()
+
+    # 没有标识，直接返回名称
+    if not ident:
+        return name.replace('_', '\\_')
+
+    # 估算文本宽度
+    # 中文字符约0.32cm/字，英文字符约0.18cm/字，标点约0.19cm/字
+    def estimate_width(s: str) -> float:
+        width = 0.0
+        for ch in s:
+            if '\u4e00' <= ch <= '\u9fff':  # CJK字符
+                width += 0.32
+            elif ch.isalpha():  # 英文字母
+                width += 0.18
+            else:  # 标点、数字等
+                width += 0.19
+        return width
+
+    # 转义特殊字符
+    name_escaped = name.replace('_', '\\_')
+    ident_escaped = ident.replace('_', '\\_')
+
+    # 章节号宽度
+    section_width = len(section_number) * 0.18 + 0.5
+
+    # 标识部分的宽度（包括括号）
+    ident_width = estimate_width(ident) + 0.38  # 括号约占0.38cm
+
+    # 名称宽度
+    name_width = estimate_width(name)
+
+    # 可用于第一行的宽度 = 页面宽度 - 章节号宽度 - 右边距
+    first_line_available = page_width_cm - section_width - 1.0
+
+    # 如果 名称 + 标识 超过第一行可用宽度，需要换行
+    if name_width + ident_width > first_line_available:
+        # 需要换行：使用 parbox 实现换行和缩进
+        parbox_width = page_width_cm - section_width
+        return f"\\parbox[t]{{{parbox_width:.1f}cm}}{{{name_escaped}\\\\\\quad （{ident_escaped}）}}"
+    else:
+        # 不需要换行，保持在一行
+        return f"{name_escaped}（{ident_escaped}）"
+
+
 def generate_chapter4_content(test_items, output_dir):
     """生成第4章内容，与test_detail的4.1章节格式相同"""
     
@@ -213,24 +272,16 @@ def generate_chapter4_content(test_items, output_dir):
             paragraph_idx += 1
             subparagraph_idx = 0
             current_module = module_key
-            safe_module = module_name.replace('_', '@@@BREAK@@@')
-            safe_module = escape_latex(safe_module).replace('@@@BREAK@@@', '\\allowbreak ')
-            safe_ident = module_ident.replace('_', '@@@BREAK@@@')
-            safe_ident = escape_latex(safe_ident).replace('@@@BREAK@@@', '\\allowbreak ')
-            lines.append(r"\GjbParagraph{4.1.%d.%d %s（%s)}" % (section_idx, paragraph_idx, safe_module, safe_ident))
+            module_section = "4.1.%d.%d" % (section_idx, paragraph_idx)
+            module_title = format_title_name_ident(module_name, module_ident, module_section)
+            lines.append(r"\GjbParagraph{%s %s}" % (module_section, module_title))
             lines.append("")
         
         # 测试项
         subparagraph_idx += 1
-        safe_item_name = item_name.replace('_', '@@@BREAK@@@')
-        safe_item_name = escape_latex(safe_item_name).replace('@@@BREAK@@@', '\\allowbreak ')
-        safe_item_ident_display = item_ident.replace('_', '@@@BREAK@@@')
-        safe_item_ident_display = escape_latex(safe_item_ident_display).replace('@@@BREAK@@@', '\\allowbreak ')
-
-        # 使用parbox防止标题过长
-        display_text = "%s（%s）" % (safe_item_name, safe_item_ident_display)
-        display_title = r"\parbox[t]{12cm}{%s}" % display_text
-        lines.append(r"\GjbSubparagraph{4.1.%d.%d.%d %s}" % (section_idx, paragraph_idx, subparagraph_idx, display_title))
+        item_section = "4.1.%d.%d.%d" % (section_idx, paragraph_idx, subparagraph_idx)
+        item_title = format_title_name_ident(item_name, item_ident, item_section)
+        lines.append(r"\GjbSubparagraph{%s %s}" % (item_section, item_title))
         lines.append("")
 
         # 生成安全的label（移除特殊字符）
