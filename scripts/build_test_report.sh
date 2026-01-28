@@ -78,15 +78,35 @@ except Exception as e:
 PY
 
 echo ""
-echo "步骤4: 复制test_detail的第4章内容到test_report..."
+echo "步骤4: 复制test_detail的第4章内容到test_report（移除4.1与4.1.1之间的表格和统计）..."
 # 确保test_detail已构建
 if [ ! -f "output/test_detail/chapters/chapter4_generated.tex" ]; then
   echo "test_detail未构建，先构建test_detail..."
   ./scripts/build_test_detail.sh > /dev/null 2>&1
 fi
-# 复制test_detail的第4章内容
-cp -f output/test_detail/chapters/chapter4_generated.tex output/test_report/chapters/chapter4_generated.tex
-echo "✅ 第4章内容已复制（与test_detail完全相同）"
+# 复制并处理：移除4.1标题后到4.1.1子标题之间的内容（测试项列表表格和统计文字）
+python3 - <<'PY'
+import re
+
+src_path = 'output/test_detail/chapters/chapter4_generated.tex'
+dst_path = 'output/test_report/chapters/chapter4_generated.tex'
+
+with open(src_path, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# 查找4.1子节标题和4.1.1子标题
+# 保留4.1标题，移除其后到4.1.1之间的所有内容
+pattern = r'(\\GjbSubsection\{4\.1 计划执行的测试\}\s*\n).*?(?=\s*\\GjbSubsubsection\{4\.1\.1)'
+
+replacement = r'\1'
+
+new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+
+with open(dst_path, 'w', encoding='utf-8') as f:
+    f.write(new_content)
+
+print('✅ 第4章内容已复制并移除4.1与4.1.1之间的表格和统计')
+PY
 
 echo ""
 echo "步骤5: 编译LaTeX文档..."
