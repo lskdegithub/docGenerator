@@ -85,6 +85,7 @@ if [ ! -f "output/test_detail/chapters/chapter4_generated.tex" ]; then
   ./scripts/build_test_detail.sh > /dev/null 2>&1
 fi
 # 复制并处理：移除4.1标题后到4.1.1子标题之间的内容（测试项列表表格和统计文字）
+# 简单逻辑：每个表格结束后添加\clearpage
 python3 - <<'PY'
 import re
 
@@ -94,18 +95,27 @@ dst_path = 'output/test_report/chapters/chapter4_generated.tex'
 with open(src_path, 'r', encoding='utf-8') as f:
     content = f.read()
 
-# 查找4.1子节标题和4.1.1子标题
-# 保留4.1标题，移除其后到4.1.1之间的所有内容
+# 步骤1: 移除4.1标题后到4.1.1之间的内容
 pattern = r'(\\GjbSubsection\{4\.1 计划执行的测试\}\s*\n).*?(?=\s*\\GjbSubsubsection\{4\.1\.1)'
+new_content = re.sub(pattern, r'\1', content, flags=re.DOTALL)
 
-replacement = r'\1'
+# 步骤2: 移除\Needspace{...}命令
+new_content = re.sub(r'\\Needspace\{[^}]+\}\s*\n', '', new_content)
 
-new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+# 步骤3: 在每个表格结束后添加\clearpage
+# 匹配完整的表格结构: {\settablespacing ... \begin{longtblr} ... \end{longtblr} } \vspace{-6pt}
+# 在 \vspace{-6pt} 后面添加 \clearpage
+new_content = re.sub(
+    r'(\{\\settablespacing\s+\\begin\{longtblr\}.*?\\end\{longtblr\}\s*\}\s*\\vspace\{-6pt\})',
+    r'\1\n\\clearpage',
+    new_content,
+    flags=re.DOTALL
+)
 
 with open(dst_path, 'w', encoding='utf-8') as f:
     f.write(new_content)
 
-print('✅ 第4章内容已复制并移除4.1与4.1.1之间的表格和统计')
+print('✅ 第4章内容已复制：每个表格结束后换页')
 PY
 
 echo ""
