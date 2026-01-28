@@ -121,6 +121,65 @@ def parse_plan_yaml(file_path):
         return None
 
 
+def format_title_name_ident(name: str, ident: str, section_number: str, page_width_cm: float = 15.5) -> str:
+    """
+    格式化章节标题中的 名称（标识），智能判断是否需要换行
+
+    参数:
+        name: 测试项名称或测试用例名称
+        ident: 标识
+        section_number: 章节号，如 "4.2.1.1.1"
+        page_width_cm: 页面可用宽度（厘米），默认15.5cm
+
+    返回:
+        LaTeX 格式的字符串，如果需要换行则在名称和标识之间插入换行
+    """
+    name = str(name or "").strip()
+    ident = str(ident or "").strip()
+
+    # 没有标识，直接返回名称
+    if not ident:
+        return name.replace('_', '\\_')
+
+    # 估算文本宽度
+    # 中文字符约0.32cm/字，英文字符约0.18cm/字，标点约0.19cm/字
+    def estimate_width(s: str) -> float:
+        width = 0.0
+        for ch in s:
+            if '\u4e00' <= ch <= '\u9fff':  # CJK字符
+                width += 0.32
+            elif ch.isalpha():  # 英文字母
+                width += 0.18
+            else:  # 标点、数字等
+                width += 0.19
+        return width
+
+    # 转义特殊字符后再估算
+    name_escaped = name.replace('_', '\\_')
+    ident_escaped = ident.replace('_', '\\_')
+
+    # 章节号宽度（如 "4.2.1.1.1 " 约占 1.2cm）
+    section_width = len(section_number) * 0.18 + 0.5
+
+    # 标识部分的宽度（包括括号）
+    ident_width = estimate_width(ident) + 0.38  # 括号约占0.38cm
+
+    # 名称宽度
+    name_width = estimate_width(name)
+
+    # 可用于第一行的宽度 = 页面宽度 - 章节号宽度 - 右边距
+    first_line_available = page_width_cm - section_width - 1.0
+
+    # 如果 名称 + 标识 超过第一行可用宽度，需要换行
+    if name_width + ident_width > first_line_available:
+        # 需要换行：使用 parbox 实现换行和缩进
+        parbox_width = page_width_cm - section_width
+        return f"\\parbox[t]{{{parbox_width:.1f}cm}}{{{name_escaped}\\\\\\quad （{ident_escaped}）}}"
+    else:
+        # 不需要换行，保持在一行
+        return f"{name_escaped}（{ident_escaped}）"
+
+
 def wrap_identifier_by_width(identifier, col_width_cm=5.5):
     """
     根据列宽自动计算换行点（纯按字符数，不改变字体大小）
@@ -270,12 +329,10 @@ def generate_section_4_2(data_dir):
             module_name = metadata_data.get('MODULE_NAME', '')
             module_id = metadata_data.get('MODULE_ID', '')
 
-            # 转义LaTeX特殊字符（如下划线）
-            module_id_escaped = module_id.replace('_', '\\_')
-
             # 生成四级子标题 (4.2.x.x) - 格式：MODULE_NAME (MODULE_ID)
-            module_title = f"{module_name}（{module_id_escaped}）" if module_id else module_name
-            latex_output.append(f"\\paragraph*{{4.2.{metric_index}.{module_idx} {module_title}}}")
+            module_section = f"4.2.{metric_index}.{module_idx}"
+            module_title = format_title_name_ident(module_name, module_id, module_section)
+            latex_output.append(f"\\paragraph*{{{module_section} {module_title}}}")
 
             # 获取该module下的所有item目录并排序
             item_dirs = sorted([d for d in module_dir.iterdir() if d.is_dir() and 'item' in d.name])
@@ -293,10 +350,13 @@ def generate_section_4_2(data_dir):
                     continue
 
                 # 生成五级子标题 (4.2.x.x.x) - 使用递增序号，格式：测试项名称(标识)
-                # 转义下划线等LaTeX特殊字符
-                item_title = plan_data['测试项名称'].replace('_', '\\_') + "（" + plan_data['标识'].replace('_', '\\_') + "）"
-                # 五级标题使用parbox实现换行
-                latex_output.append("\\subparagraph*{4.2." + str(metric_index) + "." + str(module_idx) + "." + str(item_idx) + " \\parbox[t]{12cm}{{" + item_title + "}}}")
+                item_section = f"4.2.{metric_index}.{module_idx}.{item_idx}"
+                item_title = format_title_name_ident(
+                    plan_data['测试项名称'],
+                    plan_data['标识'],
+                    item_section
+                )
+                latex_output.append(f"\\subparagraph*{{{item_section} {item_title}}}")
 
                 # 生成表格
                 table_title = plan_data['测试项名称']
