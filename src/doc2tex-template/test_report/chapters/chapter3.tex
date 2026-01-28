@@ -1,29 +1,51 @@
-\section*{3. 测试结果概述}\addcontentsline{toc}{section}{3. 测试结果概述}
+\GjbSection{3. 测试结果概述}
 
-{\normalsize
-\subsection*{3.1 测试小结}\addcontentsline{toc}{subsection}{3.1 测试小结}
+\GjbSubsection{3.1 测试执行情况}
 
-{\normalsize
-研制的xxxxxreleasexxxxx1软件版本，达到xxxxx系统xxxxx指标要求，具体要求查看系统概述相关内容。
+本次测试按照《\GjbSystemName{}软件测试大纲》中规定的测试类型、测试方法和测试进度进行测试。测试执行情况汇总如表 \ref{tbl:report-test-summary}所示。
 
-本次测试共设计5个测试项，包括37个测试用例，总体结构包括xxxxx功能测试包含10个测试用例、xxxxx功能测试包含10个测试用例、xxxxx接口测试包含5个测试用例、xxxxx接口测试包含8个测试用例，xxxxx可靠性测试包含4个测试用例。
-
-对应测试总体安排，本课题共设置5个测试项，包括37个测试用例。具体内容参见4.1.1到4.1.3章节。
+{\settablespacing
+\begin{talltblr}[theme=gjb,caption={测试执行情况汇总表},label={tbl:report-test-summary}]{
+  colspec={|p{2cm}|p{3cm}|p{3cm}|p{3cm}|},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
 }
-
-\subsection*{3.2 测试环境的影响}\addcontentsline{toc}{subsection}{3.2 测试环境的影响}
-
-{\normalsize
-无。
+测试类别 & 计划测试项数 & 完成测试项数 & 通过率 \\
+功能测试 & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} \\
+接口测试 & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} \\
+可靠性测试 & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} \\
+\end{talltblr}
 }
+\vspace{-6pt}
 
-\subsection*{3.3 改进建议}\addcontentsline{toc}{subsection}{3.3 改进建议}
+\GjbSubsection{3.2 测试结果统计}
 
-{\normalsize
-无。
+本次测试共计xx个测试项，xx个测试用例。测试结果统计如下：
+
+\begin{itemize}
+\item \textbf{通过}：xx个测试用例，占xx\%
+\item \textbf{有条件通过}：xx个测试用例，占xx\%
+\item \textbf{失败}：xx个测试用例，占xx\%
+\item \textbf{未执行}：xx个测试用例，占xx\%
+\end{itemize}
+
+\GjbSubsection{3.3 问题统计}
+
+本次测试共发现问题xx个，问题分布情况如下：
+
+{\settablespacing
+\begin{talltblr}[theme=gjb,caption={问题分布统计表},label={tbl:report-issue-stats}]{
+  colspec={|p{2cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
 }
-
+问题级别 & 功能测试 & 接口测试 & 可靠性测试 & 合计 \\
+严重 & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} \\
+一般 & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} \\
+轻微 & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} \\
+合计 & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} & {\xiaowu --} \\
+\end{talltblr}
 }
-
-% =================== 第4章：详细测试结果 ===================
-\noindent
+\vspace{-6pt}

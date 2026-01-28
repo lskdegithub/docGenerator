@@ -1,3 +1,58 @@
-\section{测试结果汇总}
+\GjbSection{4. 测试结果详情}
 
-本章用于汇总测试结论与主要问题，后续可由生成脚本覆盖或插入实际内容。
+\IfFileExists{chapters/chapter4_generated.tex}{\input{chapters/chapter4_generated.tex}}{
+\GjbSubsection{4.1 计划执行的测试}
+
+围绕《\GjbSystemName{}软件需求规格说明》的要求计划开展的测试共计xx个测试项，其中功能测试xx个。
+
+计划执行的测试项列表如表 \ref{tbl:report-testitems}所示。
+
+{\settablespacing
+\begin{longtblr}[theme=gjb,caption={测试项列表},label={tbl:report-testitems}]{
+  colspec={|c|p{3.2cm}|X|},
+  rowhead=1,
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+}
+序号 & 测试类别 & 测试项名称 \\
+\Seq & 功能测试 & （测试项名称/标识） \\
+\Seq & 接口测试 & （测试项名称/标识） \\
+\end{longtblr}
+}
+\vspace{-6pt}
+
+针对本次节点要求共设置xx个测试项，包括xx个测试用例。具体内容参见4.1.1到4.1.x章节。
+
+\GjbSubsubsection{4.1.1 （指标/特性名称）}
+
+\GjbParagraph{（模块名称）（模块标识）}
+
+\GjbSubparagraph{（测试项名称）（测试项标识）}
+
+\GjbSubsubparagraph{（测试用例名称）（测试用例标识）}
+
+{\settablespacing
+\begin{longtblr}[theme=gjbNoHead,caption={（测试用例名称）},label={tbl:report-tc-sample}]{
+  colspec={|p{0.8cm}|p{1.5cm}|p{2.25cm}|p{2.25cm}|p{2.4cm}|p{2.4cm}|p{1.45cm}|p{1.45cm}|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  column{1}={halign=c},
+}
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试用例名称}} & & \SetCell[c=3]{valign=t}{（测试用例名称）} &  &  & \TableKeyCell{标识} & \SetCell[c=2]{valign=t}{\TableIdentifier{（标识）}} & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{追踪关系}} & & \SetCell[c=6]{valign=t}{（测试项名称/标识）} &  &  &  &  & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试用例综述}} & & \SetCell[c=6]{valign=t}{（综述）} &  &  &  &  & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{用例初始化}} & & \SetCell[c=6]{valign=t}{（初始化条件）} &  &  &  &  & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{前提和约束}} & & \SetCell[c=6]{valign=t}{（前提与约束）} &  &  &  &  & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试用例类型}} & & \SetCell[c=6]{valign=t}{（测试类型）} &  &  &  &  & \\
+\SetCell[c=8]{halign=c,font=\xiaowuhei}{测试步骤} &  &  &  &  &  &  & \\
+\SetCell{font=\xiaowuhei,halign=c,valign=m}{序号} & \SetCell[c=3]{font=\xiaowuhei,halign=c,valign=m}{输入及操作} &  &  & \SetCell[c=2]{font=\xiaowuhei,halign=c,valign=m}{期望结果} &  & \SetCell[c=2]{font=\xiaowuhei,halign=c,valign=m}{测试结果} &  \\
+1 & \SetCell[c=3]{valign=t}{（输入及操作）} &  &  & \SetCell[c=2]{valign=t}{（期望结果）} &  & \SetCell[c=2]{valign=t}{} &  \\
+2 & \SetCell[c=3]{valign=t}{（输入及操作）} &  &  & \SetCell[c=2]{valign=t}{（期望结果）} &  & \SetCell[c=2]{valign=t}{} &  \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试用例终止条件}} & & \SetCell[c=6]{valign=t}{（终止条件）} &  &  &  &  & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试结果评估标准}} & & \SetCell[c=6]{valign=t}{（判定准则）} &  &  &  &  & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试用例执行结果}} & & \SetCell[c=6]{valign=t}{（执行结果）} &  &  &  &  & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{设计人员}} & & \SetCell[c=3]{valign=t}{（设计人员）} &  &  & \TableKeyCell{操作人员} & \SetCell[c=2]{valign=t}{（操作人员）} & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试人员}} & & \SetCell[c=3]{valign=t}{（测试人员）} &  &  & \TableKeyCell{测试时间} & \SetCell[c=2]{valign=t}{（测试时间）} & \\
+\end{longtblr}
+}
+\vspace{-6pt}
+}

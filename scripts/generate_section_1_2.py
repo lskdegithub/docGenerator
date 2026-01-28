@@ -186,7 +186,7 @@ def generate_section_1_2(data_dir, doc_type="test_plan"):
 
     Args:
         data_dir: 数据目录路径
-        doc_type: 文档类型，"test_plan" 或 "test_detail"
+        doc_type: 文档类型，"test_plan"、"test_detail" 或 "test_report"
     """
     metrics = collect_coverage_data(data_dir)
 
@@ -201,6 +201,9 @@ def generate_section_1_2(data_dir, doc_type="test_plan"):
     if doc_type == "test_detail":
         subsection_cmd = "\\GjbSubsection{1.2 系统概述}"
         table_label = "tbl:detail-coverage"
+    elif doc_type == "test_report":
+        subsection_cmd = "\\GjbSubsection{1.2 系统概述}"
+        table_label = "tbl:report-coverage"
     else:  # test_plan
         subsection_cmd = "\\GjbSubsection{1.2 系统概述}"
         table_label = "tbl:plan-coverage"
@@ -242,8 +245,9 @@ def main():
     parser.add_argument("--data", default="data", help="数据目录路径")
     parser.add_argument("--out", default="output/test_plan/chapters/chapter1_2_generated.tex",
                         help="输出文件路径")
-    parser.add_argument("--doc-type", default="test_plan", choices=["test_plan", "test_detail"],
-                        help="文档类型：test_plan 或 test_detail")
+    parser.add_argument("--doc-type", default="test_plan",
+                        choices=["test_plan", "test_detail", "test_report"],
+                        help="文档类型：test_plan、test_detail 或 test_report")
     args = parser.parse_args()
 
     data_dir = args.data

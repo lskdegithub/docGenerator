@@ -11,23 +11,24 @@
 % 重新定义依赖文档类型的变量
 \renewcommand{\GjbDocId}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
 \renewcommand{\GjbSystemIdent}{\GjbProjectIdent\_\GjbDocIdType\_\GjbSoftwareVersion}
+\providecommand{\GjbSystemName}{\GjbDocName}
+\providecommand{\GjbSystemShortName}{\GjbProjectIdent}
 \renewcommand{\GjbDocTitle}{\GjbDocName\ \GjbDocKind}
-\renewcommand{\GjbDocApplicableText}{\GjbProjectName{}软件测试过程}
+\renewcommand{\GjbDocApplicableText}{\GjbProjectName{}软件测试}
 
 % 文档概述模板话术
-\renewcommand{\GjbDocOverviewText}{本文档用于\GjbDocTitle，记录并总结本次测试的实施情况、环境、执行结果及问题分析，为评审与交付提供依据。}
+\renewcommand{\GjbDocOverviewText}{本文档用于\GjbDocTitle，总结了本次测试的结果，包括测试执行情况、测试结果统计、发现的问题以及测试结论和建议。}
 \renewcommand{\GjbDocStdCoverageText}{本文档模板涵盖了GJB438C-2021《军用软件开发文档通用要求》对软件测试报告文档的要素和内容的要求。}
 \renewcommand{\GjbDocSecurityText}{描述本文档密级为xx密，必须按照机密文件的要求使用和分发。即使在保密性得到保证的情况下，对本文档的使用也必须经研制方主管人员的认可。}
 
 % 表格标签
 \renewcommand{\GjbCoverageTableLabel}{tbl:report-coverage}
-\renewcommand{\GjbCoverageTableCaption}{需求与测试项覆盖性对照表}
-\renewcommand{\GjbCoverageTableColBTitle}{需求名称/标识}
+\renewcommand{\GjbCoverageTableCaption}{需求覆盖性对照表}
+\renewcommand{\GjbCoverageTableColBTitle}{需求标识}
 \def\GjbCoverageColAWidth{0.8cm}
-\def\GjbCoverageColBWidth{6.8cm}
-\def\GjbCoverageColCWidth{6.9cm}
-\renewcommand{\GjbRefDocsTableLabel}{tbl:report-refs}
-\renewcommand{\GjbEnvSoftwareTableLabel}{tbl:report-env-software}
-\renewcommand{\GjbEnvHardwareTableLabel}{tbl:report-env-hardware}
-\renewcommand{\GjbTestItemsTableLabel}{tbl:report-testitems}
-\renewcommand{\GjbSampleTestCaseTableLabel}{tbl:report-tc-sample}
+\def\GjbCoverageColBWidth{2.5cm}
+\def\GjbCoverageColCWidth{8.5cm}
+
+% 系统相关文本
+\renewcommand{\GjbSystemCustomerDevText}{该系统由xxxxxxxxxx开发，供xxxxxxxxxx使用。}
+\renewcommand{\GjbSystemEnvironmentText}{该系统的运行环境包括硬件环境和软件环境，硬件环境包括xxxxxxxxxx，软件环境包括xxxxxxxxxx。}
