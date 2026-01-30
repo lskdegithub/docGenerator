@@ -164,7 +164,7 @@ def format_title_name_ident(name: str, ident: str, section_number: str, page_wid
     if name_width + ident_width > first_line_available:
         # 需要换行：使用 parbox 实现换行和缩进
         parbox_width = page_width_cm - section_width
-        return f"\\parbox[t]{{{parbox_width:.1f}cm}}{{{name_escaped}\\\\\\quad （{ident_escaped}）}}"
+        return f"\\begin{{minipage}}[t]{{{parbox_width:.1f}cm}}{{\\setlength{{\\baselineskip}}{{18pt}}{name_escaped}\\\\\\quad （{ident_escaped}）\\vskip-{{\\baselineskip}}\\vskip{{\\baselineskip}}\\end{{minipage}}}}"
     else:
         # 不需要换行，保持在一行
         return f"{name_escaped}（{ident_escaped}）"

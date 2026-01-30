@@ -268,9 +268,10 @@ def format_title_name_ident(name: str, ident: str, section_number: str, page_wid
 
     # 如果 名称 + 标识 超过第一行可用宽度，需要换行
     if name_width + ident_width > first_line_available:
-        # 需要换行：使用 parbox 实现换行和缩进
+        # 需要换行：使用 minipage 实现换行和缩进，设置18pt行距
         parbox_width = page_width_cm - section_width
-        return f"\\parbox[t]{{{parbox_width:.1f}cm}}{{{name_escaped}\\\\\\quad （{ident_escaped}）}}"
+        # 使用minipage代替parbox，在开头添加修正间距使下一条目对齐
+        return f"\\begin{{minipage}}[t]{{{parbox_width:.1f}cm}}{{\\setlength{{\\baselineskip}}{{18pt}}{name_escaped}\\\\\\quad （{ident_escaped}）\\vskip-{{\\baselineskip}}\\vskip{{\\baselineskip}}\\end{{minipage}}}}"
     else:
         # 不需要换行，保持在一行
         return f"{name_escaped}（{ident_escaped}）"
