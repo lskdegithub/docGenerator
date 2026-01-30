@@ -828,7 +828,7 @@ def build_chapter4(metrics):
 
 计划执行的测试项列表如表 \\ref{{tbl:detail-testitems}}所示。
 
-{{\\settablespacing
+{{\\settablespacing\\SeqInit
 \\begin{{longtblr}}[theme=gjb,caption={{测试项列表}},label={{tbl:detail-testitems}}]{{
   colspec={{c p{{4.0cm}} X}},
   rowhead=1,
