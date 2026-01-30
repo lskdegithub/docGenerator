@@ -162,12 +162,20 @@ def format_title_name_ident(name: str, ident: str, section_number: str, page_wid
 
     # 如果 名称 + 标识 超过第一行可用宽度，需要换行
     if name_width + ident_width > first_line_available:
-        # 需要换行：使用 parbox 实现换行和缩进
+        # 需要换行：使用 minipage 实现换行和缩进
         parbox_width = page_width_cm - section_width
-        return f"\\begin{{minipage}}[t]{{{parbox_width:.1f}cm}}{{\\setlength{{\\baselineskip}}{{18pt}}{name_escaped}\\\\\\quad （{ident_escaped}）\\vskip-{{\\baselineskip}}\\vskip{{\\baselineskip}}\\end{{minipage}}}}"
+        return f"\\begin{{minipage}}[t]{{{parbox_width:.1f}cm}}\\setlength{{\\baselineskip}}{{18pt}}{name_escaped}\\\\\\quad （{ident_escaped}）\\end{{minipage}}"
     else:
         # 不需要换行，保持在一行
         return f"{name_escaped}（{ident_escaped}）"
+
+
+def format_toc_name_ident(name: str, ident: str) -> str:
+    name = escape_latex(str(name or "").strip())
+    ident = escape_latex(str(ident or "").strip())
+    if ident:
+        return f"{name}（{ident}）"
+    return name
 
 
 def generate_chapter4_content(test_items, output_dir):
@@ -274,14 +282,22 @@ def generate_chapter4_content(test_items, output_dir):
             current_module = module_key
             module_section = "4.1.%d.%d" % (section_idx, paragraph_idx)
             module_title = format_title_name_ident(module_name, module_ident, module_section)
-            lines.append(r"\GjbParagraph{%s %s}" % (module_section, module_title))
+            module_toc_title = format_toc_name_ident(module_name, module_ident)
+            if r"\begin{minipage}" in module_title:
+                lines.append(r"\GjbParagraph[%s %s]{%s %s}" % (module_section, module_toc_title, module_section, module_title))
+            else:
+                lines.append(r"\GjbParagraph{%s %s}" % (module_section, module_title))
             lines.append("")
         
         # 测试项
         subparagraph_idx += 1
         item_section = "4.1.%d.%d.%d" % (section_idx, paragraph_idx, subparagraph_idx)
         item_title = format_title_name_ident(item_name, item_ident, item_section)
-        lines.append(r"\GjbSubparagraph{%s %s}" % (item_section, item_title))
+        item_toc_title = format_toc_name_ident(item_name, item_ident)
+        if r"\begin{minipage}" in item_title:
+            lines.append(r"\GjbSubparagraph[%s %s]{%s %s}" % (item_section, item_toc_title, item_section, item_title))
+        else:
+            lines.append(r"\GjbSubparagraph{%s %s}" % (item_section, item_title))
         lines.append("")
 
         # 生成安全的label（移除特殊字符）

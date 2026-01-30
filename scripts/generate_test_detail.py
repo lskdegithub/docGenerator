@@ -271,10 +271,18 @@ def format_title_name_ident(name: str, ident: str, section_number: str, page_wid
         # 需要换行：使用 minipage 实现换行和缩进，设置18pt行距
         parbox_width = page_width_cm - section_width
         # 使用minipage代替parbox，在开头添加修正间距使下一条目对齐
-        return f"\\begin{{minipage}}[t]{{{parbox_width:.1f}cm}}{{\\setlength{{\\baselineskip}}{{18pt}}{name_escaped}\\\\\\quad （{ident_escaped}）\\vskip-{{\\baselineskip}}\\vskip{{\\baselineskip}}\\end{{minipage}}}}"
+        return f"\\begin{{minipage}}[t]{{{parbox_width:.1f}cm}}\\setlength{{\\baselineskip}}{{18pt}}{name_escaped}\\\\\\quad （{ident_escaped}）\\end{{minipage}}"
     else:
         # 不需要换行，保持在一行
         return f"{name_escaped}（{ident_escaped}）"
+
+
+def format_toc_name_ident(name: str, ident: str) -> str:
+    name = escape_latex(str(name or "").strip())
+    ident = escape_latex(str(ident or "").strip())
+    if ident:
+        return f"{name}（{ident}）"
+    return name
 
 
 def escape_latex_table_cell_multiline(
@@ -844,14 +852,22 @@ def build_chapter4(metrics):
             module_id = escape_latex(module["ident"])
             module_section = f"4.1.{metric_num}.{module_num}"
             module_title = format_title_name_ident(module["name"], module["ident"], module_section)
-            content += f"\\GjbParagraph{{{module_section} {module_title}}}\n\n"
+            module_toc_title = format_toc_name_ident(module["name"], module["ident"])
+            if r"\begin{minipage}" in module_title:
+                content += f"\\GjbParagraph[{module_section} {module_toc_title}]{{{module_section} {module_title}}}\n\n"
+            else:
+                content += f"\\GjbParagraph{{{module_section} {module_title}}}\n\n"
             for item in module["items"]:
                 item_num = item["order"]
                 item_name = escape_latex(item["name"])
                 item_ident = escape_latex(item["ident"])
                 item_section = f"4.1.{metric_num}.{module_num}.{item_num}"
                 item_title = format_title_name_ident(item["name"], item["ident"], item_section)
-                content += f"\\GjbSubparagraph{{{item_section} {item_title}}}\n\n"
+                item_toc_title = format_toc_name_ident(item["name"], item["ident"])
+                if r"\begin{minipage}" in item_title:
+                    content += f"\\GjbSubparagraph[{item_section} {item_toc_title}]{{{item_section} {item_title}}}\n\n"
+                else:
+                    content += f"\\GjbSubparagraph{{{item_section} {item_title}}}\n\n"
                 test_item_label = format_name_ident_multiline(item.get("name"), item.get("ident"))
                 for case in item["cases"]:
                     case_data = case["data"]

@@ -67,8 +67,30 @@ V0.0.0.1 & 李胜奎 & 喻昕、胡栋 & 2025.09.30 & 新建文档 \\
 \sloppy\emergencystretch=2em\relax
 % 设置目录缩进：5级目录 (section=0, subsection=0.75, subsubsection=1.5, paragraph=2.25, subparagraph=3)
 \makeatletter
-\let\GjbOrigDottedTocLine\@dottedtocline
-\renewcommand{\@dottedtocline}[5]{\GjbOrigDottedTocLine{#1}{#2}{#3}{#4\strut}{#5}}
+\def\GjbTocSoftBreak{\unskip\space}
+\def\GjbTocCR{\@ifnextchar[{\GjbTocCR@i}{\GjbTocSoftBreak}}
+\def\GjbTocCR@i[#1]{\GjbTocSoftBreak}
+\renewcommand{\@dottedtocline}[5]{%
+  \ifnum #1>\c@tocdepth \else
+    \vskip \z@ \@plus.2\p@
+    {%
+      \let\\\GjbTocCR
+      \let\newline\GjbTocSoftBreak
+      \leftskip #2\relax
+      \rightskip \@pnumwidth\relax
+      \parfillskip -\@pnumwidth\relax
+      \parindent #2\relax
+      \interlinepenalty\@M
+      \leavevmode
+      \@tempdima #3\relax
+      \advance\leftskip \@tempdima
+      \hskip -\leftskip
+      #4\strut\nobreak
+      \nobreak\leaders\hbox{$\m@th\mkern\@dotsep mu.\mkern\@dotsep mu$}\hfill
+      \nobreak\hb@xt@\@pnumwidth{\hss #5}\par
+    }%
+  \fi
+}
 \renewcommand{\l@section}{\@dottedtocline{1}{0em}{0em}}
 \renewcommand{\l@subsection}{\@dottedtocline{2}{0.75em}{2.3em}}
 \renewcommand{\l@subsubsection}{\@dottedtocline{3}{1.5em}{3.1em}}

@@ -229,26 +229,26 @@
   \addcontentsline{toc}{subsubsection}{#1}%
 }
 
-\newcommand{\GjbParagraph}[1]{%
+\newcommand{\GjbParagraph}[2][]{%
   \par\noindent\vspace{6pt}%
   \begingroup
   \wuhao\bfseries
   \setbox0=\hbox{1.1.1.1. }\hangindent=\wd0\hangafter=1
-  #1\par
+  #2\par
   \endgroup
   \vspace{6pt}%
-  \addcontentsline{toc}{paragraph}{#1}%
+  \addcontentsline{toc}{paragraph}{\if\relax\detokenize{#1}\relax#2\else#1\fi}%
 }
 
-\newcommand{\GjbSubparagraph}[1]{%
+\newcommand{\GjbSubparagraph}[2][]{%
   \par\noindent\vspace{6pt}%
   \begingroup
   \wuhao\bfseries
   \setbox0=\hbox{1.1.1.1.1. }\hangindent=\wd0\hangafter=1
-  #1\par
+  #2\par
   \endgroup
   \vspace{6pt}%
-  \addcontentsline{toc}{subparagraph}{#1}%
+  \addcontentsline{toc}{subparagraph}{\if\relax\detokenize{#1}\relax#2\else#1\fi}%
 }
 
 \newcommand{\GjbSubsubparagraph}[1]{%
