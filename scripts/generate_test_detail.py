@@ -817,10 +817,10 @@ def build_chapter4(metrics):
     metric_count = len(metrics)
     detail_intro = f"针对本次节点要求共设置{total_items}个测试项，包括{total_cases}个测试用例。具体内容参见4.1.1到4.1.{metric_count}章节。"
     table_rows = []
-    for item in items:
+    for idx, item in enumerate(items, start=1):
         label = format_name_ident_multiline(item.get("name"), item.get("ident"), width_cm=12.0)
         item_type = escape_latex(item["type"])
-        table_rows.append(f"\\Seq & {{\\xiaowu {item_type}}} & {{\\xiaowu {label}}} \\\\")
+        table_rows.append(f"{{\\xiaowu {idx}}} & {{\\xiaowu {item_type}}} & {{\\xiaowu {label}}} \\\\")
     table_rows_text = "\n".join(table_rows)
     content = f"""\\GjbSubsection{{4.1 计划执行的测试}}
 
@@ -828,7 +828,7 @@ def build_chapter4(metrics):
 
 计划执行的测试项列表如表 \\ref{{tbl:detail-testitems}}所示。
 
-{{\\settablespacing\\SeqInit
+{{\\settablespacing
 \\begin{{longtblr}}[theme=gjb,caption={{测试项列表}},label={{tbl:detail-testitems}}]{{
   colspec={{c p{{4.0cm}} X}},
   rowhead=1,
