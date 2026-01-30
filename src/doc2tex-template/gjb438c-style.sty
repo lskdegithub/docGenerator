@@ -204,12 +204,10 @@
 
 % 统一的GJB章节标题命令（test_plan和test_detail通用）
 % 用法: \GjbSection{3. 软件测试环境} 或 \GjbSection{软件测试环境}
-% 悬挂缩进：换行时与标题内容对齐，而非与编号对齐
 \newcommand{\GjbSection}[1]{%
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  \setbox0=\hbox{1. }\hangindent=\wd0\hangafter=1
   #1\par
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
@@ -220,7 +218,6 @@
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  \setbox0=\hbox{1.1. }\hangindent=\wd0\hangafter=1
   #1\par
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
@@ -231,7 +228,6 @@
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  \setbox0=\hbox{1.1.1. }\hangindent=\wd0\hangafter=1
   #1\par
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
@@ -242,7 +238,6 @@
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  \setbox0=\hbox{1.1.1.1. }\hangindent=\wd0\hangafter=1
   #2\par
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
@@ -253,7 +248,6 @@
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  \setbox0=\hbox{1.1.1.1.1. }\hangindent=\wd0\hangafter=1
   #2\par
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
@@ -264,7 +258,6 @@
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  \setbox0=\hbox{1.1.1.1.1.1. }\hangindent=\wd0\hangafter=1
   #1\par
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%

@@ -33,12 +33,12 @@
 % 第3章共享内容变量（使用统一格式，无缩进，无悬挂缩进）
 \def\GjbTestEnvTitleLevelOne#1{%
   \stepcounter{GjbTestEnvSubSection}%
-  \par\noindent\vspace{6pt}%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
   3.1.\arabic{GjbTestEnvSubSection}. #1\par
   \endgroup
-  \vspace{6pt}%
+  \par\addvspace{\GjbHeadingAfterSkip}%
 }
 \def\GjbEnvFigureLabel{fig:plan-env}
 \def\GjbEnvTableType{longtblr}

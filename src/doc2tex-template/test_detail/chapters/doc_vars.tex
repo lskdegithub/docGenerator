@@ -32,15 +32,17 @@
 \renewcommand{\GjbTestItemsTableLabel}{tbl:detail-testitems}
 \renewcommand{\GjbSampleTestCaseTableLabel}{tbl:detail-tc-sample}
 
-% 第3章共享内容变量（使用统一格式，无缩进，无悬挂缩进）
+% 第3章共享内容变量（使用二级标题格式）
+\ifcsname c@GjbTestEnvSection\endcsname\else\newcounter{GjbTestEnvSection}\setcounter{GjbTestEnvSection}{0}\fi
 \def\GjbTestEnvTitleLevelOne#1{%
-  \stepcounter{GjbTestEnvSubSection}%
-  \par\noindent\vspace{6pt}%
+  \stepcounter{GjbTestEnvSection}%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  3.1.\arabic{GjbTestEnvSubSection}. #1\par
+  3.\arabic{GjbTestEnvSection}. #1\par
   \endgroup
-  \vspace{6pt}%
+  \par\addvspace{\GjbHeadingAfterSkip}%
+  \addcontentsline{toc}{subsection}{3.\arabic{GjbTestEnvSection}. #1}%
 }
 \def\GjbEnvSoftwareTableLabelSupport{tbl:detail-sw-support}
 \def\GjbEnvFigureLabel{fig:detail-env}
