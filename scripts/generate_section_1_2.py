@@ -219,7 +219,7 @@ def generate_section_1_2(data_dir, doc_type="test_plan"):
 {table2_rows}
 \\end{{longtblr}}
 }}
-\\vspace{{-6pt}}"""
+\\vspace{{0pt}}"""
 
     # 构建1.2章节内容
     latex = f"""{subsection_cmd}

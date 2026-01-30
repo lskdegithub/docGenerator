@@ -241,7 +241,7 @@ def generate_chapter4_content(test_items, output_dir):
         lines.append(r"%s & {\xiaowu %s} & {\xiaowu %s\GjbCellBreak （%s)} \\" % (seq, safe_type, name, ident))
     
     lines.append(r"\end{longtblr}}")
-    lines.append(r"\vspace{-6pt}")
+    lines.append(r"\vspace{0pt}")
     lines.append("")
     
     # 引用具体章节
@@ -328,7 +328,7 @@ def generate_chapter4_content(test_items, output_dir):
         lines.append(r"\SetCell[c=2]{halign=c}{\TableKeyCell{设计人员}} & & \SetCell[c=3]{valign=t}{（设计人员）} &  &  & \TableKeyCell{操作人员} & \SetCell[c=2]{valign=t}{（操作人员）} & \\")
         lines.append(r"\SetCell[c=2]{halign=c}{\TableKeyCell{测试人员}} & & \SetCell[c=3]{valign=t}{（测试人员）} &  &  & \TableKeyCell{测试时间} & \SetCell[c=2]{valign=t}{（测试时间）} & \\")
         lines.append(r"\end{longtblr}}")
-        lines.append(r"\vspace{-6pt}")
+        lines.append(r"\vspace{0pt}")
         lines.append("")
     
     return "\n".join(lines)

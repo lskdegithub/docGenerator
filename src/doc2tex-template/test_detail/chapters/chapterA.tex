@@ -6,9 +6,10 @@
 
 {\settablespacing
 \begin{talltblr}[theme=gjb,caption={测试用例清单},label={tbl:detail-tc-list}]{
-  colspec={|p{0.8cm}|p{2.2cm}|p{3.5cm}|p{2.5cm}|p{2.0cm}|p{3.0cm}|},
+  colspec={p{0.8cm}p{2.2cm}p{3.5cm}p{2.5cm}p{2.0cm}p{3.0cm}},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vline{1,2,3,4,5,6,Z}={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 用例ID & 用例名称 & 测试类型 & 优先级 & 状态 \\
@@ -16,7 +17,7 @@
 \Seq & TC-002 & xxxxx功能测试 & 功能测试 & 中 & 待执行 \\
 \end{talltblr}
 }
-\vspace{-6pt}
+\vspace{0pt}
 
 \GjbSubsection{A.2 测试数据}
 
@@ -24,9 +25,10 @@
 
 {\settablespacing
 \begin{talltblr}[theme=gjb,caption={测试数据清单},label={tbl:detail-data-list}]{
-  colspec={|p{0.8cm}|p{4.0cm}|p{3.0cm}|p{6.7cm}|},
+  colspec={p{0.8cm}p{4.0cm}p{3.0cm}p{6.7cm}},
   rowhead=1,
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vline{1,2,3,4,Z}={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
 序号 & 数据名称 & 数据格式 & 说明 \\
@@ -34,4 +36,4 @@
 \Seq & xxxxx测试数据 & JSON & 用于xxxxx功能测试 \\
 \end{talltblr}
 }
-\vspace{-6pt}
+\vspace{0pt}

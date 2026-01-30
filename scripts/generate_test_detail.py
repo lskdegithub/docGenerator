@@ -793,7 +793,7 @@ def build_case_table(case_data, test_item_label, label_suffix):
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试人员}}}} & & \\SetCell[c=3]{{wd={wd_tester},valign=t}}{{{tester}}} &  &  & \\TableKeyCell{{测试时间}} & \\SetCell[c=2]{{wd={wd_test_time},valign=t}}{{{test_time}}} & \\\\
 \\end{{longtblr}}
 }}
-\\vspace{{-6pt}}"""
+\\vspace{{0pt}}"""
     return table
 
 
@@ -838,7 +838,7 @@ def build_chapter4(metrics):
 序号 & 测试类别 & 测试项名称 \\\\\n{table_rows_text}
 \\end{{longtblr}}
 }}
-\\vspace{{-6pt}}
+\\vspace{{0pt}}
 
 {detail_intro}
 """
@@ -1086,25 +1086,6 @@ def generate_trace_table_forward_full(
 
             line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
 
-            is_last_row_overall = global_row == contract_total_rows - 1
-            next_same_req_group = (
-                is_real
-                and global_row + 1 < len(group)
-                and (
-                    (group[global_row + 1].get("requirement") or "", group[global_row + 1].get("srs_chapter") or "", group[global_row + 1].get("test_item") or "", group[global_row + 1].get("item_section") or "")
-                    == req_item_key
-                )
-            )
-            is_last_row_in_req_group = is_real and not next_same_req_group
-
-            if is_last_row_overall:
-                line += r" \hline"
-            elif is_real:
-                if not is_last_row_in_req_group:
-                    line += r" \cline{7-8}"
-                else:
-                    line += r" \cline{3-8}"
-
             body_lines.append(line)
         i = j
         seq += 1
@@ -1120,14 +1101,13 @@ def generate_trace_table_forward_full(
   rightsep=\\GjbDetailTraceRightSep,
   colsep=\\GjbDetailTraceColSep,
   colspec={{|Q[c,t,\\GjbDetailTraceColA]|Q[l,t,\\GjbDetailTraceColB]|Q[l,t,\\GjbDetailTraceColC]|Q[c,t,\\GjbDetailTraceColD]|Q[l,t,\\GjbDetailTraceColE]|Q[c,t,\\GjbDetailTraceColF]|Q[l,t,\\GjbDetailTraceColG]|Q[c,t,\\GjbDetailTraceColH]|}},
+  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  vline{{1,2,3,4,5,6,7,8,Z}}={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
 }}
-\\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} {head_contract} & \\SetCell[c=2]{{c}} 需求规格说明书 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 测试用例 & \\\\
-\\hline
  & & 需求名称/\\allowbreak 标识 & 需规章节号 & 测试项名称/\\allowbreak 标识 & 本文档章节号 & 测试用例名称/\\allowbreak 标识 & 测试章节号 \\\\
-\\hline
 {body_text}
 \\end{{longtblr}}
 }}
@@ -1257,24 +1237,6 @@ def generate_trace_table_reverse_full(
                 c8 = ""
 
             line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
-            is_last_row_overall = global_row == contract_total_rows - 1
-            next_same_req_group = (
-                is_real
-                and global_row + 1 < len(group)
-                and (
-                    (group[global_row + 1].get("requirement") or "", group[global_row + 1].get("srs_chapter") or "", group[global_row + 1].get("test_item") or "", group[global_row + 1].get("item_section") or "")
-                    == req_item_key
-                )
-            )
-            is_last_row_in_req_group = is_real and not next_same_req_group
-
-            if is_last_row_overall:
-                line += r" \hline"
-            elif is_real:
-                if not is_last_row_in_req_group:
-                    line += r" \cline{3-4}"
-                else:
-                    line += r" \cline{3-8}"
 
             body_lines.append(line)
 
@@ -1291,14 +1253,13 @@ def generate_trace_table_reverse_full(
   rightsep=\\GjbDetailTraceRightSep,
   colsep=\\GjbDetailTraceColSep,
   colspec={{|Q[c,t,\\GjbDetailTraceColA]|Q[l,t,\\GjbDetailTraceColB]|Q[l,t,\\GjbDetailTraceColC]|Q[c,t,\\GjbDetailTraceColD]|Q[l,t,\\GjbDetailTraceColE]|Q[c,t,\\GjbDetailTraceColF]|Q[l,t,\\GjbDetailTraceColG]|Q[c,t,\\GjbDetailTraceColH]|}},
+  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  vline{{1,2,3,4,5,6,7,8,Z}}={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
 }}
-\\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} {head_contract} & \\SetCell[c=2]{{c}} 测试用例 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 需求规格说明书 & \\\\
-\\hline
  & & 测试用例名称/\\allowbreak 标识 & 测试章节号 & 测试项名称/\\allowbreak 标识 & 本文档章节号 & 需求名称/\\allowbreak 标识 & 需规章节号 \\\\
-\\hline
 {body_text}
 \\end{{longtblr}}
 }}

@@ -52,13 +52,13 @@
 \newcommand{\GjbTableRuleColor}{black}
 \newcommand{\GjbTableColSep}{3pt}
 \newcommand{\GjbCellBreak}{\newline}
-\newcommand{\GjbDetailCaseTableWidth}{14.5cm}
+\newcommand{\GjbDetailCaseTableWidth}{15.2cm}
 \newcommand{\GjbDetailCaseLeftSep}{0pt}
 \newcommand{\GjbDetailCaseRightSep}{0pt}
 \newcommand{\GjbDetailCaseColSep}{1pt}
 % 测试用例表格列宽定义（8列）
 % 列1:序号 | 列2:用例ID | 列3:用例名称 | 列4:测试类型 | 列5:优先级 | 列6:标签 | 列7-8:标识内容
-% 期望结果跨列5+6(5.0cm) | 测试结果跨列7+8(3.88cm) | 总宽14.5cm
+% 期望结果跨列5+6(5.0cm) | 测试结果跨列7+8(3.88cm) | 总宽15.2cm
 \newcommand{\GjbDetailCaseColA}{0.76cm}  % 列1-序号
 \newcommand{\GjbDetailCaseColB}{1.15cm}  % 列2-用例ID
 \newcommand{\GjbDetailCaseColC}{1.4cm}   % 列3-用例名称
@@ -136,6 +136,15 @@
 % 标题格式设置（1-5级标题）
 % =================================================================
 
+\newlength{\GjbHeadingBeforeSkip}
+\setlength{\GjbHeadingBeforeSkip}{9pt}
+\newlength{\GjbHeadingAfterSkip}
+\setlength{\GjbHeadingAfterSkip}{6pt}
+\newlength{\GjbCaptionBeforeSkip}
+\setlength{\GjbCaptionBeforeSkip}{3pt}
+\newlength{\GjbCaptionAfterSkip}
+\setlength{\GjbCaptionAfterSkip}{6pt}
+
 \setcounter{secnumdepth}{6}
 \setcounter{tocdepth}{6}
 
@@ -145,7 +154,7 @@
   {\thesection}
   {1em}
   {}
-\titlespacing*{\section}{0pt}{6pt}{0pt}
+\titlespacing*{\section}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 % 2级标题：五号宋体加粗，段前段后6pt
 \titleformat{\subsection}
@@ -153,7 +162,7 @@
   {\thesubsection}
   {1em}
   {}
-\titlespacing*{\subsection}{0pt}{6pt}{0pt}
+\titlespacing*{\subsection}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 % 3级标题：五号宋体加粗，段前段后6pt
 \titleformat{\subsubsection}
@@ -161,7 +170,7 @@
   {\thesubsubsection}
   {1em}
   {}
-\titlespacing*{\subsubsection}{0pt}{6pt}{0pt}
+\titlespacing*{\subsubsection}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 % 4级标题：五号宋体加粗，段前段后6pt
 \titleformat{\paragraph}[block]
@@ -169,7 +178,7 @@
   {\theparagraph}
   {1em}
   {}
-\titlespacing*{\paragraph}{0pt}{6pt}{0pt}
+\titlespacing*{\paragraph}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 % 5级标题：五号宋体加粗，段前段后6pt
 \titleformat{\subparagraph}[block]
@@ -177,7 +186,7 @@
   {\thesubparagraph}
   {1em}
   {}
-\titlespacing*{\subparagraph}{0pt}{6pt}{0pt}
+\titlespacing*{\subparagraph}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 \titleclass{\subsubparagraph}{straight}[\subparagraph]
 \newcounter{subsubparagraph}[subparagraph]
@@ -187,7 +196,7 @@
   {\thesubsubparagraph}
   {1em}
   {}
-\titlespacing*{\subsubparagraph}{0pt}{6pt}{0pt}
+\titlespacing*{\subsubparagraph}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 % =================================================================
 % 辅助命令
@@ -197,68 +206,68 @@
 % 用法: \GjbSection{3. 软件测试环境} 或 \GjbSection{软件测试环境}
 % 悬挂缩进：换行时与标题内容对齐，而非与编号对齐
 \newcommand{\GjbSection}[1]{%
-  \par\noindent\vspace{6pt}%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
   \setbox0=\hbox{1. }\hangindent=\wd0\hangafter=1
   #1\par
   \endgroup
-  \vspace{6pt}%
+  \par\addvspace{\GjbHeadingAfterSkip}%
   \addcontentsline{toc}{section}{#1}%
 }
 
 \newcommand{\GjbSubsection}[1]{%
-  \par\noindent\vspace{6pt}%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
   \setbox0=\hbox{1.1. }\hangindent=\wd0\hangafter=1
   #1\par
   \endgroup
-  \vspace{6pt}%
+  \par\addvspace{\GjbHeadingAfterSkip}%
   \addcontentsline{toc}{subsection}{#1}%
 }
 
 \newcommand{\GjbSubsubsection}[1]{%
-  \par\noindent\vspace{6pt}%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
   \setbox0=\hbox{1.1.1. }\hangindent=\wd0\hangafter=1
   #1\par
   \endgroup
-  \vspace{6pt}%
+  \par\addvspace{\GjbHeadingAfterSkip}%
   \addcontentsline{toc}{subsubsection}{#1}%
 }
 
 \newcommand{\GjbParagraph}[2][]{%
-  \par\noindent\vspace{6pt}%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
   \setbox0=\hbox{1.1.1.1. }\hangindent=\wd0\hangafter=1
   #2\par
   \endgroup
-  \vspace{6pt}%
+  \par\addvspace{\GjbHeadingAfterSkip}%
   \addcontentsline{toc}{paragraph}{\if\relax\detokenize{#1}\relax#2\else#1\fi}%
 }
 
 \newcommand{\GjbSubparagraph}[2][]{%
-  \par\noindent\vspace{6pt}%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
   \setbox0=\hbox{1.1.1.1.1. }\hangindent=\wd0\hangafter=1
   #2\par
   \endgroup
-  \vspace{6pt}%
+  \par\addvspace{\GjbHeadingAfterSkip}%
   \addcontentsline{toc}{subparagraph}{\if\relax\detokenize{#1}\relax#2\else#1\fi}%
 }
 
 \newcommand{\GjbSubsubparagraph}[1]{%
-  \par\noindent\vspace{6pt}%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
   \setbox0=\hbox{1.1.1.1.1.1. }\hangindent=\wd0\hangafter=1
   #1\par
   \endgroup
-  \vspace{6pt}%
+  \par\addvspace{\GjbHeadingAfterSkip}%
   % 不添加到目录中，避免目录层级过深
 }
 
@@ -267,9 +276,9 @@
 \newcommand{\StandardTable}[3]{%
   \begin{table}[H]
   \centering
-  \vspace{6pt}
+  \vspace{\GjbCaptionBeforeSkip}
   {\wuhaohei #1}
-  \vspace{6pt}
+  \vspace{\GjbCaptionAfterSkip}
   {\settablespacing
   \begin{tblr}[theme=gjb]{colspec={#2},hlines={0.2pt,solid,black},vlines={0.2pt,solid,black},leftsep=3pt,rightsep=3pt,rows={valign=t}}
   #3
@@ -303,9 +312,9 @@
 % 表格题注（居中，五号黑体，前后各6pt间距）
 % 用法: \DataTableCaption{表编号}{标题}
 \newcommand{\DataTableCaption}[2]{%
-  \vspace{6pt}%
+  \vspace{\GjbCaptionBeforeSkip}%
   \centerline{\wuhaohei 表 #1 #2}%
-  \vspace{6pt}%
+  \vspace{\GjbCaptionAfterSkip}%
 }
 
 % 表头单元格（小五号黑体，居中）
@@ -370,7 +379,7 @@
     \TableKeyCell{追踪关系} & \SetCell[c=3]{wd=13cm,valign=t}{\l__gjb_planitem_trace_tl} && \\
     \end{longtblr}
     }
-    \vspace{-6pt}
+    \vspace{0pt}
   }
 \NewDocumentCommand{\GjbPlanItemTable}{ m }
   {
@@ -426,7 +435,7 @@
 \DefTblrTemplate{caption-sep}{gjb}{\quad}
 \DefTblrTemplate{caption-text}{gjb}{\wuhaohei \InsertTblrText{caption}}
 \DefTblrTemplate{caption}{gjb}{%
-  \vspace{6pt}%
+  \vspace{3pt}%
   \centerline{%
     {\color{black}%
       \UseTblrTemplate{caption-tag}{gjb}%

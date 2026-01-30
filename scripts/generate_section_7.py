@@ -216,12 +216,6 @@ def generate_table_rows(
                 c3, c4, c5, c6 = req, srs, test_item, sec
             line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} {row_cmd}"
 
-            is_last_row_of_metric = global_row == metric_total_rows - 1
-            if is_last_row_of_metric:
-                line += r" \hline"
-            elif is_real:
-                line += r" \cline{3-6}"
-
             rows_tex.append(line)
 
         i = j
@@ -242,12 +236,11 @@ def generate_forward_table(items, trace_pass: str, probe_piece_chars: int, segme
   colspec={{|Q[c,t,0.8cm]|Q[l,t,3.0cm]|Q[l,t,2.4cm]|Q[c,t,1.8cm]|Q[l,t,5.0cm]|Q[c,t,1.4cm]|}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
+  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
-\\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} xxxxx & \\SetCell[c=2]{{c}} 需求规格说明 & & \\SetCell[c=2]{{c}} 测试大纲 & \\\\
-\\hline
  & & 需求名称/标识 & 需求规格说明章节号 & 测试项名称/标识 & 本文档的章节号 \\\\
-\\hline
 {body}
 \\end{{longtblr}}
 }}
@@ -267,12 +260,11 @@ def generate_reverse_table(items, trace_pass: str, probe_piece_chars: int, segme
   colspec={{|Q[c,t,0.8cm]|Q[l,t,3.0cm]|Q[l,t,5.2cm]|Q[c,t,1.4cm]|Q[l,t,2.0cm]|Q[c,t,1.6cm]|}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
+  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
-\\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} xxxxx & \\SetCell[c=2]{{c}} 测试大纲 & & \\SetCell[c=2]{{c}} 需求规格说明 & \\\\
-\\hline
  & & 测试项名称/标识 & 本文档的章节号 & 需求名称/标识 & 需求规格说明章节号 \\\\
-\\hline
 {body}
 \\end{{longtblr}}
 }}
