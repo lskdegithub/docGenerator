@@ -174,10 +174,18 @@ def format_title_name_ident(name: str, ident: str, section_number: str, page_wid
     if name_width + ident_width > first_line_available:
         # 需要换行：使用 parbox 实现换行和缩进
         parbox_width = page_width_cm - section_width
-        return f"\\begin{{minipage}}[t]{{{parbox_width:.1f}cm}}{{\\setlength{{\\baselineskip}}{{18pt}}{name_escaped}\\\\\\quad （{ident_escaped}）\\vskip-{{\\baselineskip}}\\vskip{{\\baselineskip}}\\end{{minipage}}}}"
+        return "\\begin{minipage}[t]{" + f"{parbox_width:.1f}" + "cm}\\setlength{\\baselineskip}{18pt}" + name_escaped + "\\\\quad （" + ident_escaped + "）\\end{minipage}"
     else:
         # 不需要换行，保持在一行
         return f"{name_escaped}（{ident_escaped}）"
+
+
+def format_toc_name_ident(name: str, ident: str) -> str:
+    name = utils.escape_latex(str(name or "").strip())
+    ident = utils.escape_latex(str(ident or "").strip())
+    if ident:
+        return f"{name}（{ident}）"
+    return name
 
 
 def wrap_identifier_by_width(identifier, col_width_cm=5.5):
@@ -307,8 +315,8 @@ def generate_section_4_2(data_dir):
         metric_content = metric_data.get('content', '')
         metric_index = metric_data.get('index', metric_dir.name.split('-')[0])
 
-        # 生成三级子标题 (4.2.x) - 只显示标题，不包含content内容
-        latex_output.append(f"\\subsubsection*{{4.2.{metric_index} {metric_title}}}")
+        metric_title = utils.escape_latex(metric_title)
+        latex_output.append(f"\\GjbSubsubsection{{4.2.{metric_index} {metric_title}}}")
         # 三级标题后不添加内容，直接处理下一级
 
         # 获取该metric下的所有module目录并排序
@@ -332,7 +340,11 @@ def generate_section_4_2(data_dir):
             # 生成四级子标题 (4.2.x.x) - 格式：MODULE_NAME (MODULE_ID)
             module_section = f"4.2.{metric_index}.{module_idx}"
             module_title = format_title_name_ident(module_name, module_id, module_section)
-            latex_output.append(f"\\paragraph*{{{module_section} {module_title}}}")
+            module_toc_title = format_toc_name_ident(module_name, module_id)
+            if r"\begin{minipage}" in module_title:
+                latex_output.append(f"\\GjbParagraph[{module_section} {module_toc_title}]{{{module_section} {module_title}}}")
+            else:
+                latex_output.append(f"\\GjbParagraph{{{module_section} {module_title}}}")
 
             # 获取该module下的所有item目录并排序
             item_dirs = sorted([d for d in module_dir.iterdir() if d.is_dir() and 'item' in d.name])
@@ -356,7 +368,11 @@ def generate_section_4_2(data_dir):
                     plan_data['标识'],
                     item_section
                 )
-                latex_output.append(f"\\subparagraph*{{{item_section} {item_title}}}")
+                item_toc_title = format_toc_name_ident(plan_data['测试项名称'], plan_data['标识'])
+                if r"\begin{minipage}" in item_title:
+                    latex_output.append(f"\\GjbSubparagraph[{item_section} {item_toc_title}]{{{item_section} {item_title}}}")
+                else:
+                    latex_output.append(f"\\GjbSubparagraph{{{item_section} {item_title}}}")
 
                 # 生成表格
                 table_title = plan_data['测试项名称']
