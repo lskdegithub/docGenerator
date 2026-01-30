@@ -109,10 +109,10 @@ new_content = re.sub(r'\\Needspace\{[^}]+\}\s*\n', '', new_content)
 new_content = new_content  # 无需修改
 
 # 步骤4: 在每个表格结束后添加\clearpage
-# 匹配完整的表格结构: {\settablespacing ... \begin{longtblr} ... \end{longtblr} } \vspace{-6pt}
-# 在 \vspace{-6pt} 后面添加 \clearpage
+# 匹配完整的表格结构，以\end{longtblr}}作为表格结束标记
+# 在每个表格块后面添加 \clearpage
 new_content = re.sub(
-    r'(\{\\settablespacing\s+\\begin\{longtblr\}.*?\\end\{longtblr\}\s*\}\s*\\vspace\{-6pt\})',
+    r'(\{\\settablespacing\s+\\begin\{longtblr\}.*?\\end\{longtblr\}\s*\})',
     r'\1\n\\clearpage',
     new_content,
     flags=re.DOTALL
