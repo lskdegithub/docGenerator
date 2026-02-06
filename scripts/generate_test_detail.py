@@ -176,6 +176,32 @@ def escape_latex_table_cell_soft(text: str) -> str:
     return escape_latex_no_wordbreak(text)
 
 
+def escape_latex_table_cell_steps(text: str) -> str:
+    text = str(text or "")
+    token = "GJBALLOWBREAKTOKEN"
+
+    def break_alnum(match: re.Match) -> str:
+        s = match.group(0)
+        chunk = 15
+        return token.join([s[i:i + chunk] for i in range(0, len(s), chunk)])
+
+    text = re.sub(r"[A-Za-z0-9]{30,}", break_alnum, text)
+    text = text.replace("\\", "\\textbackslash ")
+    text = text.replace("&", "\\&")
+    text = text.replace("%", "\\%")
+    text = text.replace("$", "\\$")
+    text = text.replace("#", "\\#")
+    text = text.replace("_", "\\_\\allowbreak ")
+    text = text.replace("{", "\\{")
+    text = text.replace("}", "\\}")
+    text = text.replace("~", "\\textasciitilde ")
+    text = text.replace("^", "\\textasciicircum ")
+    text = re.sub(r"([\u4E00-\u9FFF])([A-Za-z0-9])", r"\1\\allowbreak \2", text)
+    text = re.sub(r"([A-Za-z0-9])([\u4E00-\u9FFF])", r"\1\\allowbreak \2", text)
+    text = text.replace(token, r"\allowbreak ")
+    return " ".join(text.split())
+
+
 def wrap_alnum_runs_by_chars(text: str, chars_per_line: int) -> str:
     if not text:
         return ""
@@ -720,10 +746,10 @@ def build_steps_table(steps):
         seq = step.get("序号", idx)
         action_raw = str(step.get("输入及操作", "") or "")
         expect_raw = str(step.get("期望结果", "") or "")
-        action = escape_latex_table_cell_soft(action_raw)
-        expect = escape_latex_table_cell_soft(expect_raw)
+        action = escape_latex_table_cell_steps(action_raw)
+        expect = escape_latex_table_cell_steps(expect_raw)
         rows.append(
-            f"{seq} & \\SetCell[c=3]{{wd={wd_action},valign=t}}{{{action}}} &  &  & \\SetCell[c=2]{{wd={wd_expect},valign=t}}{{{expect}}} &  & \\SetCell[c=2]{{wd={wd_result},valign=t}}{{}} &  \\\\"
+            f"{seq} & \\SetCell[c=3]{{wd={wd_action},valign=t}}{{{action}}} &  &  & \\SetCell[c=2]{{wd={wd_expect},valign=t}}{{{expect}}} &  & \\SetCell[c=2]{{wd={wd_result},valign=t}}{{\\GjbTestResultMarks}} &  \\\\"
         )
     return "\n".join(rows)
 

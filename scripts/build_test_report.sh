@@ -79,11 +79,9 @@ PY
 
 echo ""
 echo "步骤4: 复制test_detail的第4章内容到test_report（移除4.1与4.1.1之间的表格和统计）..."
-# 确保test_detail已构建
-if [ ! -f "output/test_detail/chapters/chapter4_generated.tex" ]; then
-  echo "test_detail未构建，先构建test_detail..."
-  ./scripts/build_test_detail.sh > /dev/null 2>&1
-fi
+# 始终重新生成 test_detail 的第4章（避免复用旧的 chapter4_generated.tex）
+mkdir -p output/test_detail/chapters
+python3 "$SCRIPT_DIR/generate_test_detail.py" --out "output/test_detail" --data "$DATA_DIR" --trace-pass probe --trace-probe-piece-chars 60 --trace-enable-mark > /dev/null 2>&1 || true
 # 复制并处理：移除4.1标题后到4.1.1子标题之间的内容（测试项列表表格和统计文字）
 # 简单逻辑：每个表格结束后添加\clearpage
 python3 - <<'PY'

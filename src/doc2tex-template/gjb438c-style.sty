@@ -52,21 +52,34 @@
 \newcommand{\GjbTableRuleColor}{black}
 \newcommand{\GjbTableColSep}{3pt}
 \newcommand{\GjbCellBreak}{\newline}
+\newif\ifGjbShowTestResultMarks
+\GjbShowTestResultMarksfalse
+\NewDocumentCommand{\GjbEnableTestResultMarks}{}{%
+  \GjbShowTestResultMarkstrue
+}
+\NewDocumentCommand{\GjbDisableTestResultMarks}{}{%
+  \GjbShowTestResultMarksfalse
+}
+\NewDocumentCommand{\GjbTestResultMarks}{ O{1.0cm} }{%
+  \ifGjbShowTestResultMarks
+    {\noindent □通过\par \noindent □不通过\par \noindent 其他\underline{\hspace{#1}}\par}%
+  \fi
+}
 \newcommand{\GjbDetailCaseTableWidth}{15.2cm}
 \newcommand{\GjbDetailCaseLeftSep}{0pt}
 \newcommand{\GjbDetailCaseRightSep}{0pt}
 \newcommand{\GjbDetailCaseColSep}{1pt}
 % 测试用例表格列宽定义（8列）
 % 列1:序号 | 列2:用例ID | 列3:用例名称 | 列4:测试类型 | 列5:优先级 | 列6:标签 | 列7-8:标识内容
-% 期望结果跨列5+6(5.0cm) | 测试结果跨列7+8(3.88cm) | 总宽15.2cm
+% 期望结果跨列5+6(7.08cm) | 测试结果跨列7+8(1.80cm) | 总宽15.2cm
 \newcommand{\GjbDetailCaseColA}{0.76cm}  % 列1-序号
 \newcommand{\GjbDetailCaseColB}{1.15cm}  % 列2-用例ID
 \newcommand{\GjbDetailCaseColC}{1.4cm}   % 列3-用例名称
 \newcommand{\GjbDetailCaseColD}{2.31cm}  % 列4-测试类型
-\newcommand{\GjbDetailCaseColE}{3.5cm}   % 列5-优先级(用于期望结果跨列)
+\newcommand{\GjbDetailCaseColE}{5.58cm}  % 列5-优先级(用于期望结果跨列)
 \newcommand{\GjbDetailCaseColF}{1.5cm}   % 列6-标签(容纳4个汉字)
-\newcommand{\GjbDetailCaseColG}{2.5cm}   % 列7-标识内容
-\newcommand{\GjbDetailCaseColH}{1.38cm}  % 列8-标识内容
+\newcommand{\GjbDetailCaseColG}{1.20cm}  % 列7-标识内容
+\newcommand{\GjbDetailCaseColH}{0.60cm}  % 列8-标识内容
 \newcommand{\GjbDetailCaseColSpec}{|Q[c,\GjbDetailCaseColA]|Q[\GjbDetailCaseColB]|Q[\GjbDetailCaseColC]|Q[\GjbDetailCaseColD]|Q[\GjbDetailCaseColE]|Q[\GjbDetailCaseColF]|Q[\GjbDetailCaseColG]|Q[\GjbDetailCaseColH]|}
 % 测试用例追踪表列宽定义（8列）
 % 列1:序号 | 列2:用例名称 | 列3:标识 | 列4:编号 | 列5:追踪关系 | 列6:设计人员 | 列7:操作人员 | 列8:测试时间
