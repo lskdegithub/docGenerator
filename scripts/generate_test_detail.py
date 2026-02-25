@@ -64,8 +64,8 @@ def load_detail_case_layout(repo: Path) -> dict:
     return {
         "col_widths_cm": col_widths_cm,
         "colsep_cm": colsep_cm,
-        "case_name_value_cm": span_cm(3, 3),
-        "case_ident_value_cm": span_cm(7, 2),
+        "case_name_value_cm": span_cm(3, 2),
+        "case_ident_value_cm": span_cm(6, 3),
         "span6_value_cm": span_cm(3, 6),
         "steps_action_cm": span_cm(2, 3),
         "steps_expect_cm": span_cm(5, 2),
@@ -757,8 +757,8 @@ def build_steps_table(steps):
 def build_case_table(case_data, test_item_label, label_suffix):
     global _DETAIL_CASE_LAYOUT
     layout = _DETAIL_CASE_LAYOUT or {
-        "case_name_value_cm": 6.0,
-        "case_ident_value_cm": 4.35,  # 列7+8总宽(2.4+1.95)
+        "case_name_value_cm": 4.535,
+        "case_ident_value_cm": 6.07,  # 列6-8总宽(2.7+1.65+1.65+2*colsep)
         "span6_value_cm": 9.5,         # 列1-6总宽调整
         "designer_cm": 5.5,
         "operator_cm": 3.5,            # 增加到4个汉字宽度
@@ -767,8 +767,8 @@ def build_case_table(case_data, test_item_label, label_suffix):
         "steps_expect_cm": 5.0,        # 期望结果列宽
         "steps_result_cm": 4.56,       # 测试结果列宽
     }
-    wd_case_name = f"{float(layout.get('case_name_value_cm', 6.56)):.3f}cm"
-    wd_case_ident = f"{float(layout.get('case_ident_value_cm', 2.76)):.3f}cm"
+    wd_case_name = f"{float(layout.get('case_name_value_cm', 4.535)):.3f}cm"
+    wd_case_ident = f"{float(layout.get('case_ident_value_cm', 6.07)):.3f}cm"
     wd_span6 = f"{float(layout.get('span6_value_cm', 11.6)):.3f}cm"
     wd_designer = f"{float(layout.get('designer_cm', 6.56)):.3f}cm"
     wd_operator = f"{float(layout.get('operator_cm', 2.76)):.3f}cm"
@@ -803,7 +803,7 @@ def build_case_table(case_data, test_item_label, label_suffix):
   hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
   vline{{1,2,3,4,5,6,7,8,Z}}={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例名称}}}} & & \\SetCell[c=3]{{wd={wd_case_name},valign=t}}{{{case_name}}} &  &  & \\TableKeyCell{{标识}} & \\SetCell[c=2]{{wd={wd_case_ident},valign=t}}{{\\TableIdentifier{{{case_ident}}}}} & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例名称}}}} & & \\SetCell[c=2]{{wd={wd_case_name},valign=t}}{{{case_name}}} &  & \\SetCell{{halign=c}}{{\\TableKeyCell{{标识}}}} & \\SetCell[c=3]{{wd={wd_case_ident},valign=t}}{{\\TableIdentifier{{{case_ident}}}}} &  & \\\\
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{追踪关系}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{test_item_label}}} &  &  &  &  & \\\\
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例综述}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{summary}}} &  &  &  &  & \\\\
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{用例初始化}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{init}}} &  &  &  &  & \\\\

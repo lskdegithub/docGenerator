@@ -1,11 +1,11 @@
 {\settablespacing
 \begin{longtblr}[theme=gjbNoHead,caption={\GjbSampleTestCaseTableCaption},label={\GjbSampleTestCaseTableLabel}]{
-  colspec={|p{0.8cm}|p{1.5cm}|p{2.25cm}|p{2.25cm}|p{2.4cm}|p{2.4cm}|p{1.45cm}|p{1.45cm}|},
+  colspec={|p{0.8cm}|p{1.5cm}|p{2.25cm}|p{2.25cm}|p{0.8cm}|p{2.7cm}|p{1.65cm}|p{1.65cm}|},
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
-\SetCell[c=2]{halign=c}{\TableKeyCell{测试用例名称}} & & \SetCell[c=3]{valign=t}{（测试用例名称）} &  &  & \TableKeyCell{标识} & \SetCell[c=2]{valign=t}{\TableIdentifier{（标识）}} & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试用例名称}} & & \SetCell[c=2]{valign=t}{（测试用例名称）} &  & \SetCell{halign=c}{\TableKeyCell{标识}} & \SetCell[c=3]{valign=t}{\TableIdentifier{（标识）}} &  & \\
 \SetCell[c=2]{halign=c}{\TableKeyCell{追踪关系}} & & \SetCell[c=6]{valign=t}{（测试项名称/标识）} &  &  &  &  & \\
 \SetCell[c=2]{halign=c}{\TableKeyCell{测试用例综述}} & & \SetCell[c=6]{valign=t}{（综述）} &  &  &  &  & \\
 \SetCell[c=2]{halign=c}{\TableKeyCell{用例初始化}} & & \SetCell[c=6]{valign=t}{（初始化条件）} &  &  &  &  & \\
