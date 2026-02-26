@@ -33,6 +33,14 @@ def split_by_max_chars(text: str, max_chars: int) -> List[str]:
     return parts
 
 
+def split_to_fixed_row_parts(text: str, max_chars: int, row_count: int) -> List[str]:
+    row_count = max(1, int(row_count or 0))
+    parts = split_by_max_chars(text, max_chars=max_chars)
+    if len(parts) >= row_count:
+        return parts[: row_count - 1] + ["".join(parts[row_count - 1 :])]
+    return parts + [""] * (row_count - len(parts))
+
+
 def escape_with_breaks(text: str, max_chars: int) -> str:
     parts = split_by_max_chars(text, max_chars=max_chars)
     escaped = [utils.escape_latex(p) for p in parts if str(p).strip()]
@@ -134,8 +142,8 @@ def generate_table_rows(
         group = items[i:j]
         metric_content = group[0].get("metric_content") or group[0].get("metric_cell") or ""
 
-        metric_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
-        metric_total_rows = max(len(group), len(metric_parts))
+        metric_total_rows = len(group)
+        metric_parts = split_to_fixed_row_parts(metric_content, max_chars=int(probe_piece_chars), row_count=metric_total_rows)
 
         segs = (segments_by_seq or {}).get(str(seq), [])
         if trace_pass == "final":
@@ -156,6 +164,10 @@ def generate_table_rows(
             mark = ""
             if enable_trace_mark:
                 mark = f"\\GjbTraceMark{{{tbl_tag}}}{{{seq}}}{{{global_row + 1}}}"
+            if global_row == 0:
+                c1 = f"{mark}\\SetCell[r={metric_total_rows}]{{c,t}} {{{seq}}}"
+            else:
+                c1 = mark
 
             if trace_pass == "final":
                 while global_row >= seg_row_start + seg_row_len and seg_idx + 1 < len(segs):
@@ -165,11 +177,6 @@ def generate_table_rows(
 
                 is_segment_start = global_row == seg_row_start
                 if is_segment_start:
-                    if seg_idx == 0:
-                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{{seq}}}"
-                    else:
-                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{}}"
-
                     seg_start = seg_row_start
                     seg_end = seg_row_start + seg_row_len
                     seg_pieces = []
@@ -179,11 +186,9 @@ def generate_table_rows(
                     seg_text = r"\GjbCellBreak ".join(seg_pieces).strip()
                     c2 = f"\\SetCell[r={seg_row_len}]{{l,t}} {{{seg_text}}}"
                 else:
-                    c1 = mark
                     c2 = ""
             else:
                 piece = metric_parts[global_row] if global_row < len(metric_parts) else ""
-                c1 = f"{mark}{seq}" if global_row == 0 else mark
                 c2 = utils.escape_latex(piece)
 
             if is_real:
@@ -217,6 +222,10 @@ def generate_table_rows(
             line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} {row_cmd}"
 
             rows_tex.append(line)
+            if global_row == metric_total_rows - 1:
+                rows_tex.append(r"\hline")
+            else:
+                rows_tex.append(r"\cline{2-6}")
 
         i = j
         seq += 1
@@ -233,14 +242,16 @@ def generate_forward_table(items, trace_pass: str, probe_piece_chars: int, segme
   caption={{xxxxxxxxxx与需求规格说明以及测试项的追踪关系}},
   label={{tbl:plan-trace}},
 ]{{
-  colspec={{|Q[c,t,0.8cm]|Q[l,t,3.0cm]|Q[l,t,2.4cm]|Q[c,t,1.8cm]|Q[l,t,5.0cm]|Q[c,t,1.4cm]|}},
+  colspec={{|Q[c,t,0.8cm]|Q[l,t,3.0cm]|Q[c,t,2.4cm]|Q[c,t,1.8cm]|Q[c,t,5.0cm]|Q[c,t,1.4cm]|}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
-  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
   vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
+\\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} xxxxx & \\SetCell[c=2]{{c}} 需求规格说明 & & \\SetCell[c=2]{{c}} 测试大纲 & \\\\
+\\hline
  & & 需求名称/标识 & 需求规格说明章节号 & 测试项名称/标识 & 本文档的章节号 \\\\
+\\hline
 {body}
 \\end{{longtblr}}
 }}
@@ -257,14 +268,16 @@ def generate_reverse_table(items, trace_pass: str, probe_piece_chars: int, segme
   caption={{xxxxxxxxxx与需求规格说明以及测试项的逆向追踪关系}},
   label={{tbl:plan-trace-rev}},
 ]{{
-  colspec={{|Q[c,t,0.8cm]|Q[l,t,3.0cm]|Q[l,t,5.2cm]|Q[c,t,1.4cm]|Q[l,t,2.0cm]|Q[c,t,1.6cm]|}},
+  colspec={{|Q[c,t,0.8cm]|Q[l,t,3.0cm]|Q[c,t,5.2cm]|Q[c,t,1.4cm]|Q[c,t,2.0cm]|Q[c,t,1.6cm]|}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
-  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
   vlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
 }}
+\\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} xxxxx & \\SetCell[c=2]{{c}} 测试大纲 & & \\SetCell[c=2]{{c}} 需求规格说明 & \\\\
+\\hline
  & & 测试项名称/标识 & 本文档的章节号 & 需求名称/标识 & 需求规格说明章节号 \\\\
+\\hline
 {body}
 \\end{{longtblr}}
 }}

@@ -19,7 +19,7 @@
   vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
   column{1}={halign=c},
 }
-\SetCell[c=2]{halign=c}{\TableKeyCell{测试用例名称}} & & \SetCell[c=3]{valign=t}{（测试用例名称）} &  &  & \TableKeyCell{标识} & \SetCell[c=2]{valign=t}{\TableIdentifier{（标识）}} & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试用例名称}} & & \SetCell[c=3]{valign=t}{（测试用例名称）} &  &  & \SetCell{halign=c}{\TableKeyCell{标识}} & \SetCell[c=2]{halign=c,valign=t}{{\xiaowu\ttfamily （标识）}} & \\
 \SetCell[c=2]{halign=c}{\TableKeyCell{追踪关系}} & & \SetCell[c=6]{valign=t}{（测试项名称/标识）} &  &  &  &  & \\
 \SetCell[c=2]{halign=c}{\TableKeyCell{测试用例综述}} & & \SetCell[c=6]{valign=t}{（综述）} &  &  &  &  & \\
 \SetCell[c=2]{halign=c}{\TableKeyCell{用例初始化}} & & \SetCell[c=6]{valign=t}{（初始化条件）} &  &  &  &  & \\
@@ -32,8 +32,8 @@
 \SetCell[c=2]{halign=c}{\TableKeyCell{测试用例终止条件}} & & \SetCell[c=6]{valign=t}{（终止条件）} &  &  &  &  & \\
 \SetCell[c=2]{halign=c}{\TableKeyCell{测试结果评估标准}} & & \SetCell[c=6]{valign=t}{（判定准则）} &  &  &  &  & \\
 \SetCell[c=2]{halign=c}{\TableKeyCell{测试用例执行结果}} & & \SetCell[c=6]{valign=t}{（执行结果）} &  &  &  &  & \\
-\SetCell[c=2]{halign=c}{\TableKeyCell{设计人员}} & & \SetCell[c=3]{valign=t}{（设计人员）} &  &  & \TableKeyCell{操作人员} & \SetCell[c=2]{valign=t}{（操作人员）} & \\
-\SetCell[c=2]{halign=c}{\TableKeyCell{测试人员}} & & \SetCell[c=3]{valign=t}{（测试人员）} &  &  & \TableKeyCell{测试时间} & \SetCell[c=2]{valign=t}{（测试时间）} & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{设计人员}} & & \SetCell[c=3]{valign=t}{（设计人员）} &  &  & \SetCell{halign=c,valign=m}{\TableKeyCell{操作人员}} & \SetCell[c=2]{halign=c,valign=m}{（操作人员）} & \\
+\SetCell[c=2]{halign=c}{\TableKeyCell{测试人员}} & & \SetCell[c=3]{valign=t}{（测试人员）} &  &  & \SetCell{halign=c,valign=m}{\TableKeyCell{测试时间}} & \SetCell[c=2]{halign=c,valign=m}{（测试时间）} & \\
 \end{longtblr}
 }
 \vspace{0pt}

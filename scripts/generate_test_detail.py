@@ -822,8 +822,8 @@ def build_case_table(case_data, test_item_label, label_suffix):
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例终止条件}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{term}}} &  &  &  &  & \\\\
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试结果评估标准}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{criteria}}} &  &  &  &  & \\\\
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例执行结果}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{result}}} &  &  &  &  & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{设计人员}}}} & & \\SetCell[c=3]{{wd={wd_designer},valign=t}}{{{designer}}} &  &  & \\TableKeyCell{{操作人员}} & \\SetCell[c=2]{{wd={wd_operator},valign=t}}{{{operator}}} & \\\\
-\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试人员}}}} & & \\SetCell[c=3]{{wd={wd_tester},valign=t}}{{{tester}}} &  &  & \\TableKeyCell{{测试时间}} & \\SetCell[c=2]{{wd={wd_test_time},valign=t}}{{{test_time}}} & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{设计人员}}}} & & \\SetCell[c=3]{{wd={wd_designer},valign=t}}{{{designer}}} &  &  & \\SetCell{{halign=c,valign=m}}{{\\TableKeyCell{{操作人员}}}} & \\SetCell[c=2]{{wd={wd_operator},halign=c,valign=m}}{{{operator}}} & \\\\
+\\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试人员}}}} & & \\SetCell[c=3]{{wd={wd_tester},valign=t}}{{{tester}}} &  &  & \\SetCell{{halign=c,valign=m}}{{\\TableKeyCell{{测试时间}}}} & \\SetCell[c=2]{{wd={wd_test_time},halign=c,valign=m}}{{{test_time}}} & \\\\
 \\end{{longtblr}}
 }}
 \\vspace{{0pt}}"""
@@ -1015,8 +1015,8 @@ def generate_trace_table_forward_full(
         while j < len(rows) and (rows[j].get("metric_content") or "") == metric_content:
             j += 1
         group = rows[i:j]
-        contract_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
-        contract_total_rows = max(len(group), len(contract_parts))
+        contract_total_rows = len(group)
+        contract_parts = split_text_by_capacities(metric_content, [int(probe_piece_chars)] * contract_total_rows)
 
         segs = (segments_by_seq or {}).get(str(seq), [])
         if trace_pass == "final":
@@ -1029,7 +1029,6 @@ def generate_trace_table_forward_full(
         seg_idx = 0
         seg_row_start = 0
         seg_row_len = segs[0] if segs else contract_total_rows
-        k = 0
         for global_row in range(contract_total_rows):
             is_real = global_row < len(group)
             row = group[global_row] if is_real else {}
@@ -1055,12 +1054,13 @@ def generate_trace_table_forward_full(
             if enable_trace_mark:
                 mark = f"\\GjbTraceMark{{F}}{{{seq}}}{{{global_row + 1}}}"
 
+            if global_row == 0:
+                c1 = f"{mark}\\SetCell[r={contract_total_rows}]{{c,t}} {{{seq}}}"
+            else:
+                c1 = mark
+
             if trace_pass == "final":
                 if is_segment_start:
-                    if seg_idx == 0:
-                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{{seq}}}"
-                    else:
-                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{}}"
                     seg_start = seg_row_start
                     seg_end = seg_row_start + seg_row_len
                     seg_pieces = []
@@ -1070,11 +1070,9 @@ def generate_trace_table_forward_full(
                     seg_text = r"\GjbCellBreak ".join(seg_pieces).strip()
                     c2 = f"\\SetCell[r={seg_row_len}]{{l,t}} {{{seg_text}}}"
                 else:
-                    c1 = mark
                     c2 = ""
             else:
                 contract_piece = contract_parts[global_row] if global_row < len(contract_parts) else ""
-                c1 = f"{mark}{seq}" if global_row == 0 else mark
                 c2 = escape_latex_table_cell_soft(contract_piece)
 
             if is_real:
@@ -1098,9 +1096,9 @@ def generate_trace_table_forward_full(
                     srs_cell = escape_latex(req_item_key[1])
                     item_cell = escape_latex_table_cell_soft(req_item_key[2])
                     item_sec_cell = escape_latex(req_item_key[3])
-                    c3 = f"\\SetCell[r={span}]{{l,t}} {{{req_cell}}}"
+                    c3 = f"\\SetCell[r={span}]{{c,t}} {{{req_cell}}}"
                     c4 = f"\\SetCell[r={span}]{{c,t}} {{{srs_cell}}}"
-                    c5 = f"\\SetCell[r={span}]{{l,t}} {{{item_cell}}}"
+                    c5 = f"\\SetCell[r={span}]{{c,t}} {{{item_cell}}}"
                     c6 = f"\\SetCell[r={span}]{{c,t}} {{{item_sec_cell}}}"
                 else:
                     c3 = ""
@@ -1120,6 +1118,10 @@ def generate_trace_table_forward_full(
             line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
 
             body_lines.append(line)
+            if global_row == contract_total_rows - 1:
+                body_lines.append(r"\hline")
+            else:
+                body_lines.append(r"\cline{2-8}")
         i = j
         seq += 1
 
@@ -1133,14 +1135,16 @@ def generate_trace_table_forward_full(
   leftsep=\\GjbDetailTraceLeftSep,
   rightsep=\\GjbDetailTraceRightSep,
   colsep=\\GjbDetailTraceColSep,
-  colspec={{|Q[c,t,\\GjbDetailTraceColA]|Q[l,t,\\GjbDetailTraceColB]|Q[l,t,\\GjbDetailTraceColC]|Q[c,t,\\GjbDetailTraceColD]|Q[l,t,\\GjbDetailTraceColE]|Q[c,t,\\GjbDetailTraceColF]|Q[l,t,\\GjbDetailTraceColG]|Q[c,t,\\GjbDetailTraceColH]|}},
-  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
+  colspec={{|Q[c,t,\\GjbDetailTraceColA]|Q[l,t,\\GjbDetailTraceColB]|Q[c,t,\\GjbDetailTraceColC]|Q[c,t,\\GjbDetailTraceColD]|Q[c,t,\\GjbDetailTraceColE]|Q[c,t,\\GjbDetailTraceColF]|Q[c,t,\\GjbDetailTraceColG]|Q[c,t,\\GjbDetailTraceColH]|}},
   vline{{1,2,3,4,5,6,7,8,Z}}={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
 }}
+\\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} {head_contract} & \\SetCell[c=2]{{c}} 需求规格说明书 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 测试用例 & \\\\
+\\hline
  & & 需求名称/\\allowbreak 标识 & 需规章节号 & 测试项名称/\\allowbreak 标识 & 本文档章节号 & 测试用例名称/\\allowbreak 标识 & 测试章节号 \\\\
+\\hline
 {body_text}
 \\end{{longtblr}}
 }}
@@ -1166,8 +1170,8 @@ def generate_trace_table_reverse_full(
         while j < len(rows) and (rows[j].get("metric_content") or "") == metric_content:
             j += 1
         group = rows[i:j]
-        contract_parts = split_by_max_chars(metric_content, max_chars=int(probe_piece_chars))
-        contract_total_rows = max(len(group), len(contract_parts))
+        contract_total_rows = len(group)
+        contract_parts = split_text_by_capacities(metric_content, [int(probe_piece_chars)] * contract_total_rows)
 
         segs = (segments_by_seq or {}).get(str(seq), [])
         if trace_pass == "final":
@@ -1208,12 +1212,13 @@ def generate_trace_table_reverse_full(
             if enable_trace_mark:
                 mark = f"\\GjbTraceMark{{R}}{{{seq}}}{{{global_row + 1}}}"
 
+            if global_row == 0:
+                c1 = f"{mark}\\SetCell[r={contract_total_rows}]{{c,t}} {{{seq}}}"
+            else:
+                c1 = mark
+
             if trace_pass == "final":
                 if is_segment_start:
-                    if seg_idx == 0:
-                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{{seq}}}"
-                    else:
-                        c1 = f"{mark}\\SetCell[r={seg_row_len}]{{c,t}} {{}}"
                     seg_start = seg_row_start
                     seg_end = seg_row_start + seg_row_len
                     seg_pieces = []
@@ -1223,11 +1228,9 @@ def generate_trace_table_reverse_full(
                     seg_text = r"\GjbCellBreak ".join(seg_pieces).strip()
                     c2 = f"\\SetCell[r={seg_row_len}]{{l,t}} {{{seg_text}}}"
                 else:
-                    c1 = mark
                     c2 = ""
             else:
                 contract_piece = contract_parts[global_row] if global_row < len(contract_parts) else ""
-                c1 = f"{mark}{seq}" if global_row == 0 else mark
                 c2 = escape_latex_table_cell_soft(contract_piece)
 
             c3 = escape_latex_table_cell_soft(row.get("case_name") or "") if is_real else ""
@@ -1272,6 +1275,10 @@ def generate_trace_table_reverse_full(
             line = f"{c1} & {c2} & {c3} & {c4} & {c5} & {c6} & {c7} & {c8} \\\\"
 
             body_lines.append(line)
+            if global_row == contract_total_rows - 1:
+                body_lines.append(r"\hline")
+            else:
+                body_lines.append(r"\cline{2-8}")
 
         i = j
         seq += 1
@@ -1286,13 +1293,15 @@ def generate_trace_table_reverse_full(
   rightsep=\\GjbDetailTraceRightSep,
   colsep=\\GjbDetailTraceColSep,
   colspec={{|Q[c,t,\\GjbDetailTraceColA]|Q[l,t,\\GjbDetailTraceColB]|Q[l,t,\\GjbDetailTraceColC]|Q[c,t,\\GjbDetailTraceColD]|Q[l,t,\\GjbDetailTraceColE]|Q[c,t,\\GjbDetailTraceColF]|Q[l,t,\\GjbDetailTraceColG]|Q[c,t,\\GjbDetailTraceColH]|}},
-  hlines={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
   vline{{1,2,3,4,5,6,7,8,Z}}={{wd=\\GjbTableRuleWd,fg=\\GjbTableRuleColor}},
   rowhead=2,
   row{{1,2}}={{font=\\xiaowuhei}},
 }}
+\\hline
 \\SetCell[r=2]{{c}} 序号 & \\SetCell[r=2]{{c}} {head_contract} & \\SetCell[c=2]{{c}} 测试用例 & & \\SetCell[c=2]{{c}} 测试项 & & \\SetCell[c=2]{{c}} 需求规格说明书 & \\\\
+\\hline
  & & 测试用例名称/\\allowbreak 标识 & 测试章节号 & 测试项名称/\\allowbreak 标识 & 本文档章节号 & 需求名称/\\allowbreak 标识 & 需规章节号 \\\\
+\\hline
 {body_text}
 \\end{{longtblr}}
 }}
