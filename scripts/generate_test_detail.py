@@ -61,6 +61,12 @@ def load_detail_case_layout(repo: Path) -> dict:
         i0 = start_1 - 1
         return sum(col_widths_cm[i0 : i0 + span]) + colsep_cm * max(0, span - 1)
 
+    steps_result_cm = (
+        parse_latex_dim_to_cm(macros["GjbDetailCaseStepsResultWidth"])
+        if "GjbDetailCaseStepsResultWidth" in macros
+        else span_cm(8, 1)
+    )
+
     return {
         "col_widths_cm": col_widths_cm,
         "colsep_cm": colsep_cm,
@@ -68,8 +74,8 @@ def load_detail_case_layout(repo: Path) -> dict:
         "case_ident_value_cm": span_cm(6, 3),
         "span6_value_cm": span_cm(3, 6),
         "steps_action_cm": span_cm(2, 3),
-        "steps_expect_cm": span_cm(5, 2),
-        "steps_result_cm": span_cm(7, 2),
+        "steps_expect_cm": span_cm(5, 3),
+        "steps_result_cm": steps_result_cm,
         "designer_cm": span_cm(3, 3),
         "operator_cm": span_cm(7, 2),
         "tester_cm": span_cm(3, 3),
@@ -508,7 +514,7 @@ def estimate_case_table_height_cm(case_data: dict, test_item_label: str, layout:
     wd_test_time = float(layout.get("test_time_cm", 3.5))
     wd_steps_action = float(layout.get("steps_action_cm", 5.7))
     wd_steps_expect = float(layout.get("steps_expect_cm", 5.0))
-    wd_steps_result = float(layout.get("steps_result_cm", 4.56))
+    wd_steps_result = float(layout.get("steps_result_cm", 1.65))
 
     total = 0.0
 
@@ -738,10 +744,10 @@ def build_steps_table(steps):
     if not steps:
         steps = [{"序号": 1, "输入及操作": "", "期望结果": ""}]
     global _DETAIL_CASE_LAYOUT
-    layout = _DETAIL_CASE_LAYOUT or {"steps_action_cm": 5.7, "steps_expect_cm": 5.0, "steps_result_cm": 4.56}
+    layout = _DETAIL_CASE_LAYOUT or {"steps_action_cm": 5.7, "steps_expect_cm": 5.0, "steps_result_cm": 1.65}
     wd_action = f"{float(layout.get('steps_action_cm', 5.7)):.3f}cm"
-    wd_expect = f"{float(layout.get('steps_expect_cm', 4.56)):.3f}cm"
-    wd_result = f"{float(layout.get('steps_result_cm', 2.76)):.3f}cm"
+    wd_expect = f"{float(layout.get('steps_expect_cm', 5.0)):.3f}cm"
+    wd_result = f"{float(layout.get('steps_result_cm', 1.65)):.3f}cm"
     for idx, step in enumerate(steps, start=1):
         seq = step.get("序号", idx)
         action_raw = str(step.get("输入及操作", "") or "")
@@ -749,7 +755,7 @@ def build_steps_table(steps):
         action = escape_latex_table_cell_steps(action_raw)
         expect = escape_latex_table_cell_steps(expect_raw)
         rows.append(
-            f"{seq} & \\SetCell[c=3]{{wd={wd_action},valign=t}}{{{action}}} &  &  & \\SetCell[c=2]{{wd={wd_expect},valign=t}}{{{expect}}} &  & \\SetCell[c=2]{{wd={wd_result},valign=t}}{{\\GjbTestResultMarks}} &  \\\\"
+            f"{seq} & \\SetCell[c=3]{{wd={wd_action},valign=t}}{{{action}}} &  &  & \\SetCell[c=3]{{wd={wd_expect},valign=t}}{{{expect}}} &  &  & \\SetCell{{wd={wd_result},valign=t}}{{\\GjbTestResultMarks}} \\\\"
         )
     return "\n".join(rows)
 
@@ -765,7 +771,7 @@ def build_case_table(case_data, test_item_label, label_suffix):
         "tester_cm": 5.5,
         "test_time_cm": 3.5,           # 增加到4个汉字宽度
         "steps_expect_cm": 5.0,        # 期望结果列宽
-        "steps_result_cm": 4.56,       # 测试结果列宽
+        "steps_result_cm": 1.65,       # 测试结果列宽（单列）
     }
     wd_case_name = f"{float(layout.get('case_name_value_cm', 4.535)):.3f}cm"
     wd_case_ident = f"{float(layout.get('case_ident_value_cm', 6.07)):.3f}cm"
@@ -774,6 +780,7 @@ def build_case_table(case_data, test_item_label, label_suffix):
     wd_operator = f"{float(layout.get('operator_cm', 2.76)):.3f}cm"
     wd_tester = f"{float(layout.get('tester_cm', 6.56)):.3f}cm"
     wd_test_time = f"{float(layout.get('test_time_cm', 2.76)):.3f}cm"
+    wd_steps_result = f"{float(layout.get('steps_result_cm', 1.65)):.3f}cm"
     needspace_cm = min(estimate_case_table_height_cm(case_data, test_item_label, layout), 23.0)
     case_name_caption = escape_latex(case_data.get("测试用例名称", ""))
     case_name = escape_latex_table_cell_soft(case_data.get("测试用例名称", ""))
@@ -810,7 +817,7 @@ def build_case_table(case_data, test_item_label, label_suffix):
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{前提和约束}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{prereq}}} &  &  &  &  & \\\\
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例类型}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{case_type}}} &  &  &  &  & \\\\
 \\SetCell[c=8]{{halign=c,font=\\xiaowuhei}}{{测试步骤}} &  &  &  &  &  &  & \\\\
-\\SetCell{{font=\\xiaowuhei,halign=c,valign=m}}{{序号}} & \\SetCell[c=3]{{font=\\xiaowuhei,halign=c,valign=m}}{{输入及操作}} &  &  & \\SetCell[c=2]{{font=\\xiaowuhei,halign=c,valign=m}}{{期望结果}} &  & \\SetCell[c=2]{{font=\\xiaowuhei,halign=c,valign=m}}{{测试结果}} &  \\\\
+\\SetCell{{font=\\xiaowuhei,halign=c,valign=m}}{{序号}} & \\SetCell[c=3]{{font=\\xiaowuhei,halign=c,valign=m}}{{输入及操作}} &  &  & \\SetCell[c=3]{{font=\\xiaowuhei,halign=c,valign=m}}{{期望结果}} &  &  & \\SetCell{{wd={wd_steps_result},font=\\xiaowuhei,halign=c,valign=m}}{{测试结果}} \\\\
 {steps_rows}
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试用例终止条件}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{term}}} &  &  &  &  & \\\\
 \\SetCell[c=2]{{halign=c}}{{\\TableKeyCell{{测试结果评估标准}}}} & & \\SetCell[c=6]{{wd={wd_span6},valign=t}}{{{criteria}}} &  &  &  &  & \\\\

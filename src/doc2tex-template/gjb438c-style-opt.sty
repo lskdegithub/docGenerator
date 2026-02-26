@@ -1,0 +1,523 @@
+% GJB 438C-2021 技术文档样式文件
+% 版本: 1.1（优化版）
+% 日期: 2026-02-24
+% 说明: 包含所有字号、间距、标题、表格等格式定义（优化版）
+
+\ProvidesPackage{gjb438c-style}[2026/02/24 v1.1 GJB 438C Format (Optimized)]
+
+% =================================================================
+% 基础包加载
+% =================================================================
+\usepackage{ctex}          % 中文支持
+\usepackage{fontspec}      % 字体设置
+\usepackage{xcolor}        % 颜色支持
+\usepackage{graphicx}      % 图片支持
+\usepackage{colortbl}      % 表格颜色
+\usepackage{geometry}      % 页面设置
+\usepackage{setspace}      % 行间距设置
+\usepackage{titlesec}      % 标题格式设置
+\usepackage{float}         % 浮动体控制，用于[H]参数
+\usepackage{longtable}
+\usepackage{multirow}      % 表格多行合并
+\usepackage{tabularray}
+\usepackage{xparse}
+\IfFileExists{needspace.sty}{\usepackage{needspace}}{\newcommand{\Needspace}[1]{}}
+\let\GjbOrigUnderscore\_
+\renewcommand{\_}{\GjbOrigUnderscore\allowbreak}
+
+% =================================================================
+% 配置参数定义
+% =================================================================
+% 通过定义参数来避免硬编码
+\def\GjbFontSizeFive{10.5pt}      % 五号字体大小
+\def\GjbLineSpacingFive{18pt}     % 五号字体行间距
+\def\GjbFontSizeSmallFive{9pt}    % 小五号字体大小
+\def\GjbLineSpacingSmallFive{11pt}% 小五号字体行间距
+\def\GjbFontSizeThree{16pt}       % 三号字体大小
+\def\GjbLineSpacingThree{18pt}    % 三号字体行间距
+\def\GjbHeadingBeforeSkip{9pt}    % 标题前间距
+\def\GjbHeadingAfterSkip{6pt}     % 标题后间距
+\def\GjbCaptionBeforeSkip{3pt}    % 标题前间距
+\def\GjbCaptionAfterSkip{6pt}     % 标题后间距
+\def\GjbTableRuleWd{0.4pt}        % 表格线条宽度
+\def\GjbTableRuleColor{black}     % 表格线条颜色
+\def\GjbTableColSep{3pt}          % 表格列间距
+\def\GjbIndentSize{1.5em}         % 段落首行缩进
+
+% =================================================================
+% 中文字体设置
+% =================================================================
+\setCJKmainfont{Noto Serif CJK SC}  % 宋体
+\setCJKsansfont{Noto Sans CJK SC}  % 黑体
+\setmainfont{DejaVu Serif}          % 西文字体
+
+% =================================================================
+% 字号定义（严格按照GJB 438C-2021标准）
+% =================================================================
+% 五号，行间距18磅（10.5pt, 18pt）- 宋体，英文和数字使用罗马体
+\newcommand{\wuhao}{\fontsize{\GjbFontSizeFive}{\GjbLineSpacingFive}\rmfamily\selectfont}
+% 五号黑体加粗
+\newcommand{\wuhaohei}{\wuhao\bfseries}
+% 小五号（9pt, 11pt）- 宋体，英文和数字使用罗马体
+\newcommand{\xiaowu}{\fontsize{\GjbFontSizeSmallFive}{\GjbLineSpacingSmallFive}\rmfamily\selectfont}
+% 小五号宋体（与\xiaowu相同，保留别名）
+\newcommand{\xiaowusong}{\xiaowu}
+% 小五号黑体加粗
+\newcommand{\xiaowuhei}{\xiaowu\bfseries}
+% 三号黑体加粗（16pt, 18pt）
+\newcommand{\sanhao}{\fontsize{\GjbFontSizeThree}{\GjbLineSpacingThree}\rmfamily\bfseries}
+
+% =================================================================
+% 表格相关配置
+% =================================================================
+\newcommand{\GjbCellBreak}{\newline}
+\newif\ifGjbShowTestResultMarks
+\GjbShowTestResultMarksfalse
+\NewDocumentCommand{\GjbEnableTestResultMarks}{}{
+  \GjbShowTestResultMarkstrue
+}
+\NewDocumentCommand{\GjbDisableTestResultMarks}{}{
+  \GjbShowTestResultMarksfalse
+}
+\NewDocumentCommand{\GjbTestResultMarks}{ O{1.0cm} }{
+  \ifGjbShowTestResultMarks
+    {\noindent □通过\par \noindent □不通过\par \noindent 其他\underline{\hspace{#1}}\par}%
+  \fi
+}
+
+% 表格尺寸定义
+\newcommand{\GjbDetailCaseTableWidth}{15.2cm}
+\newcommand{\GjbDetailCaseLeftSep}{0pt}
+\newcommand{\GjbDetailCaseRightSep}{0pt}
+\newcommand{\GjbDetailCaseColSep}{1pt}
+
+% 测试用例表格列宽定义（8列）
+% 列1:序号 | 列2:用例ID | 列3:用例名称 | 列4:测试类型 | 列5:优先级 | 列6:标签 | 列7-8:标识内容
+% 期望结果跨列5+6(7.08cm) | 测试结果跨列7+8(1.80cm) | 总宽15.2cm
+\newcommand{\GjbDetailCaseColA}{0.800cm}  % 列1-序号
+\newcommand{\GjbDetailCaseColB}{1.465cm}  % 列2-用例ID
+\newcommand{\GjbDetailCaseColC}{1.600cm}  % 列3-用例名称
+\newcommand{\GjbDetailCaseColD}{2.000cm}  % 列4-测试类型
+\newcommand{\GjbDetailCaseColE}{4.124cm}  % 列5-优先级(用于期望结果跨列)
+\newcommand{\GjbDetailCaseColF}{0.800cm}  % 列6-标签(容纳4个汉字)
+\newcommand{\GjbDetailCaseColG}{2.400cm}  % 列7-标识内容
+\newcommand{\GjbDetailCaseColH}{1.765cm}  % 列8-标识内容
+\newcommand{\GjbDetailCaseStepsResultWidth}{4.200cm} % 测试结果(步骤区)跨列7+8的独立宽度
+\newcommand{\GjbDetailCaseColSpec}{|Q[c,\GjbDetailCaseColA]|Q[\GjbDetailCaseColB]|Q[\GjbDetailCaseColC]|Q[\GjbDetailCaseColD]|Q[\GjbDetailCaseColE]|Q[\GjbDetailCaseColF]|Q[\GjbDetailCaseColG]|Q[\GjbDetailCaseColH]|}
+
+% 测试用例追踪表列宽定义（8列）
+% 列1:序号 | 列2:用例名称 | 列3:标识 | 列4:编号 | 列5:追踪关系 | 列6:设计人员 | 列7:操作人员 | 列8:测试时间
+\newcommand{\GjbDetailTraceTableWidth}{15.3cm}
+\newcommand{\GjbDetailTraceLeftSep}{0pt}
+\newcommand{\GjbDetailTraceRightSep}{0pt}
+\newcommand{\GjbDetailTraceColSep}{1pt}
+\newcommand{\GjbDetailTraceColA}{0.70cm}  % 列1-序号
+\newcommand{\GjbDetailTraceColB}{1.75cm}  % 列2-用例名称
+\newcommand{\GjbDetailTraceColC}{1.50cm}  % 列3-标识
+\newcommand{\GjbDetailTraceColD}{1.30cm}  % 列4-编号
+\newcommand{\GjbDetailTraceColE}{2.93cm}  % 列5-追踪关系
+\newcommand{\GjbDetailTraceColF}{2.0cm}   % 列6-设计人员/操作人员/测试时间标签
+\newcommand{\GjbDetailTraceColG}{2.73cm}  % 列7-操作人员值
+\newcommand{\GjbDetailTraceColH}{2.0cm}   % 列8-测试时间值
+\newcommand{\GjbTraceMark}[3]{\typeout{GJBTRACE tbl=#1 seq=#2 row=#3 page=\number\value{page}}\relax}
+
+% =================================================================
+% 正文格式设置
+% =================================================================
+% 定义正文字体为五号宋体
+\renewcommand{\normalsize}{\wuhao}
+
+% =================================================================
+% 页面设置
+% =================================================================
+% A4纸张，上下左右各2.5cm页边距
+\geometry{a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=3.0cm}
+
+% 段落首行缩进为标准中文缩进1.5em
+\setlength{\parindent}{\GjbIndentSize}
+% 段落间距为0
+\setlength{\parskip}{0pt}
+
+% =================================================================
+% 行间距设置（重要：避免双重设置）
+% =================================================================
+% 全局行间距倍数为1.0（已在\fontsize中设置行间距）
+\renewcommand{\baselinestretch}{1.0}
+
+% =================================================================
+% 页码设置
+% =================================================================
+% 页码为小五号新罗马体，版心下面居中
+\pagestyle{plain}
+\renewcommand{\thepage}{\xiaowu\rmfamily\arabic{page}}
+
+% =================================================================
+% 表格和图表标题格式
+% =================================================================
+% 表格标题：五号黑体
+\renewcommand{\tablename}{\wuhaohei 表}
+% 图表标题：五号黑体
+\renewcommand{\figurename}{\wuhaohei 图}
+
+% =================================================================
+% 表格行间距设置
+% =================================================================
+% 定义表格行间距倍数（设置为1.0，使用默认表格行间距）
+\newcommand{\tablearraystretch}{1.0}
+% 应用表格行间距的辅助命令
+\newcommand{\settablespacing}{\renewcommand{\arraystretch}{\tablearraystretch}\SeqInit\sloppy\emergencystretch=2em\relax\hyphenpenalty=10000\exhyphenpenalty=10000}
+% 重置表格行间距
+\newcommand{\resettablespacing}{\renewcommand{\arraystretch}{1.0}}
+
+% =================================================================
+% 标题格式设置（1-5级标题）
+% =================================================================
+
+\newlength{\GjbHeadingBeforeSkipLen}
+\setlength{\GjbHeadingBeforeSkipLen}{\GjbHeadingBeforeSkip}
+\newlength{\GjbHeadingAfterSkipLen}
+\setlength{\GjbHeadingAfterSkipLen}{\GjbHeadingAfterSkip}
+\newlength{\GjbCaptionBeforeSkipLen}
+\setlength{\GjbCaptionBeforeSkipLen}{\GjbCaptionBeforeSkip}
+\newlength{\GjbCaptionAfterSkipLen}
+\setlength{\GjbCaptionAfterSkipLen}{\GjbCaptionAfterSkip}
+
+\setcounter{secnumdepth}{6}
+\setcounter{tocdepth}{6}
+
+% 通用标题格式设置函数
+\newcommand{\setupHeadingFormat}[1]{%
+  \titleformat{#1}
+    {\wuhao\bfseries}
+    {\csname the#1\endcsname}
+    {1em}
+    {}
+  \titlespacing*{#1}{0pt}{\GjbHeadingBeforeSkipLen}{\GjbHeadingAfterSkipLen}
+}
+
+% 1-5级标题
+\setupHeadingFormat{\section}
+\setupHeadingFormat{\subsection}
+\setupHeadingFormat{\subsubsection}
+\titleformat{\paragraph}[block]
+  {\wuhao\bfseries}
+  {\theparagraph}
+  {1em}
+  {}
+\titlespacing*{\paragraph}{0pt}{\GjbHeadingBeforeSkipLen}{\GjbHeadingAfterSkipLen}
+\titleformat{\subparagraph}[block]
+  {\wuhao\bfseries}
+  {\thesubparagraph}
+  {1em}
+  {}
+\titlespacing*{\subparagraph}{0pt}{\GjbHeadingBeforeSkipLen}{\GjbHeadingAfterSkipLen}
+
+\titleclass{\subsubparagraph}{straight}[\subparagraph]
+\newcounter{subsubparagraph}[subparagraph]
+\renewcommand\thesubsubparagraph{\thesubparagraph.\arabic{subsubparagraph}}
+\titleformat{\subsubparagraph}[block]
+  {\wuhao\bfseries}
+  {\thesubsubparagraph}
+  {1em}
+  {}
+\titlespacing*{\subsubparagraph}{0pt}{\GjbHeadingBeforeSkipLen}{\GjbHeadingAfterSkipLen}
+
+% =================================================================
+% 辅助命令
+% =================================================================
+
+% 统一的GJB章节标题命令（test_plan和test_detail通用）
+% 用法: \GjbSection{3. 软件测试环境} 或 \GjbSection{软件测试环境}
+\newcommand{\GjbSection}[1]{%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkipLen}%
+  \begingroup
+  \wuhao\bfseries
+  #1\par
+  \endgroup
+  \par\addvspace{\GjbHeadingAfterSkipLen}%
+  \addcontentsline{toc}{section}{#1}%
+}
+
+\newcommand{\GjbSubsection}[1]{%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkipLen}%
+  \begingroup
+  \wuhao\bfseries
+  #1\par
+  \endgroup
+  \par\addvspace{\GjbHeadingAfterSkipLen}%
+  \addcontentsline{toc}{subsection}{#1}%
+}
+
+\newcommand{\GjbSubsubsection}[1]{%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkipLen}%
+  \begingroup
+  \wuhao\bfseries
+  #1\par
+  \endgroup
+  \par\addvspace{\GjbHeadingAfterSkipLen}%
+  \addcontentsline{toc}{subsubsection}{#1}%
+}
+
+\newcommand{\GjbParagraph}[2][]{%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkipLen}%
+  \begingroup
+  \wuhao\bfseries
+  #2\par
+  \endgroup
+  \par\addvspace{\GjbHeadingAfterSkipLen}%
+  \addcontentsline{toc}{paragraph}{\if\relax\detokenize{#1}\relax#2\else#1\fi}%
+}
+
+\newcommand{\GjbSubparagraph}[2][]{%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkipLen}%
+  \begingroup
+  \wuhao\bfseries
+  #2\par
+  \endgroup
+  \par\addvspace{\GjbHeadingAfterSkipLen}%
+  \addcontentsline{toc}{subparagraph}{\if\relax\detokenize{#1}\relax#2\else#1\fi}%
+}
+
+\newcommand{\GjbSubsubparagraph}[1]{%
+  \par\noindent\addvspace{\GjbHeadingBeforeSkipLen}%
+  \begingroup
+  \wuhao\bfseries
+  #1\par
+  \endgroup
+  \par\addvspace{\GjbHeadingAfterSkipLen}%
+  % 不添加到目录中，避免目录层级过深
+}
+
+% 表格标准格式（防止分页）
+% 用法: \StandardTable{标题}{列格式}{内容}
+\newcommand{\StandardTable}[3]{%
+  \begin{table}[H]
+  \centering
+  \vspace{\GjbCaptionBeforeSkipLen}
+  {\wuhaohei #1}
+  \vspace{\GjbCaptionAfterSkipLen}
+  {\settablespacing
+  \begin{tblr}[theme=gjb]{colspec={#2},hlines={0.2pt,solid,black},vlines={0.2pt,solid,black},leftsep=3pt,rightsep=3pt,rows={valign=t}}
+  #3
+  \end{tblr}
+  }
+  \end{table}
+}
+
+% 带灰表头的表格行
+% 用法: \GrayHeaderRow{列数}{内容1}{内容2}{...}
+\newcommand{\GrayHeaderRow}[2]{%
+  \hline
+  \rowcolor{gray!20}%
+  #2%
+  \\%
+  \hline%
+}
+
+% 普通表格行
+% 用法: \NormalRow{列数}{内容1}{内容2}{...}
+\newcommand{\NormalRow}[2]{%
+  #2%
+  \\%
+  \hline%
+}
+
+% =================================================================
+% 数据驱动表格格式（用于自动生成章节）
+% =================================================================
+
+% 表格题注（居中，五号黑体，前后各6pt间距）
+% 用法: \DataTableCaption{表编号}{标题}
+\newcommand{\DataTableCaption}[2]{%
+  \vspace{\GjbCaptionBeforeSkipLen}%
+  \centerline{\wuhaohei 表 #1 #2}%
+  \vspace{\GjbCaptionAfterSkipLen}%
+}
+
+% 表头单元格（小五号黑体，居中）
+% 用法: \TableHeaderCell{内容}
+\newcommand{\TableHeaderCell}[1]{%
+  \xiaowuhei #1%
+}
+
+% 表单/字段类表格的 Key 单元格（小五号黑体）
+% 用法: \TableKeyCell{内容}
+\newcommand{\TableKeyCell}[1]{%
+  {\xiaowuhei #1}%
+}
+
+% 表单/字段类表格的 Identifier 值
+% 用法: \TableIdentifier{内容}
+\newcommand{\TableIdentifier}[1]{%
+  {\xiaowu\ttfamily\raggedright\hspace{0pt}#1}%
+}
+
+\ExplSyntaxOn
+\tl_new:N \l__gjb_planitem_caption_tl
+\tl_new:N \l__gjb_planitem_label_tl
+\tl_new:N \l__gjb_planitem_name_tl
+\tl_new:N \l__gjb_planitem_ident_tl
+\tl_new:N \l__gjb_planitem_req_tl
+\tl_new:N \l__gjb_planitem_strategy_tl
+\tl_new:N \l__gjb_planitem_method_tl
+\tl_new:N \l__gjb_planitem_assume_tl
+\tl_new:N \l__gjb_planitem_constraint_tl
+\tl_new:N \l__gjb_planitem_priority_tl
+\tl_new:N \l__gjb_planitem_term_tl
+\tl_new:N \l__gjb_planitem_trace_tl
+\keys_define:nn { gjb/planitem }
+  {
+    caption .tl_set:N = \l__gjb_planitem_caption_tl,
+    label .tl_set:N = \l__gjb_planitem_label_tl,
+    name .tl_set:N = \l__gjb_planitem_name_tl,
+    ident .tl_set:N = \l__gjb_planitem_ident_tl,
+    req .tl_set:N = \l__gjb_planitem_req_tl,
+    strategy .tl_set:N = \l__gjb_planitem_strategy_tl,
+    method .tl_set:N = \l__gjb_planitem_method_tl,
+    assume .tl_set:N = \l__gjb_planitem_assume_tl,
+    constraint .tl_set:N = \l__gjb_planitem_constraint_tl,
+    priority .tl_set:N = \l__gjb_planitem_priority_tl,
+    term .tl_set:N = \l__gjb_planitem_term_tl,
+    trace .tl_set:N = \l__gjb_planitem_trace_tl,
+  }
+\cs_new_protected:Npn \__gjb_planitem_table:
+  {
+    {\settablespacing
+    \begin{longtblr}[theme=gjbNoHead,caption={\l__gjb_planitem_caption_tl},label={\l__gjb_planitem_label_tl}]{
+      colspec={|p{2.3cm}|p{7.9cm}|p{0.8cm}|p{4.2cm}|},
+      hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+    }
+    \TableKeyCell{测试项名称} & \SetCell{wd=7.9cm,valign=t}{\l__gjb_planitem_name_tl} & \TableKeyCell{标识} & \SetCell{wd=4.2cm,valign=t}{\TableIdentifier{\l__gjb_planitem_ident_tl}} \\
+    \TableKeyCell{测试要求} & \SetCell[c=3]{wd=12.9cm,valign=t}{\l__gjb_planitem_req_tl} && \\
+    \TableKeyCell{测试策略与方法} & \SetCell[c=3]{wd=12.9cm,valign=t}{测试策略：\l__gjb_planitem_strategy_tl\newline 测试方法：\l__gjb_planitem_method_tl} && \\
+    \TableKeyCell{假设与约束} & \SetCell[c=3]{wd=12.9cm,valign=t}{假设：\l__gjb_planitem_assume_tl\newline 约束：\l__gjb_planitem_constraint_tl} && \\
+    \TableKeyCell{优先级} & \SetCell[c=3]{wd=12.9cm,valign=t}{\l__gjb_planitem_priority_tl} && \\
+    \TableKeyCell{测试终止条件} & \SetCell[c=3]{wd=12.9cm,valign=t}{\l__gjb_planitem_term_tl} && \\
+    \TableKeyCell{追踪关系} & \SetCell[c=3]{wd=12.9cm,valign=t}{\l__gjb_planitem_trace_tl} && \\
+    \end{longtblr}
+    }
+    \vspace{0pt}
+  }
+\NewDocumentCommand{\GjbPlanItemTable}{ m }
+  {
+    \keys_set:nn { gjb/planitem } { #1 }
+    \__gjb_planitem_table:
+  }
+\ExplSyntaxOff
+
+% 普通表格内容单元格（小五号宋体，固定宽度parbox）
+% 用法: \TableCell{宽度}{内容}
+\newcommand{\TableCell}[2]{%
+  {\xiaowu #2}%
+}
+
+% 标识列单元格（小五号宋体，固定宽度parbox，等宽字体）
+% 用法: \TableCellIdentifier{宽度}{内容}
+\newcommand{\TableCellIdentifier}[2]{%
+  {\xiaowu\ttfamily\raggedright\hspace{0pt}#2}%
+}
+\ExplSyntaxOn
+\int_new:N \g__gjb_tabseq_int
+\cs_new_protected:Npn \SeqInit { \int_gzero:N \g__gjb_tabseq_int }
+\cs_new_protected:Npn \Seq
+  {
+    \cs_if_exist:NTF \l__tblr_measuring_bool
+      {
+        \bool_if:NTF \l__tblr_measuring_bool
+          { \xiaowu 1 }
+          {
+            \int_gincr:N \g__gjb_tabseq_int
+            \xiaowu \int_to_arabic:n { \g__gjb_tabseq_int }
+          }
+      }
+      {
+        \int_gincr:N \g__gjb_tabseq_int
+        \xiaowu \int_to_arabic:n { \g__gjb_tabseq_int }
+      }
+  }
+\ExplSyntaxOff
+
+\AddToHook{env/longtblr/begin}{\SeqInit}
+\AddToHook{env/talltblr/begin}{\SeqInit}
+\AddToHook{env/tblr/begin}{\SeqInit}
+
+% =================================================================
+% Tabularray 统一样式定义
+% =================================================================
+
+% 定义通用的表格模板
+\DefTblrTemplate{caption-tag}{gjb}{\wuhaohei 表~\thetable}
+\DefTblrTemplate{caption-sep}{gjb}{\quad}
+\DefTblrTemplate{caption-text}{gjb}{\wuhaohei \InsertTblrText{caption}}
+\DefTblrTemplate{caption}{gjb}{%
+  \vspace{3pt}%
+  \centerline{%
+    {\color{black}%
+      \UseTblrTemplate{caption-tag}{gjb}%
+      \UseTblrTemplate{caption-sep}{gjb}%
+      \UseTblrTemplate{caption-text}{gjb}%
+    }%
+  }%
+  \vspace{6pt}%
+}
+\DefTblrTemplate{contfoot-text}{default}{}
+\DefTblrTemplate{conthead-text}{default}{}
+\DefTblrTemplate{capcont}{default}{}
+
+% 统一的表格主题定义
+\NewTblrTheme{gjb}{
+  \SetTblrStyle{head}{fg=black,font=\xiaowuhei,halign=c}
+  \SetTblrStyle{foot}{font=\xiaowu}
+  \SetTblrInner[tblr]{
+    width=\linewidth,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    row{1}={font=\xiaowuhei,halign=c,valign=m},
+    rows={valign=t}
+  }
+  \SetTblrInner[longtblr]{
+    width=\linewidth,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    row{1}={font=\xiaowuhei,halign=c,valign=m},
+    rows={valign=t}
+  }
+  \SetTblrInner[talltblr]{
+    width=\linewidth,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    row{1}={font=\xiaowuhei,halign=c,valign=m},
+    rows={valign=t}
+  }
+  \SetTblrTemplate{caption}{gjb}
+  \SetTblrTemplate{caption-tag}{gjb}
+  \SetTblrTemplate{caption-sep}{gjb}
+  \SetTblrTemplate{caption-text}{gjb}
+}
+
+\NewTblrTheme{gjbNoHead}{
+  \SetTblrStyle{head}{fg=black,font=\xiaowuhei,halign=c}
+  \SetTblrStyle{foot}{font=\xiaowu}
+  \SetTblrInner[tblr]{
+    width=\linewidth,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    rows={valign=t}
+  }
+  \SetTblrInner[longtblr]{
+    width=\linewidth,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    rows={valign=t}
+  }
+  \SetTblrInner[talltblr]{
+    width=\linewidth,
+    colsep=\GjbTableColSep,
+    cells={font=\xiaowu},
+    rows={valign=t}
+  }
+  \SetTblrTemplate{caption}{gjb}
+  \SetTblrTemplate{caption-tag}{gjb}
+  \SetTblrTemplate{caption-sep}{gjb}
+  \SetTblrTemplate{caption-text}{gjb}
+}
