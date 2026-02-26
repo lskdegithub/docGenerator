@@ -21,6 +21,7 @@
 \usepackage{multirow}      % 表格多行合并
 \usepackage{tabularray}
 \usepackage{xparse}
+\usepackage{caption}
 \IfFileExists{needspace.sty}{\usepackage{needspace}}{\newcommand{\Needspace}[1]{}}
 \let\GjbOrigUnderscore\_
 \renewcommand{\_}{\GjbOrigUnderscore\allowbreak}
@@ -30,7 +31,13 @@
 % =================================================================
 \setCJKmainfont{Noto Serif CJK SC}  % 宋体
 \setCJKsansfont{Noto Sans CJK SC}  % 黑体
-\setmainfont{DejaVu Serif}          % 西文字体
+\IfFontExistsTF{Times New Roman}{
+  \setmainfont{Times New Roman}
+  \newfontfamily\GjbPageNumberFont{Times New Roman}
+}{
+  \setmainfont{TeX Gyre Termes}
+  \newfontfamily\GjbPageNumberFont{TeX Gyre Termes}
+}
 
 % =================================================================
 % 字号定义（严格按照GJB 438C-2021标准）
@@ -38,15 +45,18 @@
 % 五号，行间距18磅（10.5pt, 18pt）- 宋体，英文和数字使用罗马体
 \newcommand{\wuhao}{\fontsize{10.5pt}{18pt}\rmfamily\selectfont}
 % 五号黑体加粗
-\newcommand{\wuhaohei}{\wuhao\bfseries}
+\newcommand{\wuhaohei}{\wuhao\heiti\bfseries}
 % 小五号（9pt, 11pt）- 宋体，英文和数字使用罗马体
-\newcommand{\xiaowu}{\fontsize{9pt}{11pt}\rmfamily\selectfont}
+\newcommand{\xiaowu}{\fontsize{9pt}{18pt}\rmfamily\selectfont}
 % 小五号宋体（与\xiaowu相同，保留别名）
 \newcommand{\xiaowusong}{\xiaowu}
 % 小五号黑体加粗
 \newcommand{\xiaowuhei}{\xiaowu\bfseries}
 % 三号黑体加粗（16pt, 18pt）
-\newcommand{\sanhao}{\fontsize{16pt}{18pt}\rmfamily\bfseries}
+\newcommand{\sanhao}{\fontsize{16pt}{18pt}\heiti\bfseries\selectfont}
+\DeclareCaptionFont{gjbwuhaohei}{\wuhaohei}
+\captionsetup[figure]{font=gjbwuhaohei,labelfont=gjbwuhaohei,textfont=gjbwuhaohei}
+\captionsetup[table]{font=gjbwuhaohei,labelfont=gjbwuhaohei,textfont=gjbwuhaohei}
 
 \newcommand{\GjbTableRuleWd}{0.4pt}
 \newcommand{\GjbTableRuleColor}{black}
@@ -60,9 +70,16 @@
 \NewDocumentCommand{\GjbDisableTestResultMarks}{}{%
   \GjbShowTestResultMarksfalse
 }
+\newcommand{\GjbResultCheckBox}{%
+  \begingroup
+  \setlength{\fboxsep}{0pt}%
+  \setlength{\fboxrule}{0.4pt}%
+  \raisebox{0.2ex}{\fbox{\rule{0pt}{0.72em}\rule{0.72em}{0pt}}}%
+  \endgroup
+}
 \NewDocumentCommand{\GjbTestResultMarks}{ O{1.0cm} }{%
   \ifGjbShowTestResultMarks
-    {\noindent □通过\par \noindent □不通过\par \noindent 其他\underline{\hspace{#1}}\par}%
+    {\noindent \GjbResultCheckBox\ 通过\par \noindent \GjbResultCheckBox\ 不通过\par \noindent 其他\underline{\hspace{#1}}\par}%
   \fi
 }
 \newcommand{\GjbDetailCaseTableWidth}{15.2cm}
@@ -126,7 +143,7 @@
 % =================================================================
 % 页码为小五号新罗马体，版心下面居中
 \pagestyle{plain}
-\renewcommand{\thepage}{\xiaowu\rmfamily\arabic{page}}
+\renewcommand{\thepage}{\xiaowu\GjbPageNumberFont\arabic{page}}
 
 % =================================================================
 % 表格和图表标题格式
@@ -151,7 +168,7 @@
 % =================================================================
 
 \newlength{\GjbHeadingBeforeSkip}
-\setlength{\GjbHeadingBeforeSkip}{9pt}
+\setlength{\GjbHeadingBeforeSkip}{6pt}
 \newlength{\GjbHeadingAfterSkip}
 \setlength{\GjbHeadingAfterSkip}{6pt}
 \newlength{\GjbCaptionBeforeSkip}
@@ -161,6 +178,17 @@
 
 \setcounter{secnumdepth}{6}
 \setcounter{tocdepth}{6}
+
+\makeatletter
+\newcommand{\GjbTOCTitleText}{目\quad 次}
+\newcommand{\GjbTableOfContents}{%
+  \begin{center}
+    {\sanhao \GjbTOCTitleText}
+  \end{center}
+  \vspace{6pt}
+  \@starttoc{toc}%
+}
+\makeatother
 
 % 1级标题：五号宋体加粗，段前段后6pt
 \titleformat{\section}
@@ -276,6 +304,16 @@
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
   % 不添加到目录中，避免目录层级过深
+}
+
+\newcommand{\GjbAppendixFirstLine}[2]{%
+  \par\noindent{\wuhao\heiti\bfseries #1}{\wuhao #2}\par
+}
+\newcommand{\GjbAppendixSecondLine}[1]{%
+  \par\noindent{\wuhao\heiti\bfseries #1}\par
+}
+\newcommand{\GjbAppendixThirdLine}[1]{%
+  \par\noindent{\wuhao #1}\par
 }
 
 % 表格标准格式（防止分页）
