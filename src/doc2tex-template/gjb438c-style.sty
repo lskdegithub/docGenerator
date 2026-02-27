@@ -46,6 +46,8 @@
 \newcommand{\wuhao}{\fontsize{10.5pt}{18pt}\rmfamily\selectfont}
 % 五号黑体加粗
 \newcommand{\wuhaohei}{\wuhao\heiti\bfseries}
+% 五号黑体（不加粗，显式中等字重）
+\newcommand{\wuhaoheiti}{\fontsize{10.5pt}{18pt}\heiti\mdseries\selectfont}
 % 小五号（9pt, 11pt）- 宋体，英文和数字使用罗马体
 \newcommand{\xiaowu}{\fontsize{9pt}{18pt}\rmfamily\selectfont}
 % 小五号宋体（与\xiaowu相同，保留别名）
@@ -54,7 +56,7 @@
 \newcommand{\xiaowuhei}{\xiaowu\bfseries}
 % 三号黑体加粗（16pt, 18pt）
 \newcommand{\sanhao}{\fontsize{16pt}{18pt}\heiti\bfseries\selectfont}
-\DeclareCaptionFont{gjbwuhaohei}{\wuhaohei}
+\DeclareCaptionFont{gjbwuhaohei}{\wuhaoheiti}
 \captionsetup[figure]{font=gjbwuhaohei,labelfont=gjbwuhaohei,textfont=gjbwuhaohei}
 \captionsetup[table]{font=gjbwuhaohei,labelfont=gjbwuhaohei,textfont=gjbwuhaohei}
 
@@ -149,9 +151,9 @@
 % 表格和图表标题格式
 % =================================================================
 % 表格标题：五号黑体
-\renewcommand{\tablename}{\wuhaohei 表}
+\renewcommand{\tablename}{\wuhaoheiti 表}
 % 图表标题：五号黑体
-\renewcommand{\figurename}{\wuhaohei 图}
+\renewcommand{\figurename}{\wuhaoheiti 图}
 
 % =================================================================
 % 表格行间距设置
@@ -322,7 +324,7 @@
   \begin{table}[H]
   \centering
   \vspace{\GjbCaptionBeforeSkip}
-  {\wuhaohei #1}
+  {\wuhaoheiti #1}
   \vspace{\GjbCaptionAfterSkip}
   {\settablespacing
   \begin{tblr}[theme=gjb]{colspec={#2},hlines={0.2pt,solid,black},vlines={0.2pt,solid,black},leftsep=3pt,rightsep=3pt,rows={valign=t}}
@@ -358,7 +360,7 @@
 % 用法: \DataTableCaption{表编号}{标题}
 \newcommand{\DataTableCaption}[2]{%
   \vspace{\GjbCaptionBeforeSkip}%
-  \centerline{\wuhaohei 表 #1 #2}%
+  \centerline{\wuhaoheiti 表 #1 #2}%
   \vspace{\GjbCaptionAfterSkip}%
 }
 
@@ -476,9 +478,9 @@
 % =================================================================
 % Tabularray longtblr 统一样式（用于表2）
 % =================================================================
-\DefTblrTemplate{caption-tag}{gjb}{\wuhaohei 表~\thetable}
+\DefTblrTemplate{caption-tag}{gjb}{\wuhaoheiti 表~\thetable}
 \DefTblrTemplate{caption-sep}{gjb}{\quad}
-\DefTblrTemplate{caption-text}{gjb}{\wuhaohei \InsertTblrText{caption}}
+\DefTblrTemplate{caption-text}{gjb}{\wuhaoheiti \InsertTblrText{caption}}
 \DefTblrTemplate{caption}{gjb}{%
   \vspace{3pt}%
   \centerline{%
