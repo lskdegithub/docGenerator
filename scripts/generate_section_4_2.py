@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 生成测试计划文档 4.2 章节（计划执行的测试）
@@ -123,61 +123,52 @@ def parse_plan_yaml(file_path):
 
 def format_title_name_ident(name: str, ident: str, section_number: str, page_width_cm: float = 15.5) -> str:
     """
-    格式化章节标题中的 名称（标识），智能判断是否需要换行
-
-    参数:
-        name: 测试项名称或测试用例名称
-        ident: 标识
-        section_number: 章节号，如 "4.2.1.1.1"
-        page_width_cm: 页面可用宽度（厘米），默认15.5cm
-
-    返回:
-        LaTeX 格式的字符串，如果需要换行则在名称和标识之间插入换行
+    标题格式：名称（标识）。
+    规则：
+    1) 标识整体不在中间断开；
+    2) 超长时只在“名称/标识”边界强制换行；
+    3) 相同标题文本在不同位置得到一致的换行结果。
     """
     name = str(name or "").strip()
     ident = str(ident or "").strip()
 
-    # 没有标识，直接返回名称
-    if not ident:
-        return name.replace('_', '\\_')
+    def escape_title_text(s: str) -> str:
+        s = str(s or "")
+        s = s.replace("\\", "\\textbackslash ")
+        s = s.replace("&", "\\&")
+        s = s.replace("%", "\\%")
+        s = s.replace("$", "\\$")
+        s = s.replace("#", "\\#")
+        s = s.replace("_", "\\_")
+        s = s.replace("{", "\\{")
+        s = s.replace("}", "\\}")
+        s = s.replace("~", "\\textasciitilde ")
+        s = s.replace("^", "\\textasciicircum ")
+        return s
 
-    # 估算文本宽度
-    # 中文字符约0.32cm/字，英文字符约0.18cm/字，标点约0.19cm/字
-    def estimate_width(s: str) -> float:
-        width = 0.0
+    def estimate_units(s: str) -> float:
+        units = 0.0
         for ch in s:
-            if '\u4e00' <= ch <= '\u9fff':  # CJK字符
-                width += 0.32
-            elif ch.isalpha():  # 英文字母
-                width += 0.18
-            else:  # 标点、数字等
-                width += 0.19
-        return width
+            if "\u4e00" <= ch <= "\u9fff":
+                units += 1.0
+            elif ch.isascii() and ch.isalnum():
+                units += 0.55
+            else:
+                units += 0.65
+        return units
 
-    # 转义特殊字符后再估算
-    name_escaped = name.replace('_', '\\_')
-    ident_escaped = ident.replace('_', '\\_')
+    name_escaped = escape_title_text(name)
+    if not ident:
+        return name_escaped
 
-    # 章节号宽度（如 "4.2.1.1.1 " 约占 1.2cm）
-    section_width = len(section_number) * 0.18 + 0.5
+    ident_escaped = escape_title_text(ident)
+    ident_block = f"\\mbox{{（{ident_escaped}）}}"
 
-    # 标识部分的宽度（包括括号）
-    ident_width = estimate_width(ident) + 0.38  # 括号约占0.38cm
-
-    # 名称宽度
-    name_width = estimate_width(name)
-
-    # 可用于第一行的宽度 = 页面宽度 - 章节号宽度 - 右边距
-    first_line_available = page_width_cm - section_width - 1.0
-
-    # 如果 名称 + 标识 超过第一行可用宽度，需要换行
-    if name_width + ident_width > first_line_available:
-        # 需要换行：使用 parbox 实现换行和缩进
-        parbox_width = page_width_cm - section_width
-        return "\\begin{minipage}[t]{" + f"{parbox_width:.1f}" + "cm}\\setlength{\\baselineskip}{18pt}" + name_escaped + "\\\\quad （" + ident_escaped + "）\\end{minipage}"
-    else:
-        # 不需要换行，保持在一行
-        return f"{name_escaped}（{ident_escaped}）"
+    # 稳定阈值：同一标题文本始终同样处理，不受章节号长度影响。
+    force_wrap = (len(ident) >= 28) or (estimate_units(name) + estimate_units(ident) >= 40.0)
+    if force_wrap:
+        return f"{name_escaped}\\linebreak[4]{ident_block}"
+    return f"{name_escaped}{ident_block}"
 
 
 def format_toc_name_ident(name: str, ident: str) -> str:
@@ -511,3 +502,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

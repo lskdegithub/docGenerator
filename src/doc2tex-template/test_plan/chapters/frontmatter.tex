@@ -1,40 +1,121 @@
 \pagestyle{empty}
+
+% =================================================================
+% 封面第1页
+% =================================================================
+\GjbCoverCornerMarks
+\vspace*{1.1cm}
+
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+  \raisebox{-0.12cm}{\GjbCoverLogo}
+\end{minipage}
+\begin{minipage}[t]{0.52\textwidth}
+  \raggedleft{\GjbCoverTopRightFont xxxxxxxxxx}
+\end{minipage}
+
+\vspace{0.4cm}
+\noindent\hfill{\GjbCoverCodeFont KJ/JS(xxxxxxxxxx)1015-2025}\par
+\vspace{0.2cm}
+\GjbCoverRule
+
+\vspace*{4.4cm}
 \begin{center}
-{\wuhao\bfseries xxxxxxxxxx节点软件测试大纲}
+{\GjbCoverMainTitleFont “xxxx 系统”项目}
+\vspace{18pt}
+
+{\GjbCoverMainTitleFont xxxxx 节点软件测试大纲}
 \end{center}
 
-\vspace{6pt}
-
+\vspace*{2.4cm}
+\begin{center}
 {\settablespacing
 \begin{tblr}[theme=gjbNoHead]{
-  colspec={|p{2.3cm}|p{12.2cm}|},
-  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  width=11.5cm,
+  colspec={|Q[c,1.3cm]|Q[c,2.5cm]|Q[c,1.3cm]|Q[c,2.5cm]|Q[c,1.3cm]|Q[c,2.6cm]|},
+  hlines={wd=\GjbCoverTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbCoverTableRuleWd,fg=\GjbTableRuleColor},
+  cells={font=\GjbCoverTableFont},
 }
-\TableKeyCell{文件标识} & xxxxxxxxxx\_STP \\
-\TableKeyCell{当前版本} & V1.0.0.0 \\
-\TableKeyCell{作\quad 者} & 李胜奎 \\
-\TableKeyCell{完成日期} & 2025.09.30 \\
+校对 &  & 审核 &  & 批准 &  \\
+日期 &  & 日期 &  & 日期 &  \\
+编制 &  & 会签 &  & 标检 &  \\
+日期 &  & 日期 &  & 日期 &  \\
 \end{tblr}
 }
+\end{center}
 
-\vspace{6pt}
+\vfill
+\GjbCoverRule
+\vspace{10pt}
+\begin{center}
+{\GjbCoverBottomOrgFont 国防科技大学计算机学院}
+\end{center}
+\newpage
 
+% =================================================================
+% 封面第2页
+% =================================================================
+\GjbCoverCornerMarks
+\vspace*{3.8cm}
+\begin{center}
+{\GjbCoverPageTwoTitleFont “xxxx”项目}
+\vspace{18pt}
+
+{\GjbCoverPageTwoTitleFont xxxxx 节点软件测试大纲}
+\end{center}
+
+\vspace*{2.7cm}
+\begin{center}
 {\settablespacing
-\begin{tblr}[theme=gjb]{
-  colspec={|p{2.4cm}|p{1.8cm}|p{3.8cm}|p{2.5cm}|p{4.0cm}|},
-  rowhead=1,
+\begin{tblr}[theme=gjbNoHead]{
+  width=10.8cm,
+  colspec={|Q[c,3.8cm]|Q[c,6.6cm]|},
   hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  cells={font=\GjbCoverPageTwoTableFont},
+  column{1}={bg=gray!20,font=\GjbCoverPageTwoLeftColFont},
+}
+文件标识 & xxxxx\_STP \\
+当前版本 &  \\
+作\quad 者 &  \\
+完成日期 &  \\
+\end{tblr}
+}
+\end{center}
+\newpage
+
+% =================================================================
+% 封面第3页
+% =================================================================
+\GjbCoverCornerMarks
+\vspace*{2.0cm}
+\begin{center}
+{\GjbCoverPageThreeTitleFont 版本历史}
+\end{center}
+\vspace{6pt}
+\begin{center}
+{\settablespacing
+\begin{tblr}[theme=gjbNoHead]{
+  width=0.95\textwidth,
+  colspec={|Q[c,1.6cm]|Q[c,1.8cm]|Q[c,3.2cm]|Q[c,2.4cm]|Q[c,2.4cm]|},
+  hlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  vlines={wd=\GjbTableRuleWd,fg=\GjbTableRuleColor},
+  cells={font=\GjbCoverPageThreeBodyFont},
+  row{1}={bg=gray!20,font=\GjbCoverPageThreeHeadFont},
 }
 版本号 & 作\quad 者 & 参与者 & 发布日期 & 备\quad 注 \\
-V0.0.0.1 & 李胜奎 & 喻昕、胡栋 & 2025.09.20 & 新建文档 \\
-V0.0.0.2 & 李胜奎 & 喻昕、胡栋 & 2025.09.22 & 更新完善 \\
-V1.0.0.0 & 李胜奎 & 喻昕、胡栋 & 2025.09.30 & 按照专家意见进行修改 \\
+ &  &  &  &  \\
+ &  &  &  &  \\
+ &  &  &  &  \\
+ &  &  &  &  \\
  &  &  &  &  \\
  &  &  &  &  \\
 \end{tblr}
 }
-
+\end{center}
 \newpage
+
 \begingroup
 \wuhao
 \setlength{\normalbaselineskip}{18pt}
@@ -67,9 +148,9 @@ V1.0.0.0 & 李胜奎 & 喻昕、胡栋 & 2025.09.30 & 按照专家意见进行�
     }%
   \fi
 }
-\renewcommand{\l@section}{\@dottedtocline{1}{0em}{0em}}
-\renewcommand{\l@subsection}{\@dottedtocline{2}{0.75em}{2.3em}}
-\renewcommand{\l@subsubsection}{\@dottedtocline{3}{1.5em}{3.1em}}
+\renewcommand{\l@section}{\@dottedtocline{1}{0em}{1.8em}}
+\renewcommand{\l@subsection}{\@dottedtocline{2}{0.75em}{2.6em}}
+\renewcommand{\l@subsubsection}{\@dottedtocline{3}{1.5em}{3.6em}}
 \renewcommand{\l@paragraph}[2]{\addvspace{3pt}\@dottedtocline{4}{2.25em}{3.9em}{#1}{#2}}
 \renewcommand{\l@subparagraph}[2]{\addvspace{3pt}\@dottedtocline{5}{3em}{4.7em}{#1}{#2}}
 \makeatother
@@ -81,3 +162,4 @@ V1.0.0.0 & 李胜奎 & 喻昕、胡栋 & 2025.09.30 & 按照专家意见进行�
 \newpage
 \setcounter{page}{1}
 \pagestyle{plain}
+

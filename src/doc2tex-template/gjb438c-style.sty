@@ -22,6 +22,7 @@
 \usepackage{tabularray}
 \usepackage{xparse}
 \usepackage{caption}
+\usepackage{tikz}
 \IfFileExists{needspace.sty}{\usepackage{needspace}}{\newcommand{\Needspace}[1]{}}
 \let\GjbOrigUnderscore\_
 \renewcommand{\_}{\GjbOrigUnderscore\allowbreak}
@@ -61,9 +62,31 @@
 \newcommand{\xiaowuhei}{\xiaowu\bfseries}
 % 三号黑体加粗（16pt, 18pt）
 \newcommand{\sanhao}{\fontsize{16pt}{18pt}\heiti\bfseries\selectfont}
+% 二号黑体加粗（22pt）
+\newcommand{\erhaohei}{\fontsize{22pt}{28pt}\heiti\bfseries\selectfont}
+% 一号黑体加粗（封面主标题）
+\newcommand{\yihaohei}{\fontsize{26pt}{32pt}\heiti\bfseries\selectfont}
+% 四号宋体
+\newcommand{\sihaosong}{\fontsize{14pt}{18pt}\rmfamily\selectfont}
+% 四号罗马体加粗
+\newcommand{\sihaoromanbf}{\fontsize{14pt}{18pt}\rmfamily\bfseries\selectfont}
 % 题注统一字体（表题和图题，五号黑体，不额外加粗）
 \newcommand{\GjbCaptionFont}{\fontsize{10.5pt}{18pt}\GjbCaptionCJK\mdseries\selectfont}
 \DeclareCaptionFont{gjbcaptionfont}{\GjbCaptionFont}
+
+% 封面专用字体与线宽
+\newcommand{\GjbCoverTopRightFont}{\sanhao}
+\newcommand{\GjbCoverCodeFont}{\sihaoromanbf}
+\newcommand{\GjbCoverMainTitleFont}{\yihaohei}
+\newcommand{\GjbCoverTableFont}{\sihaosong}
+\newcommand{\GjbCoverBottomOrgFont}{\sanhao}
+\newcommand{\GjbCoverTableRuleWd}{0.9pt}
+\newcommand{\GjbCoverPageTwoTitleFont}{\erhaohei}
+\newcommand{\GjbCoverPageTwoTableFont}{\wuhao}
+\newcommand{\GjbCoverPageTwoLeftColFont}{\wuhao}
+\newcommand{\GjbCoverPageThreeTitleFont}{\wuhao\bfseries}
+\newcommand{\GjbCoverPageThreeHeadFont}{\wuhao}
+\newcommand{\GjbCoverPageThreeBodyFont}{\wuhao}
 
 \newcommand{\GjbTableRuleWd}{0.4pt}
 \newcommand{\GjbTableRuleColor}{black}
@@ -175,9 +198,9 @@
 % =================================================================
 
 \newlength{\GjbHeadingBeforeSkip}
-\setlength{\GjbHeadingBeforeSkip}{6pt}
+\setlength{\GjbHeadingBeforeSkip}{3pt}
 \newlength{\GjbHeadingAfterSkip}
-\setlength{\GjbHeadingAfterSkip}{6pt}
+\setlength{\GjbHeadingAfterSkip}{3pt}
 \newlength{\GjbCaptionBeforeSkip}
 \setlength{\GjbCaptionBeforeSkip}{3pt}
 \newlength{\GjbCaptionAfterSkip}
@@ -192,6 +215,44 @@
 }
 \captionsetup[table]{aboveskip=\GjbCaptionBeforeSkip,belowskip=\GjbCaptionAfterSkip}
 \captionsetup[figure]{aboveskip=\GjbCaptionBeforeSkip,belowskip=\GjbCaptionAfterSkip}
+
+\makeatletter
+\newlength{\GjbHeadingHangIndent}
+\newlength{\GjbHeadingLabelGap}
+\setlength{\GjbHeadingLabelGap}{0.2em}
+\newcommand{\GjbFormatHeading}[1]{%
+  \begingroup
+  \expandafter\Gjb@FormatHeading#1 \@nil
+  \endgroup
+}
+\def\Gjb@FormatHeading#1 #2\@nil{%
+  \def\Gjb@HeadingNum{#1}%
+  \def\Gjb@HeadingText{#2}%
+  \if\relax\detokenize{#2}\relax
+    #1\par
+  \else
+    \raggedright
+    \parindent=0pt%
+    \settowidth{\GjbHeadingHangIndent}{#1\hspace{\GjbHeadingLabelGap}}%
+    \hangindent=\GjbHeadingHangIndent%
+    \hangafter=1%
+    \noindent #1\hspace{\GjbHeadingLabelGap}#2\par
+  \fi
+}
+\newcommand{\GjbAddHeadingToToc}[2]{%
+  \begingroup
+  \def\Gjb@TocLevel{#1}%
+  \expandafter\Gjb@AddHeadingToToc#2 \@nil
+}
+\def\Gjb@AddHeadingToToc#1 #2\@nil{%
+  \if\relax\detokenize{#2}\relax
+    \addcontentsline{toc}{\Gjb@TocLevel}{#1}%
+  \else
+    \addcontentsline{toc}{\Gjb@TocLevel}{\protect\numberline{#1}#2}%
+  \fi
+  \endgroup
+}
+\makeatother
 
 \setcounter{secnumdepth}{6}
 \setcounter{tocdepth}{6}
@@ -209,41 +270,41 @@
 
 % 1级标题：五号宋体加粗，段前段后6pt
 \titleformat{\section}
-  {\wuhao\bfseries}
+  {\wuhao\bfseries\raggedright}
   {\thesection}
-  {1em}
+  {\GjbHeadingLabelGap}
   {}
 \titlespacing*{\section}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 % 2级标题：五号宋体加粗，段前段后6pt
 \titleformat{\subsection}
-  {\wuhao\bfseries}
+  {\wuhao\bfseries\raggedright}
   {\thesubsection}
-  {1em}
+  {\GjbHeadingLabelGap}
   {}
 \titlespacing*{\subsection}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 % 3级标题：五号宋体加粗，段前段后6pt
 \titleformat{\subsubsection}
-  {\wuhao\bfseries}
+  {\wuhao\bfseries\raggedright}
   {\thesubsubsection}
-  {1em}
+  {\GjbHeadingLabelGap}
   {}
 \titlespacing*{\subsubsection}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 % 4级标题：五号宋体加粗，段前段后6pt
 \titleformat{\paragraph}[block]
-  {\wuhao\bfseries}
+  {\wuhao\bfseries\raggedright}
   {\theparagraph}
-  {1em}
+  {\GjbHeadingLabelGap}
   {}
 \titlespacing*{\paragraph}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
 % 5级标题：五号宋体加粗，段前段后6pt
 \titleformat{\subparagraph}[block]
-  {\wuhao\bfseries}
+  {\wuhao\bfseries\raggedright}
   {\thesubparagraph}
-  {1em}
+  {\GjbHeadingLabelGap}
   {}
 \titlespacing*{\subparagraph}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
@@ -251,9 +312,9 @@
 \newcounter{subsubparagraph}[subparagraph]
 \renewcommand\thesubsubparagraph{\thesubparagraph.\arabic{subsubparagraph}}
 \titleformat{\subsubparagraph}[block]
-  {\wuhao\bfseries}
+  {\wuhao\bfseries\raggedright}
   {\thesubsubparagraph}
-  {1em}
+  {\GjbHeadingLabelGap}
   {}
 \titlespacing*{\subsubparagraph}{0pt}{\GjbHeadingBeforeSkip}{\GjbHeadingAfterSkip}
 
@@ -261,63 +322,113 @@
 % 辅助命令
 % =================================================================
 
+% 封面页角标与分隔线
+\newcommand{\GjbCoverCornerMarks}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \color{black!45}
+    \draw[line width=0.35pt] ([xshift=1.0cm,yshift=-1.0cm]current page.north west) -- ++(0.55cm,0);
+    \draw[line width=0.35pt] ([xshift=1.0cm,yshift=-1.0cm]current page.north west) -- ++(0,-0.55cm);
+    \draw[line width=0.35pt] ([xshift=-1.0cm,yshift=-1.0cm]current page.north east) -- ++(-0.55cm,0);
+    \draw[line width=0.35pt] ([xshift=-1.0cm,yshift=-1.0cm]current page.north east) -- ++(0,-0.55cm);
+    \draw[line width=0.35pt] ([xshift=1.0cm,yshift=1.0cm]current page.south west) -- ++(0.55cm,0);
+    \draw[line width=0.35pt] ([xshift=1.0cm,yshift=1.0cm]current page.south west) -- ++(0,0.55cm);
+    \draw[line width=0.35pt] ([xshift=-1.0cm,yshift=1.0cm]current page.south east) -- ++(-0.55cm,0);
+    \draw[line width=0.35pt] ([xshift=-1.0cm,yshift=1.0cm]current page.south east) -- ++(0,0.55cm);
+  \end{tikzpicture}%
+}
+\newcommand{\GjbCoverRule}{%
+  \noindent\makebox[\textwidth]{\rule{1.00\textwidth}{0.9pt}}%
+}
+\newcommand{\GjbCoverLogo}{%
+  \IfFileExists{common/images/cover-logo.png}{%
+    \includegraphics[width=3.0cm]{common/images/cover-logo.png}%
+  }{%
+    \begin{tikzpicture}[x=1mm,y=1mm,baseline=(base)]
+      \coordinate (base) at (0,0);
+      % Stylized Y
+      \fill[black] (0.0,15.0) -- (4.2,15.0) -- (8.2,6.8) -- (4.0,6.8) -- cycle;
+      \fill[black] (5.2,15.0) -- (9.3,15.0) -- (12.1,9.2) -- (8.0,9.2) -- cycle;
+      \fill[black] (8.2,8.8) -- (12.3,8.8) -- (9.1,1.8) -- (5.0,1.8) -- cycle;
+      \fill[white] (4.5,15.0) -- (6.0,15.0) -- (8.8,9.2) -- (7.3,9.2) -- cycle;
+      % Stylized H
+      \fill[black] (13.2,15.0) -- (17.7,15.0) -- (14.6,1.8) -- (10.2,1.8) -- cycle;
+      \fill[black] (21.4,15.0) -- (25.8,15.0) -- (22.7,1.8) -- (18.3,1.8) -- cycle;
+      \fill[black] (14.7,9.7) -- (22.9,9.7) -- (22.0,6.1) -- (13.9,6.1) -- cycle;
+      \fill[white] (16.0,15.0) -- (18.9,15.0) -- (15.0,1.8) -- (12.1,1.8) -- cycle;
+      \fill[white] (23.0,15.0) -- (24.3,15.0) -- (20.4,1.8) -- (19.1,1.8) -- cycle;
+    \end{tikzpicture}%
+  }%
+}
+
 % 统一的GJB章节标题命令（test_plan和test_detail通用）
 % 用法: \GjbSection{3. 软件测试环境} 或 \GjbSection{软件测试环境}
 \newcommand{\GjbSection}[1]{%
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  #1\par
+  \GjbFormatHeading{#1}%
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
-  \addcontentsline{toc}{section}{#1}%
+  \GjbAddHeadingToToc{section}{#1}%
 }
 
 \newcommand{\GjbSubsection}[1]{%
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  #1\par
+  \GjbFormatHeading{#1}%
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
-  \addcontentsline{toc}{subsection}{#1}%
+  \GjbAddHeadingToToc{subsection}{#1}%
 }
 
 \newcommand{\GjbSubsubsection}[1]{%
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  #1\par
+  \GjbFormatHeading{#1}%
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
-  \addcontentsline{toc}{subsubsection}{#1}%
+  \GjbAddHeadingToToc{subsubsection}{#1}%
 }
 
 \newcommand{\GjbParagraph}[2][]{%
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  #2\par
+  \GjbFormatHeading{#2}%
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
-  \addcontentsline{toc}{paragraph}{\if\relax\detokenize{#1}\relax#2\else#1\fi}%
+  \begingroup
+  \def\GjbTocEntryText{#2}%
+  \if\relax\detokenize{#1}\relax\else
+    \def\GjbTocEntryText{#1}%
+  \fi
+  \GjbAddHeadingToToc{paragraph}{\GjbTocEntryText}%
+  \endgroup
 }
 
 \newcommand{\GjbSubparagraph}[2][]{%
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  #2\par
+  \GjbFormatHeading{#2}%
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
-  \addcontentsline{toc}{subparagraph}{\if\relax\detokenize{#1}\relax#2\else#1\fi}%
+  \begingroup
+  \def\GjbTocEntryText{#2}%
+  \if\relax\detokenize{#1}\relax\else
+    \def\GjbTocEntryText{#1}%
+  \fi
+  \GjbAddHeadingToToc{subparagraph}{\GjbTocEntryText}%
+  \endgroup
 }
 
 \newcommand{\GjbSubsubparagraph}[1]{%
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  #1\par
+  \GjbFormatHeading{#1}%
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
   % 不添加到目录中，避免目录层级过深

@@ -39,10 +39,10 @@
   \par\noindent\addvspace{\GjbHeadingBeforeSkip}%
   \begingroup
   \wuhao\bfseries
-  3.\arabic{GjbTestEnvSection}. #1\par
+  \GjbFormatHeading{3.\arabic{GjbTestEnvSection}. #1}%
   \endgroup
   \par\addvspace{\GjbHeadingAfterSkip}%
-  \addcontentsline{toc}{subsection}{3.\arabic{GjbTestEnvSection}. #1}%
+  \GjbAddHeadingToToc{subsection}{3.\arabic{GjbTestEnvSection}. #1}%
 }
 \def\GjbEnvSoftwareTableLabelSupport{tbl:detail-sw-support}
 \def\GjbEnvFigureLabel{fig:detail-env}
