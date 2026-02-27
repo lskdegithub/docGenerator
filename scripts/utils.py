@@ -43,6 +43,70 @@ def escape_latex(text: str) -> str:
     return " ".join(text.split())
 
 
+def escape_title_text(text: str) -> str:
+    """
+    Escape LaTeX special chars for section titles, without injecting
+    extra soft-break markers that could make wrapping behavior unstable.
+    """
+    text = str(text or "")
+    text = text.replace("\\", "\\textbackslash ")
+    text = text.replace("&", "\\&")
+    text = text.replace("%", "\\%")
+    text = text.replace("$", "\\$")
+    text = text.replace("#", "\\#")
+    text = text.replace("_", "\\_")
+    text = text.replace("{", "\\{")
+    text = text.replace("}", "\\}")
+    text = text.replace("~", "\\textasciitilde ")
+    text = text.replace("^", "\\textasciicircum ")
+    return " ".join(text.split())
+
+
+def estimate_title_units(text: str) -> float:
+    """
+    Roughly estimate display width in normalized units.
+    Used only for stable wrap decisions.
+    """
+    units = 0.0
+    for ch in str(text or ""):
+        if "\u4e00" <= ch <= "\u9fff":
+            units += 1.0
+        elif ch.isascii() and ch.isalnum():
+            units += 0.55
+        else:
+            units += 0.65
+    return units
+
+
+def format_title_name_ident(
+    name: str,
+    ident: str,
+    ident_len_wrap_threshold: int = 28,
+    total_units_wrap_threshold: float = 40.0,
+) -> str:
+    """
+    Format title as: 名称（标识）
+    - keep ident as an unbreakable block
+    - when too long, only break at the name/ident boundary
+    - deterministic for same title text
+    """
+    name = str(name or "").strip()
+    ident = str(ident or "").strip()
+
+    name_escaped = escape_title_text(name)
+    if not ident:
+        return name_escaped
+
+    ident_escaped = escape_title_text(ident)
+    ident_block = f"\\mbox{{（{ident_escaped}）}}"
+    force_wrap = (len(ident) >= ident_len_wrap_threshold) or (
+        estimate_title_units(name) + estimate_title_units(ident) >= total_units_wrap_threshold
+    )
+    if force_wrap:
+        return f"{name_escaped}\\linebreak[4]{ident_block}"
+    return f"{name_escaped}{ident_block}"
+
+
 def parse_plan_yaml(file_path: Path):
     """解析plan.yaml文件，返回结构化数据"""
     try:

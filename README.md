@@ -333,7 +333,7 @@ python3 scripts/audit_tables.py
 
 - [data/README.md](data/README.md) - 测试数据目录使用说明
 - [src/doc2tex-template/README.md](src/doc2tex-template/README.md) - LaTeX 模板详细说明
-- [scripts/README.md](scripts/README.md) - 构建脚本使用说明（待创建）
+- [scripts/README.md](scripts/README.md) - 构建脚本使用说明
 
 ---
 

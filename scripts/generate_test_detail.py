@@ -5,6 +5,7 @@ import argparse
 from pathlib import Path
 import yaml
 from typing import Optional
+import utils
 
 PT_TO_CM = 2.54 / 72.27
 _DETAIL_CASE_LAYOUT = None
@@ -250,53 +251,9 @@ def format_name_ident_multiline(name: str, ident: str, width_cm: Optional[float]
 
 
 def format_title_name_ident(name: str, ident: str, section_number: str, page_width_cm: float = 15.5) -> str:
-    """
-    标题格式：名称（标识）。
-    规则：
-    1) 标识整体不在中间断开；
-    2) 超长时只在“名称/标识”边界强制换行；
-    3) 相同标题文本在不同位置得到一致的换行结果。
-    """
-    name = str(name or "").strip()
-    ident = str(ident or "").strip()
-
-    def escape_title_text(s: str) -> str:
-        s = str(s or "")
-        s = s.replace("\\", "\\textbackslash ")
-        s = s.replace("&", "\\&")
-        s = s.replace("%", "\\%")
-        s = s.replace("$", "\\$")
-        s = s.replace("#", "\\#")
-        s = s.replace("_", "\\_")
-        s = s.replace("{", "\\{")
-        s = s.replace("}", "\\}")
-        s = s.replace("~", "\\textasciitilde ")
-        s = s.replace("^", "\\textasciicircum ")
-        return s
-
-    def estimate_units(s: str) -> float:
-        units = 0.0
-        for ch in s:
-            if "\u4e00" <= ch <= "\u9fff":
-                units += 1.0
-            elif ch.isascii() and ch.isalnum():
-                units += 0.55
-            else:
-                units += 0.65
-        return units
-
-    name_escaped = escape_title_text(name)
-    if not ident:
-        return name_escaped
-
-    ident_escaped = escape_title_text(ident)
-    ident_block = f"\\mbox{{（{ident_escaped}）}}"
-
-    # 稳定阈值：同一标题文本始终同样处理，不受章节号长度影响。
-    force_wrap = (len(ident) >= 28) or (estimate_units(name) + estimate_units(ident) >= 40.0)
-    if force_wrap:
-        return f"{name_escaped}\\linebreak[4]{ident_block}"
-    return f"{name_escaped}{ident_block}"
+    _ = section_number
+    _ = page_width_cm
+    return utils.format_title_name_ident(name, ident)
 
 
 def format_toc_name_ident(name: str, ident: str) -> str:

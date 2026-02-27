@@ -19,6 +19,12 @@ output/
 *.bak
 *.swp
 
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
 # 操作系统文件
 .DS_Store
 Thumbs.db
