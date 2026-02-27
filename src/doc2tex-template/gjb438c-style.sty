@@ -31,6 +31,11 @@
 % =================================================================
 \setCJKmainfont{Noto Serif CJK SC}  % 宋体
 \setCJKsansfont{Noto Sans CJK SC}  % 黑体
+\IfFontExistsTF{Noto Sans CJK SC}{
+  \newCJKfontfamily\GjbCaptionCJK{Noto Sans CJK SC}
+}{
+  \newCJKfontfamily\GjbCaptionCJK{FandolHei-Regular}
+}
 \IfFontExistsTF{Times New Roman}{
   \setmainfont{Times New Roman}
   \newfontfamily\GjbPageNumberFont{Times New Roman}
@@ -56,9 +61,9 @@
 \newcommand{\xiaowuhei}{\xiaowu\bfseries}
 % 三号黑体加粗（16pt, 18pt）
 \newcommand{\sanhao}{\fontsize{16pt}{18pt}\heiti\bfseries\selectfont}
-\DeclareCaptionFont{gjbwuhaohei}{\wuhaoheiti}
-\captionsetup[figure]{font=gjbwuhaohei,labelfont=gjbwuhaohei,textfont=gjbwuhaohei}
-\captionsetup[table]{font=gjbwuhaohei,labelfont=gjbwuhaohei,textfont=gjbwuhaohei}
+% 题注统一字体（表题和图题，五号黑体，不额外加粗）
+\newcommand{\GjbCaptionFont}{\fontsize{10.5pt}{18pt}\GjbCaptionCJK\mdseries\selectfont}
+\DeclareCaptionFont{gjbcaptionfont}{\GjbCaptionFont}
 
 \newcommand{\GjbTableRuleWd}{0.4pt}
 \newcommand{\GjbTableRuleColor}{black}
@@ -151,9 +156,9 @@
 % 表格和图表标题格式
 % =================================================================
 % 表格标题：五号黑体
-\renewcommand{\tablename}{\wuhaoheiti 表}
+\renewcommand{\tablename}{表}
 % 图表标题：五号黑体
-\renewcommand{\figurename}{\wuhaoheiti 图}
+\renewcommand{\figurename}{图}
 
 % =================================================================
 % 表格行间距设置
@@ -177,6 +182,16 @@
 \setlength{\GjbCaptionBeforeSkip}{3pt}
 \newlength{\GjbCaptionAfterSkip}
 \setlength{\GjbCaptionAfterSkip}{6pt}
+\captionsetup{
+  font=gjbcaptionfont,
+  labelfont=gjbcaptionfont,
+  textfont=gjbcaptionfont,
+  labelsep=space,
+  justification=centering,
+  singlelinecheck=false
+}
+\captionsetup[table]{aboveskip=\GjbCaptionBeforeSkip,belowskip=\GjbCaptionAfterSkip}
+\captionsetup[figure]{aboveskip=\GjbCaptionBeforeSkip,belowskip=\GjbCaptionAfterSkip}
 
 \setcounter{secnumdepth}{6}
 \setcounter{tocdepth}{6}
@@ -476,13 +491,13 @@
 % =================================================================
 
 % =================================================================
-% Tabularray longtblr 统一样式（用于表2）
+% Tabularray longtblr 统一样式（用于表）
 % =================================================================
-\DefTblrTemplate{caption-tag}{gjb}{\wuhaoheiti 表~\thetable}
-\DefTblrTemplate{caption-sep}{gjb}{\quad}
-\DefTblrTemplate{caption-text}{gjb}{\wuhaoheiti \InsertTblrText{caption}}
+\DefTblrTemplate{caption-tag}{gjb}{\GjbCaptionFont 表\thetable}
+\DefTblrTemplate{caption-sep}{gjb}{\space}
+\DefTblrTemplate{caption-text}{gjb}{\GjbCaptionFont \InsertTblrText{caption}}
 \DefTblrTemplate{caption}{gjb}{%
-  \vspace{3pt}%
+  \vspace{\GjbCaptionBeforeSkip}%
   \centerline{%
     {\color{black}%
       \UseTblrTemplate{caption-tag}{gjb}%
@@ -490,7 +505,7 @@
       \UseTblrTemplate{caption-text}{gjb}%
     }%
   }%
-  \vspace{6pt}%
+  \vspace{\GjbCaptionAfterSkip}%
 }
 \DefTblrTemplate{contfoot-text}{default}{}
 \DefTblrTemplate{conthead-text}{default}{}
