@@ -135,7 +135,8 @@
       \let\\\GjbTocCR
       \let\newline\GjbTocSoftBreak
       \leftskip #2\relax
-      \rightskip \@pnumwidth\relax
+      % 目录换行保持左对齐，避免两端分散
+      \rightskip \@pnumwidth plus 1fil\relax
       \parfillskip -\@pnumwidth\relax
       \parindent #2\relax
       \interlinepenalty\@M
