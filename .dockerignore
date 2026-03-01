@@ -1,0 +1,3 @@
+# Docker image build only needs Dockerfile in this project.
+*
+!Dockerfile

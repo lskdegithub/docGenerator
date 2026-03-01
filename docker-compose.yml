@@ -1,0 +1,38 @@
+services:
+  latex-build:
+    image: ${IMAGE:-latex-test-env:ubuntu22.04}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    stdin_open: true
+    tty: true
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      TARGET: ${TARGET:-all}
+    command:
+      - bash
+      - -lc
+      - |
+        case "${TARGET}" in
+          all)
+            ./scripts/build_test_plan.sh
+            ./scripts/build_test_detail.sh
+            ./scripts/build_test_report.sh
+            ;;
+          test_plan)
+            ./scripts/build_test_plan.sh
+            ;;
+          test_detail)
+            ./scripts/build_test_detail.sh
+            ;;
+          test_report)
+            ./scripts/build_test_report.sh
+            ;;
+          *)
+            echo "TARGET must be one of: all | test_plan | test_detail | test_report"
+            exit 1
+            ;;
+        esac

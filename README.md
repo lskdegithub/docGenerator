@@ -59,6 +59,38 @@
 
 如果目标环境未安装这些字体，请先安装或调整 [gjb438c-style.sty](file:///d:/workspace/claude/app/latex-test/src/doc2tex-template/gjb438c-style.sty) 的字体配置。
 
+### Docker 方式（Ubuntu 22.04 内网推荐）
+
+项目已提供容器构建文件与脚本，可将项目目录挂载到容器内编译：
+
+```bash
+# 1) 构建镜像
+./scripts/docker_build_image.sh
+
+# 2) 在容器中编译全部文档（挂载当前项目目录）
+./scripts/docker_compile.sh all
+
+# 或编译单个文档
+./scripts/docker_compile.sh test_plan
+./scripts/docker_compile.sh test_detail
+./scripts/docker_compile.sh test_report
+```
+
+说明：
+- 默认镜像名：`latex-test-env:ubuntu22.04`
+- 编译输出仍写回宿主机项目目录（`output/`）
+- 脚本通过 `--user $(id -u):$(id -g)` 运行，避免挂载目录产生 root 权限文件
+
+内外网迁移可使用镜像导出/导入：
+
+```bash
+# 外网机导出
+docker save latex-test-env:ubuntu22.04 -o latex-test-env-ubuntu22.04.tar
+
+# 内网机导入
+docker load -i latex-test-env-ubuntu22.04.tar
+```
+
 ## 项目结构
 
 ```
